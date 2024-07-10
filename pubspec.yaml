@@ -39,6 +39,13 @@ dependencies:
   get_it: ^7.6.7
   base_x: ^2.0.1
   flame: ^1.15.0
+  lottie: ^3.1.2
+  json_view: ^0.4.2
+  equatable: ^2.0.5
+  flutter_bloc: ^8.1.6
+  flame_bloc: ^1.10.10
+  image: ^4.2.0
+  sizer: ^2.0.15
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +75,7 @@ flutter:
   assets:
     - assets/images/
     - assets/textures/Untitled.melmod
+    - assets/animations/loading_animation.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

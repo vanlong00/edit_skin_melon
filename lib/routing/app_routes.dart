@@ -1,3 +1,4 @@
 class AppRoutes {
-  static const String skinEditor = '/skin_editor';
+  static const String skinEditor = '/';
+  static const String viewJson = '/view_json';
 }

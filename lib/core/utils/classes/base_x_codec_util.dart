@@ -9,11 +9,11 @@ class BaseXCodecUtil {
 
   BaseXCodecUtil() : base = BaseXCodec('ABCDEFGHIJKLMNOP');
 
-  String encodeBase(Uint8List data) {
+  String encode(Uint8List data) {
     return base.encoder.convert(data);
   }
 
-  Uint8List decodeBase(String data) {
+  Uint8List decode(String data) {
     return base.decoder.convert(data);
   }
 }

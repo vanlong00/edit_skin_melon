@@ -1,17 +1,50 @@
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sizer/sizer.dart';
 
-class SkinEditorScreen extends StatelessWidget {
+import '../widgets/view_game_widget.dart';
+
+class SkinEditorScreen extends StatefulWidget {
   const SkinEditorScreen({super.key});
+
+  @override
+  State<SkinEditorScreen> createState() => _SkinEditorScreenState();
+}
+
+class _SkinEditorScreenState extends State<SkinEditorScreen> {
+  @override
+  void initState() {
+    context.read<SkinEditorBloc>().add(const SkinEditorInitialEvent("assets/textures/Untitled.melmod"));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Skin Editor"),
+      appBar: buildAppBar(context),
+      body: Column(
+        children: [
+          const Expanded(child: ViewGameWidget()),
+          Container(
+            height: 50.h,
+          )
+        ],
       ),
-      body: const Center(
-        child: Text("Skin Editor Screen"),
-      ),
+    );
+  }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      title: const Text("Skin Editor"),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.code),
+          onPressed: () {
+            Navigator.pushNamed(context, "/view_json");
+          },
+        )
+      ],
     );
   }
 }
