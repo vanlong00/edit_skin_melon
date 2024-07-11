@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:base_x/base_x.dart';
-import 'package:injectable/injectable.dart';
 
-@Singleton()
 class BaseXCodecUtil {
   final BaseXCodec base;
 

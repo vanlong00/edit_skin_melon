@@ -23,5 +23,11 @@ class SkinEditorState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [projectItem, isLoading];
+  List<Object?> get props {
+    return [
+      projectItem,
+      projectItem?.parts?.map((e) => e.mainTextureUint8List).toList(),
+      isLoading,
+    ];
+  }
 }

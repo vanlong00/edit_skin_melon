@@ -7,6 +7,8 @@ import 'package:sizer/sizer.dart';
 import 'core/di/di.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   configureDependencies();
 
   runApp(const MyApp());

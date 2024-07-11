@@ -7,11 +7,13 @@ Future<String> getFileFromAssets(String path) async {
   return fileContents;
 }
 
-Future<String> loadAsset(String path) async {
-  try {
-    final context = getIt<GlobalKey<NavigatorState>>().currentState?.context;
-    return await DefaultAssetBundle.of(context!).loadString(path);
-  } catch (e) {
-    throw Exception('Error loading asset');
+class AnyFunction {
+  static Future<String> loadAsset(String path) async {
+    try {
+      BuildContext? context = getIt<GlobalKey<NavigatorState>>().currentState?.context;
+      return await DefaultAssetBundle.of(context!).loadString(path);
+    } catch (e) {
+      throw Exception('Error loading asset');
+    }
   }
 }

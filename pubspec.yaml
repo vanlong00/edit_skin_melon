@@ -46,6 +46,7 @@ dependencies:
   flame_bloc: ^1.10.10
   image: ^4.2.0
   sizer: ^2.0.15
+  image_picker: ^1.0.8
 
 dev_dependencies:
   flutter_test:

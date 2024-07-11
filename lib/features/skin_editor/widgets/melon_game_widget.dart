@@ -1,6 +1,6 @@
 import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor_bloc.dart';
-import 'package:edit_skin_melon/features/skin_editor/widgets/part_position.dart';
+import 'package:edit_skin_melon/features/skin_editor/widgets/base.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
@@ -13,9 +13,9 @@ class MelonGame extends FlameGame with ScaleDetector {
     camera.viewfinder.zoom = 4;
     camera.moveTo(Vector2(0, 28));
     world.add(
-      FlameBlocProvider<SkinEditorBloc, SkinEditorState>.value(
-        value: getIt<SkinEditorBloc>(),
-        children: [BasePosition()],
+      FlameBlocProvider<SkinEditorBloc, SkinEditorState>(
+        create: () => getIt<SkinEditorBloc>(),
+        children: [Base()],
       ),
     );
     return super.onLoad();

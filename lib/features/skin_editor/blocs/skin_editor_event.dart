@@ -12,3 +12,12 @@ class SkinEditorInitialEvent extends SkinEditorEvent {
   @override
   List<Object?> get props => [pathDefault];
 }
+
+class SkinEditorChangeSkinEvent extends SkinEditorEvent {
+  final Uint8List skin;
+
+  const SkinEditorChangeSkinEvent(this.skin);
+
+  @override
+  List<Object?> get props => [skin];
+}

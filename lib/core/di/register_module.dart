@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterModule {
-  @lazySingleton
+  @singleton
   GlobalKey<NavigatorState> navigatorKey() {
     return GlobalKey<NavigatorState>();
   }

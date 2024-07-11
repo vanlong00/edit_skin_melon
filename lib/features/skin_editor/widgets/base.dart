@@ -6,7 +6,7 @@ import 'package:flame_bloc/flame_bloc.dart';
 import '../models/models.dart';
 import 'pi_component.dart';
 
-class BasePosition extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
+class Base extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
   ProjectItem? projectItem;
   bool isEventFirst = false;
   List<PIComponent> partComponent = [];
@@ -24,7 +24,7 @@ class BasePosition extends Component with FlameBlocListenable<SkinEditorBloc, Sk
   }
 
   void updateParts(ProjectItem? projectItem) {
-    if (projectItem != null && partComponent.isEmpty) {
+    if (projectItem != null) {
       Vector2 previousPosition = Vector2.zero();
       for (var i = 0; i < projectItem.parts!.length; i++) {
         final position = _calculatePosition(i, previousPosition);
