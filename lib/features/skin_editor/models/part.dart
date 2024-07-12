@@ -67,24 +67,27 @@ class Part extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory Part.fromMap(Map<String, dynamic> json) => Part(
-        mainTexture: json["mainTexture"],
-        mainTextureUint8List: json["mainTexture"] != null ? BaseXCodecUtil().decode(json["mainTexture"]) : null,
-        pixelsPerUnit: json["pixelsPerUnit"],
-        mainTextureWidth: json["mainTextureWidth"],
-        mainTextureHeight: json["mainTextureHeight"],
-        collidersJson: List<String>.from(json["collidersJson"].map((x) => x)),
-        glowMap: List<String>.from(json["glowMap"].map((x) => x)),
-        grabPosition: GrabPos.fromMap(json["grabPosition"]),
-        canBeTaken: json["canBeTaken"],
-        canGlow: json["canGlow"],
-        canBurn: json["canBurn"],
-        canFloat: json["canFloat"],
-      );
+  factory Part.fromMap(Map<String, dynamic> json) {
+    final mainTextureUint8List = BaseXCodecUtil().decode(json["mainTexture"]);
+
+    return Part(
+      mainTexture: json["mainTexture"],
+      mainTextureUint8List: json["mainTexture"] != null ? mainTextureUint8List : null,
+      pixelsPerUnit: json["pixelsPerUnit"],
+      mainTextureWidth: json["mainTextureWidth"],
+      mainTextureHeight: json["mainTextureHeight"],
+      collidersJson: List<String>.from(json["collidersJson"].map((x) => x)),
+      glowMap: List<String>.from(json["glowMap"].map((x) => x)),
+      grabPosition: GrabPos.fromMap(json["grabPosition"]),
+      canBeTaken: json["canBeTaken"],
+      canGlow: json["canGlow"],
+      canBurn: json["canBurn"],
+      canFloat: json["canFloat"],
+    );
+  }
 
   Map<String, dynamic> toMap() => {
         "mainTexture": mainTexture,
-        "mainTextureUint8List": mainTextureUint8List,
         "pixelsPerUnit": pixelsPerUnit,
         "mainTextureWidth": mainTextureWidth,
         "mainTextureHeight": mainTextureHeight,
@@ -100,6 +103,7 @@ class Part extends Equatable {
   @override
   List<Object?> get props => [
         mainTexture,
+        mainTextureUint8List,
         pixelsPerUnit,
         mainTextureWidth,
         mainTextureHeight,

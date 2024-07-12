@@ -1,12 +1,13 @@
 import 'dart:ui' as ui;
 
-import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
 import '../models/models.dart';
+import '../utils/constant.dart';
 
 class PartComponent extends SpriteComponent with FlameBlocListenable<SkinEditorBloc, SkinEditorState> {
   PartComponent({
@@ -23,8 +24,6 @@ class PartComponent extends SpriteComponent with FlameBlocListenable<SkinEditorB
 
   @override
   bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
-    if (index != 0) return false;
-
     final previousTexture = previousState.projectItem!.parts![index].mainTextureUint8List;
     final newTexture = newState.projectItem!.parts![index].mainTextureUint8List;
 
@@ -38,9 +37,7 @@ class PartComponent extends SpriteComponent with FlameBlocListenable<SkinEditorB
   @override
   Future<void> onNewState(SkinEditorState state) async {
     if (isEventTexture) {
-      print("PART COMPONENT: $index");
-      var newPart = state.projectItem!.parts![index];
-      print(newPart.mainTextureUint8List == part.mainTextureUint8List);
+      final newPart = state.projectItem!.parts![index];
       sprite = await createSpriteFromPart(newPart);
       isEventTexture = false;
     }
@@ -56,6 +53,8 @@ class PartComponent extends SpriteComponent with FlameBlocListenable<SkinEditorB
   @override
   Future<void> onLoad() async {
     sprite = await createSpriteFromPart(part);
+    size = sprite!.originalSize * maxPerUnit / part.pixelsPerUnit!;
+
     return super.onLoad();
   }
 

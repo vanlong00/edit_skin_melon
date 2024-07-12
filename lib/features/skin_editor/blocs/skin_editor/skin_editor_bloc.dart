@@ -2,31 +2,31 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:developer' as dev;
 
-import 'package:edit_skin_melon/core/di/di.dart';
+import 'package:edit_skin_melon/core/utils/classes/file_download_helper.dart';
 import 'package:edit_skin_melon/core/utils/functions/any_functions.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
 import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:image/image.dart' as img;
 
-part 'skin_editor_event.dart';
-
 part 'skin_editor_state.dart';
+
+part 'skin_editor_event.dart';
 
 @lazySingleton
 class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   SkinEditorBloc() : super(const SkinEditorState.initial()) {
     on<SkinEditorInitialEvent>(_onSkinEditorInitialEvent);
     on<SkinEditorChangeSkinEvent>(_onSkinEditorChangeSkinEvent);
+    on<SkinEditorToPngEvent>(_onSkinEditorToPngEvent);
   }
 
   Future<void> _onSkinEditorInitialEvent(SkinEditorInitialEvent event, Emitter<SkinEditorState> emit) async {
     EasyLoading.show();
 
-    final content = await AnyFunction.loadAsset(event.pathDefault);
+    final content = await AnyFunction.loadAsset("assets/textures/RMA PLAYER HOME LS.melmod");
     ProjectItem projectItem = ProjectItem.fromJson(content);
 
     emit(state.copyWith(projectItem: projectItem, isLoading: false));
@@ -34,18 +34,11 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   }
 
   Future<void> _onSkinEditorChangeSkinEvent(SkinEditorChangeSkinEvent event, Emitter<SkinEditorState> emit) async {
-    // dev.log(event.skin.toString(), name: "SKIN");
-    // dev.log(state.projectItem!.parts![0].mainTextureUint8List.toString(), name: "DEFAULT SKIN");
+    img.Image? skinImg = img.decodeImage(Uint8List.fromList(event.skin));
+    img.Image? defaultSkinImg = img.decodeImage(state.projectItem!.parts![0].mainTextureUint8List!);
 
-    var skinImg = img.decodeImage(Uint8List.fromList(event.skin));
-    var defaultSkinImg = img.decodeImage(state.projectItem!.parts![0].mainTextureUint8List!);
-
-    var result = img.compositeImage(defaultSkinImg!,skinImg! );
-    var resultUint8List = img.encodePng(result);
-
-    // dev.log(resultUint8List.toString(), name: "Result");
-
-    print("SKIN EDITOR BLOC: ${state.projectItem!.parts![0].mainTextureUint8List! == resultUint8List}");
+    img.Image result = img.compositeImage(defaultSkinImg!, skinImg!, center: true);
+    Uint8List resultUint8List = img.encodePng(result);
 
     var partFirst = state.projectItem!.parts![0];
 
@@ -60,4 +53,23 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
       ),
     ));
   }
+
+  Future<void> _onSkinEditorToPngEvent(SkinEditorToPngEvent event, Emitter<SkinEditorState> emit) async {
+    try {
+      // final granted = await PermissionHelper.requestStoragePermissions();
+      // if (!granted) return;
+
+      state.projectItem?.parts?.forEach((Part element) {
+        final index = state.projectItem!.parts!.indexOf(element);
+        saveImage(index, element);
+        // saveData(index, element);
+      });
+    } catch (e) {
+      dev.log('Error saving file: $e');
+    }
+  }
+
+  Future<void> saveData(int index, Part element) async => FileDownloaderHelper.saveFileAsStringOnDevice("data/skin$index.txt", element.toJson());
+
+  Future<void> saveImage(int index, Part element) => FileDownloaderHelper.saveFileAsByteOnDevice("thumb/skin$index.png", element.mainTextureUint8List!);
 }

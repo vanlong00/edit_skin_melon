@@ -1,4 +1,4 @@
-import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';

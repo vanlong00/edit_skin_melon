@@ -1,4 +1,4 @@
-import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,27 +24,16 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
-      body: Column(
+      body: Row(
         children: [
           const Expanded(child: ViewGameWidget()),
           SizedBox(
-            height: 50.h,
+            width: 25.w,
             child: Center(
               child: IconButton(
                 icon: const Icon(Icons.add, size: 64),
                 onPressed: () async {
-                  final XFile? image = await ImagePicker().pickImage(
-                    source: ImageSource.gallery,
-                    maxWidth: 512,
-                    maxHeight: 512,
-                    imageQuality: 100,
-                  );
 
-                  if (image == null) return;
-
-                  image.readAsBytes().then((value) {
-                    context.read<SkinEditorBloc>().add(SkinEditorChangeSkinEvent(value));
-                  });
                 },
               ),
             ),

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart' as _i3;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import '../../features/skin_editor/blocs/skin_editor_bloc.dart' as _i4;
+import '../../features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart' as _i4;
 import 'register_module.dart' as _i5;
 
 extension GetItInjectableX on _i1.GetIt {

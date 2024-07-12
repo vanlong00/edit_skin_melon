@@ -21,3 +21,10 @@ class SkinEditorChangeSkinEvent extends SkinEditorEvent {
   @override
   List<Object?> get props => [skin];
 }
+
+class SkinEditorToPngEvent extends SkinEditorEvent {
+  const SkinEditorToPngEvent();
+
+  @override
+  List<Object?> get props => [];
+}

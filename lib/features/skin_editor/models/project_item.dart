@@ -99,8 +99,8 @@ class ProjectItem extends Equatable {
         modHuman: List<ModHuman>.from(json["modHuman"].map((x) => ModHuman.fromMap(x))),
         modFirearms: List<dynamic>.from(json["modFirearms"].map((x) => x)),
         metadata: MetaData.fromMap(json["metadata"]),
-        colorData: List<dynamic>.from(json["colorData"].map((x) => x)),
-        scriptsData: List<dynamic>.from(json["ScriptsData"].map((x) => x)),
+        colorData: json["colorData"] != null ? List<dynamic>.from(json["colorData"].map((x) => x)) : null,
+        scriptsData: json["ScriptsData"] != null ? List<dynamic>.from(json["ScriptsData"].map((x) => x)) : null,
       );
 
   Map<String, dynamic> toMap() => {

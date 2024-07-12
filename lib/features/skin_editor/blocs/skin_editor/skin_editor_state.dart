@@ -24,9 +24,11 @@ class SkinEditorState extends Equatable {
 
   @override
   List<Object?> get props {
+    final partsHashCode = projectItem?.parts?.hashCode;
+
     return [
       projectItem,
-      projectItem?.parts?.map((e) => e.mainTextureUint8List).toList(),
+      partsHashCode,
       isLoading,
     ];
   }

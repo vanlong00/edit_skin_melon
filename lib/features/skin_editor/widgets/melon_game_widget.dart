@@ -1,5 +1,5 @@
 import 'package:edit_skin_melon/core/di/di.dart';
-import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/base.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';

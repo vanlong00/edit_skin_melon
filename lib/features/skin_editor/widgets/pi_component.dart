@@ -3,6 +3,8 @@ import 'package:edit_skin_melon/features/skin_editor/widgets/part_component.dart
 import 'package:flame/components.dart';
 
 import '../models/models.dart';
+import '../utils/constant.dart';
+
 
 class PIComponent extends PositionComponent with HasGameRef<MelonGame> {
   PIComponent(
@@ -20,8 +22,6 @@ class PIComponent extends PositionComponent with HasGameRef<MelonGame> {
 
   @override
   Future<void> onLoad() async {
-    const maxPerUnit = 50.0;
-
     position = position * maxPerUnit;
 
     final partMelon = PartComponent(
