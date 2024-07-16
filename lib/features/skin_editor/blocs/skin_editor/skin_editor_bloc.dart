@@ -59,17 +59,17 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
       // final granted = await PermissionHelper.requestStoragePermissions();
       // if (!granted) return;
 
-      state.projectItem?.parts?.forEach((Part element) {
-        final index = state.projectItem!.parts!.indexOf(element);
-        saveImage(index, element);
-        // saveData(index, element);
-      });
+      for (var index = 0, parts = state.projectItem!.parts!; index < parts.length; index++) {
+        final element = parts[index];
+        await saveImage(index, element);
+        await saveData(index, element);
+      }
     } catch (e) {
       dev.log('Error saving file: $e');
     }
   }
 
-  Future<void> saveData(int index, Part element) async => FileDownloaderHelper.saveFileAsStringOnDevice("data/skin$index.txt", element.toJson());
+  Future<void> saveData(int index, Part element) async => FileDownloaderHelper.saveFileAsStringOnDevice("data/skin$index.json", element.toJson2());
 
   Future<void> saveImage(int index, Part element) => FileDownloaderHelper.saveFileAsByteOnDevice("thumb/skin$index.png", element.mainTextureUint8List!);
 }

@@ -1,4 +1,5 @@
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +18,7 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<SkinEditorBloc>().add(const SkinEditorInitialEvent("assets/textures/Untitled.melmod"));
+    context.read<SkinEditorBloc>().add(const SkinEditorInitialEvent("assets/textures/default.melmod"));
   }
 
   @override
@@ -33,6 +34,8 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
               child: IconButton(
                 icon: const Icon(Icons.add, size: 64),
                 onPressed: () async {
+                  // context.read<SkinEditorBloc>().add(const SkinEditorToPngEvent());
+                  context.read<SkinItemBloc>().add(const SkinItemInitData("test"));
 
                 },
               ),

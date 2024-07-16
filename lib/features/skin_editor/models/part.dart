@@ -67,12 +67,14 @@ class Part extends Equatable {
 
   String toJson() => json.encode(toMap());
 
+  String toJson2() => json.encode(toMap2());
+
   factory Part.fromMap(Map<String, dynamic> json) {
     final mainTextureUint8List = BaseXCodecUtil().decode(json["mainTexture"]);
 
     return Part(
       mainTexture: json["mainTexture"],
-      mainTextureUint8List: json["mainTexture"] != null ? mainTextureUint8List : null,
+      mainTextureUint8List: json["mainTextureUint8List"] ?? mainTextureUint8List,
       pixelsPerUnit: json["pixelsPerUnit"],
       mainTextureWidth: json["mainTextureWidth"],
       mainTextureHeight: json["mainTextureHeight"],
@@ -91,6 +93,16 @@ class Part extends Equatable {
         "pixelsPerUnit": pixelsPerUnit,
         "mainTextureWidth": mainTextureWidth,
         "mainTextureHeight": mainTextureHeight,
+        "collidersJson": collidersJson != null ? List<dynamic>.from(collidersJson!.map((x) => x)) : [],
+        "glowMap": glowMap != null ? List<dynamic>.from(glowMap!.map((x) => x)) : [],
+        "grabPosition": grabPosition?.toMap(),
+        "canBeTaken": canBeTaken,
+        "canGlow": canGlow,
+        "canBurn": canBurn,
+        "canFloat": canFloat,
+      };
+
+  Map<String, dynamic> toMap2() => {
         "collidersJson": collidersJson != null ? List<dynamic>.from(collidersJson!.map((x) => x)) : [],
         "glowMap": glowMap != null ? List<dynamic>.from(glowMap!.map((x) => x)) : [],
         "grabPosition": grabPosition?.toMap(),
