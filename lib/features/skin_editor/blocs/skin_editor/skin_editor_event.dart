@@ -1,6 +1,6 @@
 part of 'skin_editor_bloc.dart';
 
-sealed class SkinEditorEvent extends Equatable {
+sealed class SkinEditorEvent extends ReplayEvent with EquatableMixin {
   const SkinEditorEvent();
 }
 
@@ -20,6 +20,17 @@ class SkinEditorChangeSkinEvent extends SkinEditorEvent {
 
   @override
   List<Object?> get props => [skin];
+}
+
+class SkinEditorUpdateSkinEvent extends SkinEditorEvent {
+  final String skinPath;
+  final String dataPath;
+  final int indexPart;
+
+  const SkinEditorUpdateSkinEvent({required this.skinPath, required this.dataPath, required this.indexPart});
+
+  @override
+  List<Object?> get props => [skinPath, dataPath, indexPart];
 }
 
 class SkinEditorToPngEvent extends SkinEditorEvent {

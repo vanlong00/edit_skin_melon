@@ -18,6 +18,12 @@ class Base extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditor
   }
 
   @override
+  bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
+    // TODO: implement listenWhen
+    return previousState.projectItem?.parts?.length != newState.projectItem?.parts?.length;
+  }
+
+  @override
   void onNewState(SkinEditorState state) {
     super.onNewState(state);
     updateParts(state.projectItem);

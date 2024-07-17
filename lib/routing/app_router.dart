@@ -21,8 +21,8 @@ class AppRouter {
       case AppRoutes.skinEditor:
         return MultiBlocProvider(
           providers: [
-            BlocProvider(
-              create: (context) => getIt<SkinEditorBloc>(),
+            BlocProvider.value(
+              value: getIt<SkinEditorBloc>(),
             ),
             BlocProvider(
               create: (context) => getIt<SkinItemBloc>(),
@@ -31,8 +31,8 @@ class AppRouter {
           child: const SkinEditorScreen(),
         );
       case AppRoutes.viewJson:
-        return BlocProvider(
-          create: (context) => getIt<SkinEditorBloc>(),
+        return BlocProvider.value(
+          value: getIt<SkinEditorBloc>(),
           child: const ViewJsonScreen(),
         );
       default:

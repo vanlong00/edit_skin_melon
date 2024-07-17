@@ -5,10 +5,15 @@ abstract class SkinItemEvent extends Equatable {
 }
 
 class SkinItemInitData extends SkinItemEvent {
-  final String assetsPath;
+  @override
+  List<Object> get props => [];
+}
 
-  const SkinItemInitData(this.assetsPath);
+class SkinItemSelectData extends SkinItemEvent {
+  final int indexPart;
+
+  const SkinItemSelectData({required this.indexPart});
 
   @override
-  List<Object> get props => [assetsPath];
+  List<Object> get props => [indexPart];
 }

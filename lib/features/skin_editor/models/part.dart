@@ -70,7 +70,7 @@ class Part extends Equatable {
   String toJson2() => json.encode(toMap2());
 
   factory Part.fromMap(Map<String, dynamic> json) {
-    final mainTextureUint8List = BaseXCodecUtil().decode(json["mainTexture"]);
+    final mainTextureUint8List = json["mainTexture"] != null ? BaseXCodecUtil().decode(json["mainTexture"]) : null;
 
     return Part(
       mainTexture: json["mainTexture"],
@@ -103,6 +103,7 @@ class Part extends Equatable {
       };
 
   Map<String, dynamic> toMap2() => {
+        "pixelsPerUnit": pixelsPerUnit,
         "collidersJson": collidersJson != null ? List<dynamic>.from(collidersJson!.map((x) => x)) : [],
         "glowMap": glowMap != null ? List<dynamic>.from(glowMap!.map((x) => x)) : [],
         "grabPosition": grabPosition?.toMap(),

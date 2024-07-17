@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -12,7 +10,7 @@ part 'skin_item_event.dart';
 
 part 'skin_item_state.dart';
 
-@injectable
+@lazySingleton
 class SkinItemBloc extends Bloc<SkinItemEvent, SkinItemState> {
   Map<String, Map<String, List<String>>> skinsModel = {
     "head": {},
@@ -33,12 +31,14 @@ class SkinItemBloc extends Bloc<SkinItemEvent, SkinItemState> {
 
   SkinItemBloc() : super(SkinItemInitial()) {
     on<SkinItemInitData>(_onSkinItemInitData);
+    on<SkinItemSelectData>(_onSkinItemSelectData);
   }
 
   Future<FutureOr<void>> _onSkinItemInitData(SkinItemInitData event, Emitter<SkinItemState> emit) async {
     emit(SkinItemLoading());
 
-    final manifestMap = await AnyFunction.loadModsAsset();
+    final Map<String, dynamic> manifestMap = await AnyFunction.loadModsAsset();
+
     final cateSkins = skinsModel.keys.toList();
 
     for (var cate in cateSkins) {
@@ -46,14 +46,20 @@ class SkinItemBloc extends Bloc<SkinItemEvent, SkinItemState> {
           manifestMap.keys.where((key) => key.contains("images/")).where((key) => key.contains("$cate/")).toList();
 
       final thumbs = skinsData.where((key) => key.contains("thumb/")).toList();
-      final datas = skinsData.where((key) => !key.contains("data/")).toList();
+      final datas = skinsData.where((key) => key.contains("data/")).toList();
 
       skinsModel[cate]?.addAll({
-        "data": thumbs,
-        "thumb": datas,
+        "data": datas,
+        "thumb": thumbs,
       });
     }
 
-    print(skinsModel);
+    emit(SkinItemLoaded(skinsModel: skinsModel));
+  }
+
+  FutureOr<void> _onSkinItemSelectData(SkinItemSelectData event, Emitter<SkinItemState> emit) {
+    if (state is SkinItemLoaded) {
+      emit((state as SkinItemLoaded).copyWith(indexPart: event.indexPart));
+    }
   }
 }

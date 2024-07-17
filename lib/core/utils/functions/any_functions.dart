@@ -14,7 +14,7 @@ class AnyFunction {
     }
   }
 
-  static Future<Map<String, String>> loadModsAsset() async {
+  static Future<Map<String, dynamic>> loadModsAsset() async {
     try {
       final manifestContent = await rootBundle.loadString('AssetManifest.json');
 

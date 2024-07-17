@@ -1,6 +1,10 @@
+import 'dart:ui';
+
 import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/base.dart';
+import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
@@ -9,20 +13,31 @@ class MelonGame extends FlameGame with ScaleDetector {
   late double startZoom;
 
   @override
+  Color backgroundColor() => AppColor.backgroundGame;
+
+  @override
   Future<void> onLoad() async {
     camera.viewfinder.zoom = 4;
     camera.moveTo(Vector2(0, 28));
     world.add(
-      FlameBlocProvider<SkinEditorBloc, SkinEditorState>(
-        create: () => getIt<SkinEditorBloc>(),
+      FlameMultiBlocProvider(
+        providers: [
+          FlameBlocProvider<SkinEditorBloc, SkinEditorState>.value(
+            value: getIt<SkinEditorBloc>(),
+          ),
+          FlameBlocProvider<SkinItemBloc, SkinItemState>.value(
+            value: getIt<SkinItemBloc>(),
+          ),
+        ],
         children: [Base()],
       ),
+
     );
     return super.onLoad();
   }
 
   void clampZoom() {
-    camera.viewfinder.zoom = camera.viewfinder.zoom.clamp(0.1, 50);
+    camera.viewfinder.zoom = camera.viewfinder.zoom.clamp(4, 50);
   }
 
   @override

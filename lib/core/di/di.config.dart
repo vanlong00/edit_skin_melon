@@ -32,7 +32,7 @@ extension GetItInjectableX on _i1.GetIt {
     gh.singleton<_i3.GlobalKey<_i3.NavigatorState>>(
         () => registerModule.navigatorKey());
     gh.lazySingleton<_i4.SkinEditorBloc>(() => _i4.SkinEditorBloc());
-    gh.factory<_i5.SkinItemBloc>(() => _i5.SkinItemBloc());
+    gh.lazySingleton<_i5.SkinItemBloc>(() => _i5.SkinItemBloc());
     return this;
   }
 }
