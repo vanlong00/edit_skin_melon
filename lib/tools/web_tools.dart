@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -65,29 +66,29 @@ class _WebToolsState extends State<WebTools> {
     });
   }
 
-  void _clearCachedFiles() async {
-    _resetState();
-    try {
-      bool? result = await FilePicker.platform.clearTemporaryFiles();
-      _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-      _scaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text(
-            (result! ? 'Temporary files removed with success.' : 'Failed to clean temporary files'),
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation$e');
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
+  // void _clearCachedFiles() async {
+  //   _resetState();
+  //   try {
+  //     bool? result = await FilePicker.platform.clearTemporaryFiles();
+  //     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
+  //     _scaffoldMessengerKey.currentState?.showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           (result! ? 'Temporary files removed with success.' : 'Failed to clean temporary files'),
+  //           style: const TextStyle(
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation$e');
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   } finally {
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
 
   void _selectFolder() async {
     _resetState();
@@ -110,40 +111,38 @@ class _WebToolsState extends State<WebTools> {
     }
   }
 
-  Future<void> _saveFile() async {
-    _resetState();
-    try {
-      String? fileName = await FilePicker.platform.saveFile(
-        allowedExtensions: (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
-        type: _pickingType,
-        dialogTitle: _dialogTitleController.text,
-        fileName: _defaultFileNameController.text,
-        initialDirectory: _initialDirectoryController.text,
-        lockParentWindow: _lockParentWindow,
-      );
-      setState(() {
-        _saveAsFileName = fileName;
-        _userAborted = fileName == null;
-      });
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation$e');
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
+  // Future<void> _saveFile() async {
+  //   _resetState();
+  //   try {
+  //     String? fileName = await FilePicker.platform.saveFile(
+  //       allowedExtensions: (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
+  //       type: _pickingType,
+  //       dialogTitle: _dialogTitleController.text,
+  //       fileName: _defaultFileNameController.text,
+  //       initialDirectory: _initialDirectoryController.text,
+  //       lockParentWindow: _lockParentWindow,
+  //     );
+  //     setState(() {
+  //       _saveAsFileName = fileName;
+  //       _userAborted = fileName == null;
+  //     });
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation$e');
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   } finally {
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
 
   void _logException(String message) {
-    print(message);
+    log(message);
     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
     _scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
         content: Text(
           message,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -195,9 +194,7 @@ class _WebToolsState extends State<WebTools> {
                     fontSize: 20,
                   ),
                 ),
-                const SizedBox(
-                  height: 20.0,
-                ),
+                buildSizedBox(),
                 // Wrap(
                 //   spacing: 10.0,
                 //   runSpacing: 10.0,
@@ -309,13 +306,9 @@ class _WebToolsState extends State<WebTools> {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20.0,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 20.0,
-                ),
+                buildSizedBox(),
+                buildDivider(),
+                buildSizedBox(),
                 const Text(
                   'Actions',
                   textAlign: TextAlign.start,
@@ -374,10 +367,8 @@ class _WebToolsState extends State<WebTools> {
                     ],
                   ),
                 ),
-                const Divider(),
-                const SizedBox(
-                  height: 20.0,
-                ),
+                buildDivider(),
+                buildSizedBox(),
                 const Text(
                   'File Picker Result',
                   textAlign: TextAlign.start,
@@ -397,6 +388,10 @@ class _WebToolsState extends State<WebTools> {
       ),
     );
   }
+
+  Divider buildDivider() => const Divider();
+
+  SizedBox buildSizedBox() => const SizedBox(height: 20.0);
 
   Column buildFiles() {
     return Column(
@@ -428,7 +423,7 @@ class _WebToolsState extends State<WebTools> {
                     subtitle: Text(path ?? ''),
                   );
                 },
-                separatorBuilder: (BuildContext context, int index) => const Divider(),
+                separatorBuilder: (BuildContext context, int index) => buildDivider(),
               ),
             ),
           )
