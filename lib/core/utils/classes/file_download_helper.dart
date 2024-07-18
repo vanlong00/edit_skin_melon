@@ -26,14 +26,18 @@ class FileDownloaderHelper {
 
         final res = await outFile.writeAsBytes(bytes, flush: true);
         log("=> saved file: ${res.path}");
+      } else if (Platform.isMacOS) {
+        final path = fileName;
+        final bytes = bytesData;
+        final outFile = File(path);
+        if (!outFile.parent.existsSync()) {
+          await outFile.create(recursive: true);
+        }
+
+        final res = await outFile.writeAsBytes(bytes, flush: true);
+        log("=> saved file: ${res.path}");
       } else {
-        // IOS
-        // final directory = await getApplicationDocumentsDirectory();
-        // // Get the application documents directory path
-        // final path = '${directory.path}/$fileName';
-        // final bytes = await inFile.readAsBytes();
-        // final res = await Share.shareXFiles([XFile(path, bytes: bytes)]);
-        // log("=> saved status: ${res.status}");
+
       }
     } catch (e) {
       throw Exception(e);
@@ -61,13 +65,15 @@ class FileDownloaderHelper {
         final res = await outFile.writeAsString(content, flush: true);
         log("=> saved file: ${res.path}");
       } else {
-        // IOS
-        // final directory = await getApplicationDocumentsDirectory();
-        // // Get the application documents directory path
-        // final path = '${directory.path}/$fileName';
-        // final bytes = await inFile.readAsBytes();
-        // final res = await Share.shareXFiles([XFile(path, bytes: bytes)]);
-        // log("=> saved status: ${res.status}");
+        final path = fileName;
+        final content = contentData;
+        final outFile = File(path);
+        if (!outFile.parent.existsSync()) {
+          await outFile.create(recursive: true);
+        }
+
+        final res = await outFile.writeAsString(content, flush: true);
+        log("=> saved file: ${res.path}");
       }
     } catch (e) {
       throw Exception(e);
