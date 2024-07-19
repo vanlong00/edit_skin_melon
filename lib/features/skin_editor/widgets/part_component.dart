@@ -51,6 +51,8 @@ class PartComponent extends SpriteComponent with FlameBlocListenable<SkinEditorB
   @override
   void onInitialState(SkinEditorState state) {
     index = state.projectItem!.parts!.indexOf(part);
+    priority = 50 - index;
+
     add(TapComponent(
       index: index,
       position: size / 2,
