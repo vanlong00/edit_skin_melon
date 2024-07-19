@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:collection/collection.dart';
@@ -37,6 +38,23 @@ class _WebToolsState extends State<WebTools> {
   bool _multiPick = true;
   FileType _pickingType = FileType.any;
   double? _exportProgress;
+
+  Map<String, List<Part>> skinsModel = {
+    "head": [],
+    "body1": [],
+    "body2": [],
+    "body3": [],
+    "leg_left1": [],
+    "leg_left2": [],
+    "leg_left3": [],
+    "leg_right1": [],
+    "leg_right2": [],
+    "leg_right3": [],
+    "arm_left1": [],
+    "arm_left2": [],
+    "arm_right1": [],
+    "arm_right2": [],
+  };
 
   List<String> typeDirs = [
     'head',
@@ -98,7 +116,9 @@ class _WebToolsState extends State<WebTools> {
     setState(() {
       _isLoading = true;
       _pathsError = null;
-      _exportProgress = 0.0; // Reset progress at the start
+      skinsModel.forEach((key, value) {
+        value.clear();
+      });
     });
 
     try {
@@ -118,11 +138,25 @@ class _WebToolsState extends State<WebTools> {
           continue;
         }
 
-        await _exportProjectItemParts(projectItem, i + indexNamed);
+        await _exportProjectItemParts(projectItem, i);
+      }
 
-        setState(() {
-          _exportProgress = (i + 1) / total;
-        });
+      skinsModel.forEach((key, value) {
+        removeDuplicate(value);
+      });
+      printMap(skinsModel);
+
+      for (var i = 0; i < skinsModel.length; i++) {
+        final parts = skinsModel[typeDirs[i]]!;
+        final dirType = typeDirs[i];
+
+        for (var j = 0; j < parts.length; j++) {
+          final part = parts[j];
+          Future.wait([
+            saveImage("$_directoryPath/$dirType/thumb/skin${indexNamed + j}.png", part.mainTextureUint8List!),
+            saveData("$_directoryPath/$dirType/data/skin${indexNamed + j}.json", part.toJson2()),
+          ]);
+        }
       }
     } on PlatformException catch (e) {
       _logException('Unsupported operation$e');
@@ -136,40 +170,40 @@ class _WebToolsState extends State<WebTools> {
     });
   }
 
+  void removeDuplicate(List<Part> list) {
+    final unique = list.toSet().toList();
+    list.clear();
+    list.addAll(unique);
+  }
+
+  void printMap(Map<String, List<Part>> map) {
+    map.forEach((key, value) {
+      print("Key: $key");
+      print("Value: ${value.length}");
+    });
+    print("====================================");
+  }
 
   Future<void> _exportProjectItemParts(ProjectItem projectItem, int fileIndex) async {
     for (var index = 0; index < projectItem.parts!.length; index++) {
       final part = projectItem.parts![index];
-      final pathFile = "$_directoryPath/${typeDirs[index]}";
 
-      await Future.wait([
-        saveImage("$pathFile/thumb/skin$fileIndex.png", part.mainTextureUint8List!),
-        saveData("$pathFile/data/skin$fileIndex.json", part.toJson2()),
-      ]);
+      skinsModel[typeDirs[index]]?.add(part);
+
+      // await Future.wait([
+      //   saveImage("$pathFile/thumb/skin$fileIndex.png", part.mainTextureUint8List!),
+      //   saveData("$pathFile/data/skin$fileIndex.json", part.toJson2()),
+      // ]);
     }
   }
 
-  // Map<String, dynamic> removeSameValue(Map<String, List<dynamic>> originalMap) {
-  //   Map<String, dynamic> uniqueValuesMap = {};
-  //
-  //   for (var type in originalMap.keys.toList()) {
-  //     var thumbMap = originalMap[type];
-  //
-  //     var dataMap = thumbMap!.toSet().toList();
-  //
-  //     originalMap.update(type, (value) => dataMap);
-  //     // var thumbMap2 = Map.fromEntries(dataMap);
-  //   }
-  //   originalMap.forEach((key, value) {
-  //     print(key);
-  //     print(value);
-  //     print('=====================');
-  //   });
-  //
-  //   return uniqueValuesMap;
-  // }
+  String uint8ListToString(Uint8List input) {
+    return utf8.decode(input);
+  }
 
-  String _getTypeDir(int index) => typeDirs[index];
+  Uint8List stringToUint8List(String input) {
+    return Uint8List.fromList(utf8.encode(input));
+  }
 
   Future<void> saveData(String pathSave, String data) async =>
       FileDownloaderHelper.saveFileAsStringOnDevice(pathSave, data);

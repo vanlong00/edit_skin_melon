@@ -29,9 +29,6 @@ class MyApp extends StatelessWidget {
         initialRoute: Platform.isMacOS ? AppRoutes.webTools : AppRoutes.skinEditor,
         navigatorKey: getIt<GlobalKey<NavigatorState>>(),
         builder: EasyLoading.init(),
-        theme: ThemeData(
-          colorSchemeSeed: Colors.blue,
-        ),
       ),
     );
   }
