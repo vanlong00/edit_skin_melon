@@ -1,12 +1,16 @@
+import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/part_component.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 
+import '../blocs/skin_editor/skin_editor_bloc.dart';
 import '../models/models.dart';
 import '../utils/constant.dart';
 
-
-class PIComponent extends PositionComponent with HasGameRef<MelonGame> {
+class PIComponent extends PositionComponent
+    with HasGameRef<MelonGame>, FlameBlocListenable<SkinEditorBloc, SkinEditorState> {
   PIComponent(
     this.part, {
     Vector2? position,

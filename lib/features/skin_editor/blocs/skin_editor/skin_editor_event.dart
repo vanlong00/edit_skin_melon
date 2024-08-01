@@ -13,24 +13,25 @@ class SkinEditorInitialEvent extends SkinEditorEvent {
   List<Object?> get props => [pathDefault];
 }
 
-class SkinEditorChangeSkinEvent extends SkinEditorEvent {
-  final Uint8List skin;
-
-  const SkinEditorChangeSkinEvent(this.skin);
-
-  @override
-  List<Object?> get props => [skin];
-}
-
-class SkinEditorUpdateSkinEvent extends SkinEditorEvent {
+class SkinEditorUpdatePartEvent extends SkinEditorEvent {
   final String skinPath;
   final String dataPath;
   final int indexPart;
 
-  const SkinEditorUpdateSkinEvent({required this.skinPath, required this.dataPath, required this.indexPart});
+  const SkinEditorUpdatePartEvent({required this.skinPath, required this.dataPath, required this.indexPart});
 
   @override
   List<Object?> get props => [skinPath, dataPath, indexPart];
+}
+
+class SkinEditorBlendColorEvent extends SkinEditorEvent {
+  final Uint8List data;
+  final int indexPart;
+
+  const SkinEditorBlendColorEvent(this.indexPart, {required this.data});
+
+  @override
+  List<Object?> get props => [data];
 }
 
 class SkinEditorToPngEvent extends SkinEditorEvent {

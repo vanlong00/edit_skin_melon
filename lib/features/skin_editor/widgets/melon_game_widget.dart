@@ -9,10 +9,9 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 
-import '../utils/constant.dart';
 import 'part_component.dart';
 
-class MelonGame extends FlameGame with ScaleDetector {
+class MelonGame extends FlameGame with ScaleDetector{
   double startZoom = 1;
   PartComponent? partComponent;
 
@@ -21,7 +20,7 @@ class MelonGame extends FlameGame with ScaleDetector {
 
   @override
   Future<void> onLoad() async {
-    camera.viewfinder.zoom = 7.6;
+    camera.viewfinder.zoom = 10;
     camera.moveTo(Vector2(0, 28));
     world.add(
       FlameMultiBlocProvider(
@@ -42,44 +41,5 @@ class MelonGame extends FlameGame with ScaleDetector {
 
   void clampZoom() {
     camera.viewfinder.zoom = camera.viewfinder.zoom.clamp(1, 50);
-  }
-
-  @override
-  void onScaleStart(ScaleStartInfo info) {
-    partComponent = componentsAtPoint(info.eventPosition.widget).whereType<PartComponent>().firstOrNull;
-    startZoom = camera.viewfinder.zoom;
-    super.onScaleStart(info);
-  }
-
-  @override
-  void onScaleEnd(ScaleEndInfo info) {
-    // TODO: implement onScaleEnd
-    partComponent = null;
-    super.onScaleEnd(info);
-  }
-
-  @override
-  void onScaleUpdate(ScaleUpdateInfo info) {
-    switch (info.pointerCount) {
-      case 1:
-        if (partComponent != null) {
-          break;
-        }
-        final delta = info.delta.global;
-        final zoomSpeed = 1 / camera.viewfinder.zoom;
-        final adjustedDelta = delta * zoomSpeed * 0.6;
-        camera.viewfinder.position += -adjustedDelta;
-        break;
-      case 2:
-        final currentScale = info.scale.global;
-        final newZoom = startZoom * currentScale.y;
-
-        if (newZoom >= 0) {
-          camera.viewfinder.zoom = newZoom;
-          clampZoom();
-        }
-    }
-
-    super.onScaleUpdate(info);
   }
 }

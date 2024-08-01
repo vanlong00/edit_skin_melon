@@ -19,8 +19,8 @@ part 'skin_editor_event.dart';
 class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
   SkinEditorBloc() : super(const SkinEditorState.initial()) {
     on<SkinEditorInitialEvent>(_onSkinEditorInitialEvent);
-    on<SkinEditorChangeSkinEvent>(_onSkinEditorChangeSkinEvent);
-    on<SkinEditorUpdateSkinEvent>(_onSkinEditorUpdateSkinEvent);
+    on<SkinEditorUpdatePartEvent>(_onSkinEditorUpdateEvent);
+    on<SkinEditorBlendColorEvent>(_onSkinEditorBlendColorEvent);
     on<SkinEditorToPngEvent>(_onSkinEditorToPngEvent);
   }
 
@@ -35,12 +35,8 @@ class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
     EasyLoading.dismiss();
   }
 
-  Future<void> _onSkinEditorChangeSkinEvent(SkinEditorChangeSkinEvent event, Emitter<SkinEditorState> emit) async {
-
-  }
-
-  Future<FutureOr<void>> _onSkinEditorUpdateSkinEvent(
-      SkinEditorUpdateSkinEvent event, Emitter<SkinEditorState> emit) async {
+  Future<FutureOr<void>> _onSkinEditorUpdateEvent(
+      SkinEditorUpdatePartEvent event, Emitter<SkinEditorState> emit) async {
     Uint8List skin = await rootBundle.load(event.skinPath).then((value) => value.buffer.asUint8List());
     Part data = await rootBundle.loadString(event.dataPath).then((value) => Part.fromJson(value));
 
@@ -56,6 +52,20 @@ class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
         parts: state.projectItem!.parts!.map((e) {
           if (e == state.projectItem!.parts![event.indexPart]) {
             return newPart;
+          }
+          return e;
+        }).toList(),
+      ),
+    ));
+  }
+
+  FutureOr<void> _onSkinEditorBlendColorEvent(SkinEditorBlendColorEvent event, Emitter<SkinEditorState> emit) {
+
+    emit(state.copyWith(
+      projectItem: state.projectItem!.copyWith(
+        parts: state.projectItem!.parts!.map((e) {
+          if (e == state.projectItem!.parts![event.indexPart]) {
+            return e.copyWith(mainTextureUint8List: event.data);
           }
           return e;
         }).toList(),
