@@ -2,62 +2,80 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
-import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 
+import '../../../../core/di/di.dart';
 import '../../models/models.dart';
 import '../../utils/constant.dart';
+import '../../utils/image_util.dart';
 
-class PartSpriteComponent extends SpriteComponent with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, DragCallbacks {
+class PartSpriteComponent extends SpriteComponent
+    with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame>, TapCallbacks {
   PartSpriteComponent({
     required this.part,
     Vector2? position,
+    required this.positionParent,
   }) : super(
           position: position,
           anchor: Anchor.center,
         );
 
   Part part;
+  Vector2 positionParent;
   late int index;
   bool isEventTexture = false;
 
-  // Set img.Image?
-  // img.Image? pix;
+  img.Image? pix;
+  Uint8List? pixData;
 
-  // @override
-  // void onDragStart(DragStartEvent event) {
-  //   pix = img.decodeImage(part.mainTextureUint8List!);
-  //   super.onDragStart(event);
-  // }
 
-  // @override
-  // Future<void> onDragUpdate(DragUpdateEvent event) async {
-  //   Vector2 localPos = event.localStartPosition;
-  //
-  //   if (pix == null) return;
-  //
-  //   bool hasPixel = ImageUtil.hasPixel(localPos.x.toInt(), localPos.y.toInt(), pix!);
-  //
-  //   // Event blend color
-  //   if (hasPixel) {
-  //     pix = ImageUtil.applyBrush(localPos.x.toInt(), localPos.y.toInt(), Colors.red, pix!, 0);
-  //     Uint8List uint8List = img.encodePng(pix!);
-  //     sprite = await createSpriteFromData(uint8List);
-  //     getIt<SkinEditorBloc>().add(SkinEditorBlendColorEvent(index, data: uint8List));
-  //   }
-  //
-  //
-  //   super.onDragUpdate(event);
-  // }
+  Vector2 convertGlobalToLocal(Vector2 positionTo) {
+    var zoom = game.camera.viewfinder.zoom;
+    var zoomUnit = (game.size / 2) / zoom;
 
-  // @override
-  // void onDragEnd(DragEndEvent event) {
-  //   pix = null;
-  //   super.onDragEnd(event);
-  // }
+    var local = ((zoomUnit * 2)
+          ..multiply(positionTo)
+          ..divide(game.size)) -
+        zoomUnit;
+
+    var pos = local + game.camera.viewfinder.position + (size / 2) - positionParent;
+
+    return pos * part.pixelsPerUnit! / AppGameConstant.MAX_PER_UINT;
+  }
+
+  void onScaleStart(ScaleStartInfo info) async {
+    pix = img.decodeImage(part.mainTextureUint8List!);
+  }
+
+  void onScaleEnd(ScaleEndInfo info) {
+    if (pix == null) return;
+    if (pixData == null) return;
+
+    getIt<SkinEditorBloc>().add(SkinEditorBlendColorEvent(index, data: pixData!));
+    pixData = null;
+    pix = null;
+  }
+
+  void onScaleUpdate(ScaleUpdateInfo info) async {
+    Vector2 localPos = convertGlobalToLocal(info.eventPosition.widget);
+
+    if (pix == null) return;
+
+    bool hasPixel = ImageUtil.hasPixel(localPos.x.toInt(), localPos.y.toInt(), pix!);
+
+    if (hasPixel) {
+      pix = ImageUtil.applyBrush(localPos.x.toInt(), localPos.y.toInt(), Colors.red, pix!, 0);
+      pixData = img.encodePng(pix!);
+      sprite = await createSpriteFromData(pixData!);
+
+    }
+  }
 
   @override
   bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
@@ -87,13 +105,6 @@ class PartSpriteComponent extends SpriteComponent with FlameBlocListenable<SkinE
   void onInitialState(SkinEditorState state) {
     index = state.projectItem!.parts!.indexOf(part);
     priority = 50 - index;
-
-    add(TapComponent(
-      index: index,
-      position: size / 2,
-      size: size,
-      anchor: Anchor.center,
-    ));
   }
 
   @override
@@ -110,29 +121,5 @@ class PartSpriteComponent extends SpriteComponent with FlameBlocListenable<SkinE
   Future<Sprite> createSpriteFromData(Uint8List data) async {
     ui.Image image = await decodeImageFromList(data);
     return Sprite(image);
-  }
-}
-
-class TapComponent extends PositionComponent with TapCallbacks, FlameBlocListenable<SkinItemBloc, SkinItemState> {
-  TapComponent({
-    required this.index,
-    Vector2? position,
-    Vector2? size,
-    int? priority,
-    Anchor? anchor,
-  }) : super(
-          position: position,
-          size: size,
-          priority: priority,
-          anchor: anchor,
-        );
-
-  final int index;
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    bloc.add(SkinItemSelectData(indexPart: index));
-    event.continuePropagation = true;
-    super.onTapDown(event);
   }
 }

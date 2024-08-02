@@ -13,12 +13,12 @@ class SkinEditorInitialEvent extends SkinEditorEvent {
   List<Object?> get props => [pathDefault];
 }
 
-class SkinEditorUpdatePartEvent extends SkinEditorEvent {
+class SkinEditorUpdateAvailableModelEvent extends SkinEditorEvent {
   final String skinPath;
   final String dataPath;
   final int indexPart;
 
-  const SkinEditorUpdatePartEvent({required this.skinPath, required this.dataPath, required this.indexPart});
+  const SkinEditorUpdateAvailableModelEvent({required this.skinPath, required this.dataPath, required this.indexPart});
 
   @override
   List<Object?> get props => [skinPath, dataPath, indexPart];

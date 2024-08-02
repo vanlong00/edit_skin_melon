@@ -12,16 +12,21 @@ import 'package:injectable/injectable.dart';
 import 'package:replay_bloc/replay_bloc.dart';
 
 part 'skin_editor_event.dart';
+
 part 'skin_editor_state.dart';
 
 @lazySingleton
 class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
-  SkinEditorBloc() : super(const SkinEditorState.initial()) {
+  SkinEditorBloc() : super(const SkinEditorState.initial(), limit: 10) {
     on<SkinEditorInitialEvent>(_onSkinEditorInitialEvent);
-    on<SkinEditorUpdatePartEvent>(_onSkinEditorUpdateEvent);
+    on<SkinEditorUpdateAvailableModelEvent>(_onSkinEditorUpdateEvent);
     on<SkinEditorBlendColorEvent>(_onSkinEditorBlendColorEvent);
     on<SkinEditorToPngEvent>(_onSkinEditorToPngEvent);
   }
+
+  bool get isStatePrevious => canUndo;
+
+  bool get isStateNext => canRedo;
 
   Future<void> _onSkinEditorInitialEvent(SkinEditorInitialEvent event, Emitter<SkinEditorState> emit) async {
     EasyLoading.show();
@@ -30,12 +35,13 @@ class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
     ProjectItem projectItem = ProjectItem.fromJson(content);
 
     emit(state.copyWith(projectItem: projectItem, isLoading: false));
+
     clearHistory();
     EasyLoading.dismiss();
   }
 
   Future<FutureOr<void>> _onSkinEditorUpdateEvent(
-      SkinEditorUpdatePartEvent event, Emitter<SkinEditorState> emit) async {
+      SkinEditorUpdateAvailableModelEvent event, Emitter<SkinEditorState> emit) async {
     Uint8List skin = await rootBundle.load(event.skinPath).then((value) => value.buffer.asUint8List());
     Part data = await rootBundle.loadString(event.dataPath).then((value) => Part.fromJson(value));
 
@@ -59,7 +65,6 @@ class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
   }
 
   FutureOr<void> _onSkinEditorBlendColorEvent(SkinEditorBlendColorEvent event, Emitter<SkinEditorState> emit) {
-
     emit(state.copyWith(
       projectItem: state.projectItem!.copyWith(
         parts: state.projectItem!.parts!.map((e) {

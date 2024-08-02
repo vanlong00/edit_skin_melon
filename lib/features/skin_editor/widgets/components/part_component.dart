@@ -29,6 +29,7 @@ class PartComponent extends PositionComponent
     final partMelon = PartSpriteComponent(
       part: part,
       position: size / 2,
+      positionParent: position,
     );
 
     add(partMelon);

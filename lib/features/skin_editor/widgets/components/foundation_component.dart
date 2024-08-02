@@ -19,7 +19,6 @@ class FoundationComponent extends Component with FlameBlocListenable<SkinEditorB
 
   @override
   bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
-    // TODO: implement listenWhen
     return previousState.projectItem?.parts?.length != newState.projectItem?.parts?.length;
   }
 
@@ -51,7 +50,7 @@ class FoundationComponent extends Component with FlameBlocListenable<SkinEditorB
     } else if (index == 1) {
       y = previousPosition.y + 0.21;
     } else if (index >= 2 && index <= 3) {
-      y = previousPosition.y + 0.17;
+      y = previousPosition.y + 0.18;
     } else if (index == 4) {
       x = -(previousPosition.x + 0.14);
       y = previousPosition.y + 0.36;
@@ -75,7 +74,7 @@ class FoundationComponent extends Component with FlameBlocListenable<SkinEditorB
       y = 0.28;
     } else if (index == 11 || index == 13) {
       x = previousPosition.x + 0.01;
-      y = previousPosition.y + 0.24;
+      y = previousPosition.y + 0.26;
     } else if (index == 12) {
       x = 0.3;
       y = 0.28;
