@@ -3,13 +3,13 @@ import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.d
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 
-import '../models/models.dart';
-import 'pi_component.dart';
+import '../../models/models.dart';
+import 'part_component.dart';
 
-class Base extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
+class FoundationComponent extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
   ProjectItem? projectItem;
   bool isEventFirst = false;
-  List<PIComponent> partComponent = [];
+  List<PartComponent> partComponent = [];
 
   @override
   Future<void> onInitialState(SkinEditorState state) async {
@@ -34,7 +34,7 @@ class Base extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditor
       Vector2 previousPosition = Vector2.zero();
       for (var i = 0; i < projectItem.parts!.length; i++) {
         final position = _calculatePosition(i, previousPosition);
-        final part = PIComponent(projectItem.parts![i], position: position);
+        final part = PartComponent(projectItem.parts![i], position: position);
         partComponent.add(part);
         previousPosition = position; // Update previousPosition for the next iteration
       }

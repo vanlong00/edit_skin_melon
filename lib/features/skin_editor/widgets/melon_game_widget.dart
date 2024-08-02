@@ -3,17 +3,14 @@ import 'dart:ui';
 import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
-import 'package:edit_skin_melon/features/skin_editor/widgets/base.dart';
+import 'package:edit_skin_melon/features/skin_editor/widgets/components/foundation_component.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 
-import 'part_component.dart';
-
 class MelonGame extends FlameGame with ScaleDetector{
   double startZoom = 1;
-  PartComponent? partComponent;
 
   @override
   Color backgroundColor() => AppColor.backgroundGame;
@@ -32,7 +29,7 @@ class MelonGame extends FlameGame with ScaleDetector{
             value: getIt<SkinItemBloc>(),
           ),
         ],
-        children: [Base()],
+        children: [FoundationComponent()],
       ),
     );
     debugMode = true;

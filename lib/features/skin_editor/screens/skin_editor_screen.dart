@@ -1,12 +1,7 @@
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
-import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
-import 'package:edit_skin_melon/theme/app_color.dart';
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../core/di/di.dart';
 import '../widgets/view_game_widget.dart';
@@ -28,7 +23,7 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // appBar: buildAppBar(context),
       body: SafeArea(
         child: Stack(
@@ -98,7 +93,7 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
             //     ),
             //   ],
             // ),
-            const Positioned.fill(child: ViewGameWidget()),
+            Positioned.fill(child: ViewGameWidget()),
           ],
         ),
       ),

@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-import 'part.dart';
-import 'mod_human.dart';
 import 'meta_data.dart';
+import 'mod_human.dart';
+import 'part.dart';
 
 class ProjectItem extends Equatable {
   final int? convertVersion;

@@ -7,7 +7,6 @@ import 'package:injectable/injectable.dart';
 import '../../../../core/utils/functions/any_functions.dart';
 
 part 'skin_item_event.dart';
-
 part 'skin_item_state.dart';
 
 @lazySingleton

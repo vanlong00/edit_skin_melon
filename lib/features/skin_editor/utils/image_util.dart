@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:edit_skin_melon/features/skin_editor/widgets/part_component.dart';
+import 'package:edit_skin_melon/features/skin_editor/utils/color_help.dart';
 import 'package:image/image.dart' as img;
 
 class ImageUtil {

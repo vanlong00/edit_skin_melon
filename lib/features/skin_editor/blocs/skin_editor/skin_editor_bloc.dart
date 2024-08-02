@@ -7,13 +7,12 @@ import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
 import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
-import 'package:injectable/injectable.dart';
 import 'package:image/image.dart' as img;
+import 'package:injectable/injectable.dart';
 import 'package:replay_bloc/replay_bloc.dart';
 
-part 'skin_editor_state.dart';
-
 part 'skin_editor_event.dart';
+part 'skin_editor_state.dart';
 
 @lazySingleton
 class SkinEditorBloc extends ReplayBloc<SkinEditorEvent, SkinEditorState> {
