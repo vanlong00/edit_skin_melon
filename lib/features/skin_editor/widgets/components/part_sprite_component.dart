@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/widgets/components/part_component.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -11,29 +12,33 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
 import '../../../../core/di/di.dart';
+import '../../blocs/skin_item/skin_item_bloc.dart';
 import '../../models/models.dart';
 import '../../utils/constant.dart';
 import '../../utils/image_util.dart';
 
-class PartSpriteComponent extends SpriteComponent
-    with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame>, TapCallbacks {
+class PartSpriteComponent extends SpriteComponent with HasGameRef<MelonGame>, TapCallbacks, ParentIsA<PartComponent> {
   PartSpriteComponent({
-    required this.part,
-    Vector2? position,
-    required this.positionParent,
+    super.position,
   }) : super(
-          position: position,
           anchor: Anchor.center,
         );
 
-  Part part;
-  Vector2 positionParent;
   late int index;
   bool isEventTexture = false;
 
   img.Image? pix;
   Uint8List? pixData;
 
+  SkinEditorBloc get skinEditorBloc => getIt<SkinEditorBloc>();
+  SkinItemBloc get skinItemBloc => getIt<SkinItemBloc>();
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    // TODO: implement onTapUp
+    getIt<SkinItemBloc>().add(SkinItemSelect(indexPart: index));
+    super.onTapUp(event);
+  }
 
   Vector2 convertGlobalToLocal(Vector2 positionTo) {
     var zoom = game.camera.viewfinder.zoom;
@@ -44,20 +49,22 @@ class PartSpriteComponent extends SpriteComponent
           ..divide(game.size)) -
         zoomUnit;
 
-    var pos = local + game.camera.viewfinder.position + (size / 2) - positionParent;
+    var pos = local + game.camera.viewfinder.position + (size / 2) - parent.position;
 
-    return pos * part.pixelsPerUnit! / AppGameConstant.MAX_PER_UINT;
+    return pos * parent.part.pixelsPerUnit! / AppGameConstant.MAX_PER_UINT;
   }
 
   void onScaleStart(ScaleStartInfo info) async {
-    pix = img.decodeImage(part.mainTextureUint8List!);
+    pix = img.decodeImage(skinEditorBloc.state.projectItem!.parts![index].mainTextureUint8List!);
   }
 
   void onScaleEnd(ScaleEndInfo info) {
-    if (pix == null) return;
-    if (pixData == null) return;
+    if (pixData == null || pix == null) {
+      return;
+    }
 
     getIt<SkinEditorBloc>().add(SkinEditorBlendColorEvent(index, data: pixData!));
+
     pixData = null;
     pix = null;
   }
@@ -70,47 +77,23 @@ class PartSpriteComponent extends SpriteComponent
     bool hasPixel = ImageUtil.hasPixel(localPos.x.toInt(), localPos.y.toInt(), pix!);
 
     if (hasPixel) {
-      pix = ImageUtil.applyBrush(localPos.x.toInt(), localPos.y.toInt(), Colors.red, pix!, 0);
+      pix = ImageUtil.applyBrush(localPos.x.toInt(), localPos.y.toInt(), skinEditorBloc.state.colorDraw, pix!, 0);
       pixData = img.encodePng(pix!);
       sprite = await createSpriteFromData(pixData!);
-
     }
-  }
-
-  @override
-  bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
-    final previousTexture = previousState.projectItem!.parts![index].mainTextureUint8List;
-    final newTexture = newState.projectItem!.parts![index].mainTextureUint8List;
-
-    if (previousTexture != newTexture) {
-      isEventTexture = true;
-      return isEventTexture;
-    }
-
-    return super.listenWhen(previousState, newState);
-  }
-
-  @override
-  Future<void> onNewState(SkinEditorState state) async {
-    if (isEventTexture) {
-      final newPart = state.projectItem!.parts![index];
-      part = newPart;
-      sprite = await createSpriteFromPart(part);
-      size = sprite!.originalSize * AppGameConstant.MAX_PER_UINT / part.pixelsPerUnit!;
-      isEventTexture = false;
-    }
-  }
-
-  @override
-  void onInitialState(SkinEditorState state) {
-    index = state.projectItem!.parts!.indexOf(part);
-    priority = 50 - index;
   }
 
   @override
   Future<void> onLoad() async {
-    sprite = await createSpriteFromPart(part);
-    size = sprite!.originalSize * AppGameConstant.MAX_PER_UINT / part.pixelsPerUnit!;
+    sprite = await createSpriteFromPart(parent.part);
+    add(
+      FlameBlocListener<SkinEditorBloc, SkinEditorState>(
+        onNewState: onNewStateSkinEditor,
+        listenWhen: listenWhenSkinEditor,
+        onInitialState: onInitialStateSkinEditor,
+        bloc: skinEditorBloc,
+      ),
+    );
   }
 
   Future<Sprite> createSpriteFromPart(Part part) async {
@@ -121,5 +104,35 @@ class PartSpriteComponent extends SpriteComponent
   Future<Sprite> createSpriteFromData(Uint8List data) async {
     ui.Image image = await decodeImageFromList(data);
     return Sprite(image);
+  }
+
+  /// Listen to the state changes in the SkinEditorBloc
+  bool listenWhenSkinEditor(SkinEditorState previousState, SkinEditorState newState) {
+    /// Check if the texture has changed
+    final previousTexture = previousState.projectItem!.parts![index].mainTextureUint8List;
+    final newTexture = newState.projectItem!.parts![index].mainTextureUint8List;
+
+    if (previousTexture != newTexture) {
+      isEventTexture = true;
+      return isEventTexture;
+    }
+
+    return true;
+  }
+
+  Future<void> onNewStateSkinEditor(SkinEditorState state) async {
+    if (isEventTexture) {
+      final newPart = state.projectItem!.parts![index];
+      parent.part = newPart;
+      sprite = await createSpriteFromPart(parent.part);
+      size = sprite!.originalSize * AppGameConstant.MAX_PER_UINT / parent.part.pixelsPerUnit!;
+      isEventTexture = false;
+    }
+  }
+
+  Future<void> onInitialStateSkinEditor(SkinEditorState state) async {
+    size = sprite!.originalSize * AppGameConstant.MAX_PER_UINT / parent.part.pixelsPerUnit!;
+    index = state.projectItem!.parts!.indexOf(parent.part);
+    priority = 50 - index;
   }
 }

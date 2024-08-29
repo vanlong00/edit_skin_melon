@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:collection/collection.dart';
-import 'package:edit_skin_melon/core/utils/classes/file_download_helper.dart';
+
+import 'package:edit_skin_melon/core/utils/helpers/file_download_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../features/skin_editor/models/models.dart';
 
@@ -36,7 +35,7 @@ class _WebToolsState extends State<WebTools> {
   bool _lockParentWindow = false;
   bool _userAborted = false;
   bool _multiPick = true;
-  FileType _pickingType = FileType.any;
+  final FileType _pickingType = FileType.any;
   double? _exportProgress;
 
   Map<String, List<Part>> skinsModel = {
@@ -144,7 +143,7 @@ class _WebToolsState extends State<WebTools> {
       skinsModel.forEach((key, value) {
         removeDuplicate(value);
       });
-      printMap(skinsModel);
+      // printMap(skinsModel);
 
       for (var i = 0; i < skinsModel.length; i++) {
         final parts = skinsModel[typeDirs[i]]!;
@@ -211,29 +210,6 @@ class _WebToolsState extends State<WebTools> {
   Future<void> saveImage(String pathSave, Uint8List data) =>
       FileDownloaderHelper.saveFileAsByteOnDevice(pathSave, data);
 
-  // void _clearCachedFiles() async {
-  //   _resetState();
-  //   try {
-  //     bool? result = await FilePicker.platform.clearTemporaryFiles();
-  //     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-  //     _scaffoldMessengerKey.currentState?.showSnackBar(
-  //       SnackBar(
-  //         content: Text(
-  //           (result! ? 'Temporary files removed with success.' : 'Failed to clean temporary files'),
-  //           style: const TextStyle(
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //       ),
-  //     );
-  //   } on PlatformException catch (e) {
-  //     _logException('Unsupported operation$e');
-  //   } catch (e) {
-  //     _logException(e.toString());
-  //   } finally {
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
 
   void _selectFolder() async {
     setState(() {
@@ -259,30 +235,6 @@ class _WebToolsState extends State<WebTools> {
       setState(() => _isLoading = false);
     }
   }
-
-  // Future<void> _saveFile() async {
-  //   _resetState();
-  //   try {
-  //     String? fileName = await FilePicker.platform.saveFile(
-  //       allowedExtensions: (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
-  //       type: _pickingType,
-  //       dialogTitle: _dialogTitleController.text,
-  //       fileName: _defaultFileNameController.text,
-  //       initialDirectory: _initialDirectoryController.text,
-  //       lockParentWindow: _lockParentWindow,
-  //     );
-  //     setState(() {
-  //       _saveAsFileName = fileName;
-  //       _userAborted = fileName == null;
-  //     });
-  //   } on PlatformException catch (e) {
-  //     _logException('Unsupported operation$e');
-  //   } catch (e) {
-  //     _logException(e.toString());
-  //   } finally {
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
 
   void _logException(String message) {
     log(message);
@@ -359,66 +311,6 @@ class _WebToolsState extends State<WebTools> {
                         controller: _indexNamedController,
                       ),
                     ),
-                    // SizedBox(
-                    //   width: 400,
-                    //   child: TextField(
-                    //     decoration: const InputDecoration(
-                    //       border: OutlineInputBorder(),
-                    //       labelText: 'Initial Directory',
-                    //     ),
-                    //     controller: _initialDirectoryController,
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   width: 400,
-                    //   child: TextField(
-                    //     decoration: const InputDecoration(
-                    //       border: OutlineInputBorder(),
-                    //       labelText: 'Default File Name',
-                    //     ),
-                    //     controller: _defaultFileNameController,
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   width: 400,
-                    //   child: DropdownButtonFormField<FileType>(
-                    //     value: _pickingType,
-                    //     icon: const Icon(Icons.expand_more),
-                    //     alignment: Alignment.centerLeft,
-                    //     decoration: const InputDecoration(
-                    //       border: OutlineInputBorder(),
-                    //     ),
-                    //     items: FileType.values
-                    //         .map(
-                    //           (fileType) => DropdownMenuItem<FileType>(
-                    //             child: Text(fileType.toString()),
-                    //             value: fileType,
-                    //           ),
-                    //         )
-                    //         .toList(),
-                    //     onChanged: (value) => setState(
-                    //       () {
-                    //         _pickingType = value!;
-                    //         if (_pickingType != FileType.custom) {
-                    //           _fileExtensionController.text = _extension = '';
-                    //         }
-                    //       },
-                    //     ),
-                    //   ),
-                    // ),
-                    // _pickingType == FileType.custom
-                    //     ? SizedBox(
-                    //         width: 400,
-                    //         child: TextFormField(
-                    //           decoration: const InputDecoration(
-                    //               border: OutlineInputBorder(), labelText: 'File Extension', hintText: 'jpg, png, gif'),
-                    //           autovalidateMode: AutovalidateMode.always,
-                    //           controller: _fileExtensionController,
-                    //           keyboardType: TextInputType.text,
-                    //           maxLength: 15,
-                    //         ),
-                    //       )
-                    //     : const SizedBox(),
                   ],
                 ),
                 buildSizedBox(),
@@ -502,32 +394,6 @@ class _WebToolsState extends State<WebTools> {
                           icon: const Icon(Icons.bug_report),
                         ),
                       ),
-                      // SizedBox(
-                      //   width: 120,
-                      //   child: FloatingActionButton.extended(
-                      //     onPressed: () => _saveFile(),
-                      //     label: const Text('Save file'),
-                      //     icon: const Icon(Icons.save_as),
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   width: 200,
-                      //   child: FloatingActionButton.extended(
-                      //     onPressed: () => _clearCachedFiles(),
-                      //     label: const Text('Clear temporary files'),
-                      //     icon: const Icon(Icons.delete_forever),
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   width: 120,
-                      //   child: FloatingActionButton.extended(
-                      //     onPressed: () {
-                      //
-                      //     },
-                      //     label: const Text('Save File'),
-                      //     icon: const Icon(Icons.save_as),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

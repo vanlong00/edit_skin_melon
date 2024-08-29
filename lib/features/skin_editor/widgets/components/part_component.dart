@@ -7,30 +7,19 @@ import '../../blocs/skin_editor/skin_editor_bloc.dart';
 import '../../models/models.dart';
 import '../../utils/constant.dart';
 
-class PartComponent extends PositionComponent
-    with HasGameRef<MelonGame>, FlameBlocListenable<SkinEditorBloc, SkinEditorState> {
+class PartComponent extends PositionComponent with HasGameRef<MelonGame> {
   PartComponent(
     this.part, {
-    Vector2? position,
-    Vector2? size,
-    int? priority,
-  }) : super(
-          position: position,
-          size: size,
-          priority: priority,
-        );
+    super.position,
+  });
 
-  final Part part;
+  Part part;
 
   @override
   Future<void> onLoad() async {
     position = position * AppGameConstant.MAX_PER_UINT;
 
-    final partMelon = PartSpriteComponent(
-      part: part,
-      position: size / 2,
-      positionParent: position,
-    );
+    final partMelon = PartSpriteComponent();
 
     add(partMelon);
     return super.onLoad();

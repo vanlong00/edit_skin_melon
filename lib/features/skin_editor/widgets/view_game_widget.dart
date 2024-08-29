@@ -10,15 +10,6 @@ class ViewGameWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GameWidget(
       game: MelonGame(),
-      overlayBuilderMap: {
-        "Next": (context, game) => Positioned(
-          right: 0,
-          child: IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.arrow_forward),
-              ),
-        ),
-      },
     );
   }
 }

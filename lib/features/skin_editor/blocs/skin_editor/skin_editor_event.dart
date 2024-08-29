@@ -34,9 +34,18 @@ class SkinEditorBlendColorEvent extends SkinEditorEvent {
   List<Object?> get props => [data];
 }
 
-class SkinEditorToPngEvent extends SkinEditorEvent {
-  const SkinEditorToPngEvent();
+class SkinEditorSwitchIsDrawableEvent extends SkinEditorEvent {
+  const SkinEditorSwitchIsDrawableEvent();
 
   @override
   List<Object?> get props => [];
+}
+
+class SkinEditorPickColorEvent extends SkinEditorEvent {
+  final Color color;
+
+  const SkinEditorPickColorEvent(this.color);
+
+  @override
+  List<Object?> get props => [color];
 }

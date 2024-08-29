@@ -9,20 +9,22 @@ import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
+import 'package:flutter/foundation.dart';
 
 class MelonGame extends FlameGame with ScaleDetector {
-  final pauseOverlayIdentifier = 'Next';
   late double startZoom;
+
   PartSpriteComponent? spriteComponent;
+  bool? isDrawable;
 
   @override
   Color backgroundColor() => AppColor.backgroundGame;
 
   @override
   Future<void> onLoad() async {
-    overlays.add(pauseOverlayIdentifier);
     camera.viewfinder.zoom = 7;
     camera.moveTo(Vector2(0, 32));
+
     world.add(
       FlameMultiBlocProvider(
         providers: [
@@ -32,7 +34,8 @@ class MelonGame extends FlameGame with ScaleDetector {
         children: [FoundationComponent()],
       ),
     );
-    debugMode = true;
+
+    debugMode = kDebugMode;
     return super.onLoad();
   }
 
@@ -42,23 +45,33 @@ class MelonGame extends FlameGame with ScaleDetector {
 
   @override
   void onScaleStart(ScaleStartInfo info) {
-    startZoom = camera.viewfinder.zoom;
-    spriteComponent = componentsAtPoint(info.eventPosition.widget).whereType<PartSpriteComponent>().firstOrNull;
-    spriteComponent?.onScaleStart(info);
+    switch (info.pointerCount) {
+      case 1:
+        spriteComponent = componentsAtPoint(info.eventPosition.widget).whereType<PartSpriteComponent>().firstOrNull;
+        spriteComponent?.onScaleStart(info);
+        break;
+      case 2:
+        startZoom = camera.viewfinder.zoom;
+        break;
+    }
+
     super.onScaleStart(info);
   }
 
   @override
   void onScaleEnd(ScaleEndInfo info) {
-    spriteComponent?.onScaleEnd(info);
-    spriteComponent = null;
+    if (spriteComponent != null && isDrawable == true) {
+      spriteComponent?.onScaleEnd(info);
+      spriteComponent = null;
+    }
+
     super.onScaleEnd(info);
   }
 
   @override
   void onScaleUpdate(ScaleUpdateInfo info) {
     if (info.pointerCount == 1) {
-      if (spriteComponent != null) {
+      if (spriteComponent != null && isDrawable == true) {
         spriteComponent?.onScaleUpdate(info);
       } else {
         final delta = info.delta.global * (1 / camera.viewfinder.zoom) * 0.6;

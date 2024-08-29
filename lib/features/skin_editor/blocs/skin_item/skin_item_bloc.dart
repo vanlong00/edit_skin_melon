@@ -30,7 +30,7 @@ class SkinItemBloc extends Bloc<SkinItemEvent, SkinItemState> {
 
   SkinItemBloc() : super(SkinItemInitial()) {
     on<SkinItemInitData>(_onSkinItemInitData);
-    on<SkinItemSelectData>(_onSkinItemSelectData);
+    on<SkinItemSelect>(_onSkinItemSelectData);
   }
 
   Future<FutureOr<void>> _onSkinItemInitData(SkinItemInitData event, Emitter<SkinItemState> emit) async {
@@ -56,7 +56,7 @@ class SkinItemBloc extends Bloc<SkinItemEvent, SkinItemState> {
     emit(SkinItemLoaded(skinsModel: skinsModel));
   }
 
-  FutureOr<void> _onSkinItemSelectData(SkinItemSelectData event, Emitter<SkinItemState> emit) {
+  FutureOr<void> _onSkinItemSelectData(SkinItemSelect event, Emitter<SkinItemState> emit) {
     if (state is SkinItemLoaded) {
       emit((state as SkinItemLoaded).copyWith(indexPart: event.indexPart));
     }

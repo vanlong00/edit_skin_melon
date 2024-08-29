@@ -1,25 +1,29 @@
 part of 'skin_editor_bloc.dart';
 
 class SkinEditorState extends Equatable {
+  final ProjectItem? projectItem;
+  final bool isLoading;
+  final bool isDrawable;
+  final Color colorDraw;
+
   const SkinEditorState({
     this.projectItem,
     this.isLoading = false,
+    this.isDrawable = false,
+    this.colorDraw = Colors.red,
   });
-
-  const SkinEditorState.initial()
-      : projectItem = null,
-        isLoading = false;
-
-  final ProjectItem? projectItem;
-  final bool isLoading;
 
   SkinEditorState copyWith({
     ProjectItem? projectItem,
     bool? isLoading,
+    bool? isDrawable,
+    Color? colorDraw,
   }) {
     return SkinEditorState(
       projectItem: projectItem ?? this.projectItem,
       isLoading: isLoading ?? this.isLoading,
+      isDrawable: isDrawable ?? this.isDrawable,
+      colorDraw: colorDraw ?? this.colorDraw,
     );
   }
 
@@ -28,6 +32,8 @@ class SkinEditorState extends Equatable {
     return [
       projectItem,
       isLoading,
+      isDrawable,
+      colorDraw,
     ];
   }
 }

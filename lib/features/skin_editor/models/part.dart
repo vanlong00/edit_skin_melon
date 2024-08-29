@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:edit_skin_melon/core/utils/classes/base_x_codec_util.dart';
+import 'package:edit_skin_melon/core/utils/helpers/base_x_codec_helper.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/grab_pos.dart';
 import 'package:equatable/equatable.dart';
 
@@ -70,7 +70,7 @@ class Part extends Equatable {
   String toJson2() => json.encode(toMap2());
 
   factory Part.fromMap(Map<String, dynamic> json) {
-    final mainTextureUint8List = json["mainTexture"] != null ? BaseXCodecUtil().decode(json["mainTexture"]) : null;
+    final mainTextureUint8List = json["mainTexture"] != null ? BaseXCodecHelper().decode(json["mainTexture"]) : null;
 
     return Part(
       mainTexture: json["mainTexture"],

@@ -9,10 +9,10 @@ class SkinItemInitData extends SkinItemEvent {
   List<Object> get props => [];
 }
 
-class SkinItemSelectData extends SkinItemEvent {
+class SkinItemSelect extends SkinItemEvent {
   final int indexPart;
 
-  const SkinItemSelectData({required this.indexPart});
+  const SkinItemSelect({required this.indexPart});
 
   @override
   List<Object> get props => [indexPart];

@@ -8,24 +8,33 @@ import 'part_component.dart';
 
 class FoundationComponent extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
   ProjectItem? projectItem;
-  bool isEventFirst = false;
+  bool isEventIsDrawable = false;
   List<PartComponent> partComponent = [];
 
   @override
   Future<void> onInitialState(SkinEditorState state) async {
     super.onInitialState(state);
     updateParts(state.projectItem);
+    gameRef.isDrawable = state.isDrawable;
   }
 
   @override
   bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
-    return previousState.projectItem?.parts?.length != newState.projectItem?.parts?.length;
+    if (previousState.isDrawable != newState.isDrawable) {
+      isEventIsDrawable = true;
+    }
+
+    return isEventIsDrawable;
   }
 
   @override
   void onNewState(SkinEditorState state) {
+    // TODO: implement onNewState
+    if (isEventIsDrawable) {
+      gameRef.isDrawable = state.isDrawable;
+      isEventIsDrawable = false;
+    }
     super.onNewState(state);
-    updateParts(state.projectItem);
   }
 
   void updateParts(ProjectItem? projectItem) {
