@@ -36,6 +36,18 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
     Colors.brown,
   ];
 
+  List<String> imagePart = [
+    "assets/images/head1.png",
+    "assets/images/body1.png",
+    "assets/images/body2.png",
+    "assets/images/body3.png",
+    "assets/images/leg1.png",
+    "assets/images/leg2.png",
+    "assets/images/leg3.png",
+    "assets/images/arm1.png",
+    "assets/images/arm2.png",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -44,51 +56,61 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
         body: Stack(
           children: [
             const ViewGameWidget(),
-            BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)>(
-              selector: (state) => (state.isDrawable, state.colorDraw),
-              builder: (context, record) {
-                return Visibility(
-                  visible: record.$1,
-                  child: Container(
-                    width: 100.w,
-                    margin: EdgeInsets.symmetric(horizontal: 2.w),
-                    padding: EdgeInsets.all(1.w),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 8,
-                        crossAxisSpacing: 1.w,
-                        mainAxisSpacing: 1.w,
-                      ),
-                      itemCount: colorPalette.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            context.read<SkinEditorBloc>().add(SkinEditorPickColorEvent(colorPalette[index]));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: colorPalette[index],
-                              border: record.$2 == colorPalette[index]
-                                  ? Border.all(
-                                      color: getTextColor(colorPalette[index]),
-                                      width: 2,
-                                      strokeAlign: BorderSide.strokeAlignInside,
-                                      style: BorderStyle.solid,
-                                    )
-                                  : null,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
+            _buildColorPalette(),
           ],
         ),
       ),
+    );
+  }
+
+  BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)> _buildColorPalette() {
+    return BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)>(
+      selector: (state) => (state.isDrawable, state.colorDraw),
+      builder: (context, record) {
+        return AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          opacity: record.$1 ? 1.0 : 0.0,
+          curve: Curves.easeInOut,
+          child: IgnorePointer(
+            ignoring: !record.$1,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(vertical: 2.w),
+              child: Row(
+                children: colorPalette.map((color) {
+                  return GestureDetector(
+                    onTap: () {
+                      context.read<SkinEditorBloc>().add(SkinEditorPickColorEvent(color));
+                    },
+                    child: AnimatedScale(
+                      scale: record.$2 == color ? 1.2 : 1,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 1.w),
+                        height: 12.w,
+                        width: 12.w,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -140,20 +162,5 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
         )
       ],
     );
-  }
-
-  Color getTextColor(Color color) {
-    int d = 0;
-
-    // Counting the perceptive luminance - human eye favors green color...
-    double luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
-
-    if (luminance > 0.5) {
-      d = 0; // bright colors - black font
-    } else {
-      d = 255; // dark colors - white font
-    }
-
-    return Color.fromARGB(color.alpha, d, d, d);
   }
 }

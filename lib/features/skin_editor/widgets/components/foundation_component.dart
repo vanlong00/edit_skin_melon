@@ -6,7 +6,8 @@ import 'package:flame_bloc/flame_bloc.dart';
 import '../../models/models.dart';
 import 'part_component.dart';
 
-class FoundationComponent extends Component with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
+class FoundationComponent extends Component
+    with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
   ProjectItem? projectItem;
   bool isEventIsDrawable = false;
   List<PartComponent> partComponent = [];
@@ -42,7 +43,11 @@ class FoundationComponent extends Component with FlameBlocListenable<SkinEditorB
       Vector2 previousPosition = Vector2.zero();
       for (var i = 0; i < projectItem.parts!.length; i++) {
         final position = _calculatePosition(i, previousPosition);
-        final part = PartComponent(projectItem.parts![i], position: position);
+        final part = PartComponent(
+          projectItem.parts![i],
+          position: position,
+          priority: 50 - i,
+        );
         partComponent.add(part);
         previousPosition = position; // Update previousPosition for the next iteration
       }
@@ -60,33 +65,35 @@ class FoundationComponent extends Component with FlameBlocListenable<SkinEditorB
       y = previousPosition.y + 0.21;
     } else if (index >= 2 && index <= 3) {
       y = previousPosition.y + 0.18;
-    } else if (index == 4) {
-      x = -(previousPosition.x + 0.14);
-      y = previousPosition.y + 0.36;
-    } else if (index == 5) {
-      x = previousPosition.x;
-      y = previousPosition.y + 0.24;
-    } else if (index == 6) {
-      x = previousPosition.x + 0.03;
-      y = previousPosition.y + 0.146;
-    } else if (index == 7) {
-      x = partComponent[3].position.x + 0.14;
+    } else if (index == 4 || index == 7) {
+      switch (index) {
+        case 4:
+          x = -(partComponent[3].position.x + 0.14);
+          break;
+        case 7:
+          x = partComponent[3].position.x + 0.14;
+          break;
+      }
       y = partComponent[3].position.y + 0.36;
-    } else if (index == 8) {
+    } else if (index == 5 || index == 8) {
       x = previousPosition.x;
       y = previousPosition.y + 0.24;
-    } else if (index == 9) {
+    } else if (index == 6 || index == 9) {
       x = previousPosition.x + 0.03;
-      y = previousPosition.y + 0.146;
-    } else if (index == 10) {
-      x = -0.3;
+      y = previousPosition.y + 0.16;
+    } else if (index == 10 || index == 12) {
+      switch (index) {
+        case 10:
+          x = -0.3;
+          break;
+        case 12:
+          x = 0.3;
+          break;
+      }
       y = 0.28;
     } else if (index == 11 || index == 13) {
       x = previousPosition.x + 0.01;
       y = previousPosition.y + 0.26;
-    } else if (index == 12) {
-      x = 0.3;
-      y = 0.28;
     }
     return Vector2(x, y);
   }
