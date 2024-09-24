@@ -15,7 +15,8 @@ import 'package:injectable/injectable.dart' as _i2;
 import '../../features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart'
     as _i4;
 import '../../features/skin_editor/blocs/skin_item/skin_item_bloc.dart' as _i5;
-import 'register_module.dart' as _i6;
+import '../../features/skin_editor/blocs/skin_part/skin_part_bloc.dart' as _i6;
+import 'register_module.dart' as _i7;
 
 extension GetItInjectableX on _i1.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -31,10 +32,11 @@ extension GetItInjectableX on _i1.GetIt {
     final registerModule = _$RegisterModule();
     gh.singleton<_i3.GlobalKey<_i3.NavigatorState>>(
         () => registerModule.navigatorKey());
-    gh.lazySingleton<_i4.SkinEditorBloc>(() => _i4.SkinEditorBloc());
+    gh.factory<_i4.SkinEditorBloc>(() => _i4.SkinEditorBloc());
     gh.lazySingleton<_i5.SkinItemBloc>(() => _i5.SkinItemBloc());
+    gh.factory<_i6.SkinPartBloc>(() => _i6.SkinPartBloc());
     return this;
   }
 }
 
-class _$RegisterModule extends _i6.RegisterModule {}
+class _$RegisterModule extends _i7.RegisterModule {}

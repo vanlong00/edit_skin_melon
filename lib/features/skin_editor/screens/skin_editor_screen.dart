@@ -1,11 +1,10 @@
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../core/di/di.dart';
-import '../../../theme/app_color.dart';
 import '../widgets/view_game_widget.dart';
 
 class SkinEditorScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<SkinEditorBloc>().add(const SkinEditorInitialEvent("assets/textures/default.melmod"));
+    context.read<SkinEditorBloc>().add(SkinEditorInitialEvent("assets/textures/default.melmod", context: context));
     context.read<SkinItemBloc>().add(SkinItemInitData());
   }
 
@@ -36,29 +35,31 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
     Colors.brown,
   ];
 
-  List<String> imagePart = [
-    "assets/images/head1.png",
-    "assets/images/body1.png",
-    "assets/images/body2.png",
-    "assets/images/body3.png",
-    "assets/images/leg1.png",
-    "assets/images/leg2.png",
-    "assets/images/leg3.png",
-    "assets/images/arm1.png",
-    "assets/images/arm2.png",
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: buildAppBar(context),
-        body: Stack(
-          children: [
-            const ViewGameWidget(),
-            _buildColorPalette(),
-          ],
-        ),
+    return Scaffold(
+      appBar: buildAppBar(context),
+      body: Stack(
+        children: [
+          const ViewGameWidget(),
+          Column(
+            children: [
+              _buildColorPalette(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  height: 10.w,
+                  width: 10.w,
+                  child: Icon(
+                    Icons.palette,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 8.w,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -67,12 +68,12 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
     return BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)>(
       selector: (state) => (state.isDrawable, state.colorDraw),
       builder: (context, record) {
-        return AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          opacity: record.$1 ? 1.0 : 0.0,
+        return AnimatedSize(
+          duration: const Duration(seconds: 1),
+          reverseDuration: const Duration(seconds: 1),
           curve: Curves.easeInOut,
-          child: IgnorePointer(
-            ignoring: !record.$1,
+          child: SizedBox(
+            height: record.$1 ? 12.w : 0.w,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -88,8 +89,8 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
                       curve: Curves.easeInOut,
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 1.w),
-                        height: 12.w,
-                        width: 12.w,
+                        height: 8.w,
+                        width: 8.w,
                         decoration: BoxDecoration(
                           color: color,
                           shape: BoxShape.circle,
@@ -132,34 +133,110 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
             );
           },
         ),
-        // BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-        //   selector: (state) {
-        //     return getIt<SkinEditorBloc>().canUndo;
+        BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
+          selector: (state) => state.isShowGrid,
+          builder: (context, isShowGrid) {
+            return IconButton(
+              onPressed: () {
+                context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsShowGridEvent());
+              },
+              isSelected: isShowGrid,
+              icon: const Icon(Icons.grid_off_outlined),
+              selectedIcon: const Icon(Icons.grid_on),
+            );
+          },
+        ),
+        BlocBuilder<SkinPartBloc, SkinPartState>(
+          builder: (context, state) {
+            final bloc = context.read<SkinPartBloc>();
+
+            return IconButton(
+              onPressed: bloc.canUndo ? bloc.undo : null,
+              icon: const Icon(Icons.undo),
+            );
+          },
+        ),
+        BlocBuilder<SkinPartBloc, SkinPartState>(
+          builder: (context, state) {
+            final bloc = context.read<SkinPartBloc>();
+
+            return IconButton(
+              onPressed: bloc.canRedo ? bloc.redo : null,
+              icon: const Icon(Icons.redo),
+            );
+          },
+        ),
+        // IconButton(
+        //   onPressed: () {
+        //     Navigator.pushNamed(context, "/view_json");
         //   },
-        //   builder: (context, canUndo) {
-        //     return IconButton(
-        //       onPressed: canUndo ? getIt<SkinEditorBloc>().undo : null,
-        //       icon: const Icon(Icons.undo),
-        //     );
-        //   },
-        // ),
-        // BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-        //   selector: (state) {
-        //     return getIt<SkinEditorBloc>().canRedo;
-        //   },
-        //   builder: (context, canRedo) {
-        //     return IconButton(
-        //       onPressed: canRedo ? getIt<SkinEditorBloc>().redo : null,
-        //       icon: const Icon(Icons.redo),
-        //     );
-        //   },
+        //   icon: const Icon(Icons.code),
         // ),
         IconButton(
           onPressed: () {
-            Navigator.pushNamed(context, "/view_json");
+            List<(String, List<int>)> items = [
+              ("head", [0]),
+              ("body1", [1]),
+              ("body2", [2]),
+              ("body3", [3]),
+              ("leg1", [4, 7]),
+              ("leg2", [5, 8]),
+              ("leg3", [6, 9]),
+              ("arm1", [10, 12]),
+              ("arm2", [11, 13]),
+            ];
+
+            showModalBottomSheet(
+              context: context,
+              showDragHandle: true,
+              isScrollControlled: true,
+              builder: (BuildContext _) {
+                return BlocProvider.value(
+                  value: context.read<SkinEditorBloc>(),
+                  child: SizedBox(
+                    height: 30.h,
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 8.0,
+                        childAspectRatio: 4.0,
+                      ),
+                      itemCount: items.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+                      itemBuilder: (__, index) {
+                        var item = items[index];
+                        return BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
+                          selector: (state) => item.$2.every((element) => state.isShowPart[element]),
+                          builder: (context, isSelected) {
+                            return GestureDetector(
+                              onTap: () => context.read<SkinEditorBloc>().add(SkinEditorIsShowPartEvent(item.$2)),
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color:
+                                      isSelected ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Text(
+                                  item.$1,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
           },
-          icon: const Icon(Icons.code),
-        )
+          icon: const Icon(Icons.remove_red_eye_outlined),
+        ),
       ],
     );
   }

@@ -5,12 +5,16 @@ class SkinEditorState extends Equatable {
   final bool isLoading;
   final bool isDrawable;
   final Color colorDraw;
+  final bool isShowGrid;
+  final List<bool> isShowPart;
 
   const SkinEditorState({
     this.projectItem,
     this.isLoading = false,
     this.isDrawable = false,
-    this.colorDraw = Colors.red,
+    this.colorDraw = Colors.white,
+    this.isShowGrid = false,
+    this.isShowPart = const [],
   });
 
   SkinEditorState copyWith({
@@ -18,12 +22,16 @@ class SkinEditorState extends Equatable {
     bool? isLoading,
     bool? isDrawable,
     Color? colorDraw,
+    bool? isShowGrid,
+    List<bool>? isShowPart,
   }) {
     return SkinEditorState(
       projectItem: projectItem ?? this.projectItem,
       isLoading: isLoading ?? this.isLoading,
       isDrawable: isDrawable ?? this.isDrawable,
       colorDraw: colorDraw ?? this.colorDraw,
+      isShowGrid: isShowGrid ?? this.isShowGrid,
+      isShowPart: isShowPart ?? this.isShowPart,
     );
   }
 
@@ -34,6 +42,8 @@ class SkinEditorState extends Equatable {
       isLoading,
       isDrawable,
       colorDraw,
+      isShowGrid,
+      isShowPart,
     ];
   }
 }

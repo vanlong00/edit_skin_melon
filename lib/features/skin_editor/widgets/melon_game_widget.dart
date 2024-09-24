@@ -1,41 +1,50 @@
 import 'dart:ui';
-import 'package:edit_skin_melon/core/di/di.dart';
+
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
-import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/utils/constant.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/components/foundation_component.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/components/part_sprite_component.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:flame_bloc/flame_bloc.dart';
-import 'package:flutter/foundation.dart';
 
 class MelonGame extends FlameGame with ScaleDetector {
   late double startZoom;
 
+  final SkinEditorBloc skinEditorBloc;
+  final SkinPartBloc skinPartBloc;
+
   PartSpriteComponent? spriteComponent;
   bool? isDrawable;
+
+  MelonGame({
+    required this.skinEditorBloc,
+    required this.skinPartBloc,
+  });
 
   @override
   Color backgroundColor() => AppColor.backgroundGame;
 
   @override
   Future<void> onLoad() async {
-    camera.viewfinder.zoom = 7;
-    camera.moveTo(Vector2(0, 32));
+    camera.viewfinder.zoom = 10;
+    camera.moveTo(Vector2(0, 18));
 
-    world.add(
-      FlameMultiBlocProvider(
-        providers: [
-          FlameBlocProvider<SkinEditorBloc, SkinEditorState>.value(value: getIt<SkinEditorBloc>()),
-          FlameBlocProvider<SkinItemBloc, SkinItemState>.value(value: getIt<SkinItemBloc>()),
-        ],
-        children: [FoundationComponent()],
-      ),
-    );
+    world.add(FoundationComponent());
 
-    debugMode = kDebugMode;
+    // world.add(
+    //   FlameMultiBlocProvider(
+    //     providers: [
+    //       FlameBlocProvider<SkinEditorBloc, SkinEditorState>.value(value: getIt<SkinEditorBloc>()),
+    //       FlameBlocProvider<SkinItemBloc, SkinItemState>.value(value: getIt<SkinItemBloc>()),
+    //       FlameBlocProvider<SkinPartBloc, SkinPartState>.value(value: getIt<SkinPartBloc>()),
+    //     ],
+    //     children: [FoundationComponent()],
+    //   ),
+    // );
+
+    // debugMode = kDebugMode;
     return super.onLoad();
   }
 

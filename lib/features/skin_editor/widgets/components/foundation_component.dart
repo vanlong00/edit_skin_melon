@@ -1,26 +1,45 @@
+import 'dart:async';
+
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 
+import '../../blocs/skin_part/skin_part_bloc.dart';
 import '../../models/models.dart';
 import 'part_component.dart';
 
-class FoundationComponent extends Component
-    with FlameBlocListenable<SkinEditorBloc, SkinEditorState>, HasGameRef<MelonGame> {
+class FoundationComponent extends Component with HasGameRef<MelonGame> {
   ProjectItem? projectItem;
   bool isEventIsDrawable = false;
   List<PartComponent> partComponent = [];
 
   @override
-  Future<void> onInitialState(SkinEditorState state) async {
-    super.onInitialState(state);
-    updateParts(state.projectItem);
+  FutureOr<void> onLoad() {
+    add(
+      FlameBlocListener<SkinEditorBloc, SkinEditorState>(
+        onNewState: onNewStateSkinEditor,
+        listenWhen: listenWhenSkinEditor,
+        onInitialState: onInitialStateSkinEditor,
+        bloc: gameRef.skinEditorBloc,
+      ),
+    );
+
+    add(
+      FlameBlocListener<SkinPartBloc, SkinPartState>(
+        onNewState: onNewStateSkinPart,
+        onInitialState: onInitialStateSkinPart,
+        bloc: gameRef.skinPartBloc,
+      ),
+    );
+    return super.onLoad();
+  }
+
+  Future<void> onInitialStateSkinEditor(SkinEditorState state) async {
     gameRef.isDrawable = state.isDrawable;
   }
 
-  @override
-  bool listenWhen(SkinEditorState previousState, SkinEditorState newState) {
+  bool listenWhenSkinEditor(SkinEditorState previousState, SkinEditorState newState) {
     if (previousState.isDrawable != newState.isDrawable) {
       isEventIsDrawable = true;
     }
@@ -28,23 +47,22 @@ class FoundationComponent extends Component
     return isEventIsDrawable;
   }
 
-  @override
-  void onNewState(SkinEditorState state) {
-    // TODO: implement onNewState
+  void onNewStateSkinEditor(SkinEditorState state) {
     if (isEventIsDrawable) {
       gameRef.isDrawable = state.isDrawable;
       isEventIsDrawable = false;
     }
-    super.onNewState(state);
   }
 
-  void updateParts(ProjectItem? projectItem) {
-    if (projectItem != null) {
+  void updateParts(List<Part>? parts) {
+    if (partComponent.isNotEmpty) return;
+
+    if (parts != null) {
       Vector2 previousPosition = Vector2.zero();
-      for (var i = 0; i < projectItem.parts!.length; i++) {
+      for (var i = 0; i < parts.length; i++) {
         final position = _calculatePosition(i, previousPosition);
         final part = PartComponent(
-          projectItem.parts![i],
+          parts[i],
           position: position,
           priority: 50 - i,
         );
@@ -62,9 +80,11 @@ class FoundationComponent extends Component
       x = 0;
       y = 0;
     } else if (index == 1) {
-      y = previousPosition.y + 0.21;
-    } else if (index >= 2 && index <= 3) {
-      y = previousPosition.y + 0.18;
+      y = previousPosition.y + 0.22;
+    } else if (index == 2) {
+      y = previousPosition.y + 0.2;
+    } else if (index == 3) {
+      y = previousPosition.y + 0.19;
     } else if (index == 4 || index == 7) {
       switch (index) {
         case 4:
@@ -96,5 +116,14 @@ class FoundationComponent extends Component
       y = previousPosition.y + 0.26;
     }
     return Vector2(x, y);
+  }
+
+  void onNewStateSkinPart(SkinPartState state) {
+    // updateParts(state.parts);
+  }
+
+  void onInitialStateSkinPart(SkinPartState state) {
+    updateParts(state.parts);
+
   }
 }

@@ -6,11 +6,12 @@ sealed class SkinEditorEvent extends ReplayEvent with EquatableMixin {
 
 class SkinEditorInitialEvent extends SkinEditorEvent {
   final String pathDefault;
+  final BuildContext context;
 
-  const SkinEditorInitialEvent(this.pathDefault);
+  const SkinEditorInitialEvent(this.pathDefault, {required this.context});
 
   @override
-  List<Object?> get props => [pathDefault];
+  List<Object?> get props => [pathDefault, context];
 }
 
 class SkinEditorUpdateAvailableModelEvent extends SkinEditorEvent {
@@ -34,6 +35,17 @@ class SkinEditorBlendColorEvent extends SkinEditorEvent {
   List<Object?> get props => [data];
 }
 
+class SkinEditorIsShowPartEvent extends SkinEditorEvent {
+  final List<int> indexPart;
+
+  const SkinEditorIsShowPartEvent(this.indexPart);
+
+  @override
+  List<Object?> get props => [indexPart];
+}
+/// ---------------------
+/// From this, we use to update state not relate to ProjectItem
+
 class SkinEditorSwitchIsDrawableEvent extends SkinEditorEvent {
   const SkinEditorSwitchIsDrawableEvent();
 
@@ -49,3 +61,21 @@ class SkinEditorPickColorEvent extends SkinEditorEvent {
   @override
   List<Object?> get props => [color];
 }
+
+class SkinEditorSwitchIsShowGridEvent extends SkinEditorEvent {
+  const SkinEditorSwitchIsShowGridEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class SkinEditorSwitchIsShowPartEvent extends SkinEditorEvent {
+  final List<int> indexPart;
+
+  const SkinEditorSwitchIsShowPartEvent(this.indexPart);
+
+  @override
+  List<Object?> get props => [indexPart];
+}
+
+

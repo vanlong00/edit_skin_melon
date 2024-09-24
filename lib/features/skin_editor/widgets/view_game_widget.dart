@@ -1,6 +1,9 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../blocs/skin_editor/skin_editor_bloc.dart';
+import '../blocs/skin_part/skin_part_bloc.dart';
 import 'melon_game_widget.dart';
 
 class ViewGameWidget extends StatelessWidget {
@@ -9,7 +12,10 @@ class ViewGameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GameWidget(
-      game: MelonGame(),
+      game: MelonGame(
+        skinEditorBloc: context.read<SkinEditorBloc>(),
+        skinPartBloc: context.read<SkinPartBloc>(),
+      ),
     );
   }
 }
