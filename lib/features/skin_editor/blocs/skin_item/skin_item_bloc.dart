@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/utils/functions/any_functions.dart';
+import '../../../../core/utils/functions/asset_loader.dart';
 
 part 'skin_item_event.dart';
 part 'skin_item_state.dart';
@@ -36,7 +36,7 @@ class SkinItemBloc extends Bloc<SkinItemEvent, SkinItemState> {
   Future<FutureOr<void>> _onSkinItemInitData(SkinItemInitData event, Emitter<SkinItemState> emit) async {
     emit(SkinItemLoading());
 
-    final Map<String, dynamic> manifestMap = await AnyFunction.loadModsAsset();
+    final Map<String, dynamic> manifestMap = await AssetLoader.loadModsAsset();
 
     final cateSkins = skinsModel.keys.toList();
 

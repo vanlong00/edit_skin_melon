@@ -8,6 +8,7 @@ import 'package:edit_skin_melon/features/skin_editor/widgets/components/part_spr
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/foundation.dart';
 
 class MelonGame extends FlameGame with ScaleDetector {
   late double startZoom;
@@ -32,17 +33,6 @@ class MelonGame extends FlameGame with ScaleDetector {
     camera.moveTo(Vector2(0, 18));
 
     world.add(FoundationComponent());
-
-    // world.add(
-    //   FlameMultiBlocProvider(
-    //     providers: [
-    //       FlameBlocProvider<SkinEditorBloc, SkinEditorState>.value(value: getIt<SkinEditorBloc>()),
-    //       FlameBlocProvider<SkinItemBloc, SkinItemState>.value(value: getIt<SkinItemBloc>()),
-    //       FlameBlocProvider<SkinPartBloc, SkinPartState>.value(value: getIt<SkinPartBloc>()),
-    //     ],
-    //     children: [FoundationComponent()],
-    //   ),
-    // );
 
     // debugMode = kDebugMode;
     return super.onLoad();
@@ -80,7 +70,7 @@ class MelonGame extends FlameGame with ScaleDetector {
   @override
   void onScaleUpdate(ScaleUpdateInfo info) {
     if (info.pointerCount == 1) {
-      if (spriteComponent != null && isDrawable == true) {
+      if (spriteComponent != null && isDrawable == true && spriteComponent?.isVisible == true) {
         spriteComponent?.onScaleUpdate(info);
       } else {
         final delta = info.delta.global * (1 / camera.viewfinder.zoom) * 0.6;

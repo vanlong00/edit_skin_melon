@@ -1,6 +1,6 @@
 import 'package:image/image.dart' as img;
 
-extension ColorHelp on int {
+extension ColorExtension on int {
   int getRed() => this & 0xff;
 
   int getGreen() => (this >> 8) & 0xff;

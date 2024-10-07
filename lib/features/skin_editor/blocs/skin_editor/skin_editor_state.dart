@@ -6,6 +6,7 @@ class SkinEditorState extends Equatable {
   final bool isDrawable;
   final Color colorDraw;
   final bool isShowGrid;
+  final bool isShowSelectionPart;
   final List<bool> isShowPart;
 
   const SkinEditorState({
@@ -14,6 +15,7 @@ class SkinEditorState extends Equatable {
     this.isDrawable = false,
     this.colorDraw = Colors.white,
     this.isShowGrid = false,
+    this.isShowSelectionPart = false,
     this.isShowPart = const [],
   });
 
@@ -23,6 +25,7 @@ class SkinEditorState extends Equatable {
     bool? isDrawable,
     Color? colorDraw,
     bool? isShowGrid,
+    bool? isShowSelectionPart,
     List<bool>? isShowPart,
   }) {
     return SkinEditorState(
@@ -32,6 +35,7 @@ class SkinEditorState extends Equatable {
       colorDraw: colorDraw ?? this.colorDraw,
       isShowGrid: isShowGrid ?? this.isShowGrid,
       isShowPart: isShowPart ?? this.isShowPart,
+      isShowSelectionPart: isShowSelectionPart ?? this.isShowSelectionPart,
     );
   }
 
@@ -44,6 +48,7 @@ class SkinEditorState extends Equatable {
       colorDraw,
       isShowGrid,
       isShowPart,
+      isShowSelectionPart,
     ];
   }
 }

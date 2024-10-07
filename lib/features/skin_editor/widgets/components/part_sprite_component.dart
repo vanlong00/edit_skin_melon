@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/components/part_component.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:flame/components.dart';
@@ -14,16 +16,17 @@ import 'package:image/image.dart' as img;
 import '../../blocs/skin_part/skin_part_bloc.dart';
 import '../../models/models.dart';
 import '../../utils/constant.dart';
-import '../../utils/image_util.dart';
+import '../../utils/image_manipulator.dart';
 import 'gird_component.dart';
 
 class PartSpriteComponent extends SpriteComponent
     with HasGameRef<MelonGame>, TapCallbacks, ParentIsA<PartComponent>, HasVisibility {
   PartSpriteComponent({
+    required this.index,
     super.position,
   }) : super(anchor: Anchor.center);
 
-  late int index;
+  final int index;
   bool isEventTexture = false;
 
   img.Image? pix;
@@ -33,7 +36,7 @@ class PartSpriteComponent extends SpriteComponent
   @override
   void onTapUp(TapUpEvent event) {
     // TODO: implement onTapUp
-    // getIt<SkinItemBloc>().add(SkinItemSelect(indexPart: index));
+    getIt<SkinItemBloc>().add(SkinItemSelect(indexPart: index));
     super.onTapUp(event);
   }
 
@@ -42,10 +45,10 @@ class PartSpriteComponent extends SpriteComponent
     if (!isVisible) return;
 
     if (gameRef.isDrawable == true) {
-      final Vector2 localPos = event.localPosition;
+      final Vector2 localPos = convertGlobalToLocal(event.canvasPosition);
       pix = img.decodeImage(gameRef.skinPartBloc.state.parts![index].mainTextureUint8List!);
 
-      /// Update the sprite with the brush
+      // Update the sprite with the brush
       updateSpriteWithBrush(localPos);
 
       resetPixData();
@@ -68,7 +71,7 @@ class PartSpriteComponent extends SpriteComponent
   void onScaleUpdate(ScaleUpdateInfo info) async {
     Vector2 localPos = convertGlobalToLocal(info.eventPosition.widget);
 
-    /// Update the sprite with the brush
+    // Update the sprite with the brush
     if (isVisible) updateSpriteWithBrush(localPos);
   }
 
@@ -100,7 +103,6 @@ class PartSpriteComponent extends SpriteComponent
   }
 
   /// ----------------- SkinEditorBloc -----------------
-  /// Listen to the state changes in the SkinEditorBloc
   bool listenWhenSkinEditor(SkinEditorState previousState, SkinEditorState newState) {
     /// Check if the grid is enabled
     if (previousState.isShowGrid != newState.isShowGrid) {
@@ -128,10 +130,9 @@ class PartSpriteComponent extends SpriteComponent
   /// ----------------- End SkinEditorBloc -----------------
 
   /// ----------------- SkinPartBloc -----------------
-  /// Listen to the state changes in the SkinPartBloc
   void onInitialStateSkinPart(SkinPartState state) {
-    index = state.parts!.indexOf(parent.part);
-    priority = 50 - index;
+    // index = state.parts!.indexOf(parent.part);
+    priority = AppGameConstant.MAX_PRIORITY_PART - index;
   }
 
   Future<void> onNewStateSkinPart(SkinPartState state) async {
@@ -170,7 +171,7 @@ class PartSpriteComponent extends SpriteComponent
     add(GridComponent(
       rows: sprite!.originalSize.y.toInt(),
       columns: sprite!.originalSize.x.toInt(),
-      cellSize: 1.0, // Adjust the cell size as needed
+      cellSize: 1.0 * AppGameConstant.MAX_PER_UINT / parent.part.pixelsPerUnit!, // Adjust the cell size as needed
     ));
   }
 
@@ -201,11 +202,18 @@ class PartSpriteComponent extends SpriteComponent
   void updateSpriteWithBrush(Vector2 localPos) async {
     if (pix == null) return;
 
-    bool hasPixel = ImageUtil.hasPixel(localPos.x.toInt(), localPos.y.toInt(), pix!);
+    bool hasPixel = ImageManipulator.hasPixel(localPos.x.toInt(), localPos.y.toInt(), pix!);
 
     if (hasPixel) {
-      pix =
-          ImageUtil.applyBrush(localPos.x.toInt(), localPos.y.toInt(), gameRef.skinEditorBloc.state.colorDraw, pix!, 0);
+      pix = ImageManipulator.applyBrush(
+        localPos.x.toInt(),
+        localPos.y.toInt(),
+        gameRef.skinEditorBloc.state.colorDraw,
+        pix!,
+        // parent.part.pixelsPerUnit! ~/ AppGameConstant.MAX_PRIORITY_PART,
+        0,
+      );
+
       pixData = img.encodePng(pix!);
       sprite = await createSpriteFromData(pixData!);
     }

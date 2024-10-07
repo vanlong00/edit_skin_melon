@@ -22,3 +22,14 @@ class SkinPartBlendColorEvent extends SkinPartEvent {
   @override
   List<Object?> get props => [data];
 }
+
+class SkinPartUpdateAvailableModelEvent extends SkinPartEvent {
+  final String skinPath;
+  final String dataPath;
+  final int indexPart;
+
+  const SkinPartUpdateAvailableModelEvent({required this.skinPath, required this.dataPath, required this.indexPart});
+
+  @override
+  List<Object?> get props => [skinPath, dataPath, indexPart];
+}

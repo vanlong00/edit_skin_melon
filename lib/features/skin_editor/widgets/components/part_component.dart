@@ -8,18 +8,19 @@ import '../../utils/constant.dart';
 class PartComponent extends PositionComponent with HasGameRef<MelonGame> {
   PartComponent(
     this.part, {
+    required this.index,
     super.priority,
     super.position,
   });
 
   Part part;
+  final int index;
 
   @override
   Future<void> onLoad() async {
-    // position = position * AppGameConstant.MAX_PER_UINT;
     position = position * AppGameConstant.MAX_PER_UINT;
 
-    final partMelon = PartSpriteComponent();
+    final partMelon = PartSpriteComponent(index: index);
 
     add(partMelon);
     return super.onLoad();

@@ -12,9 +12,14 @@ class GridComponent extends PositionComponent {
     required this.columns,
     required this.cellSize,
     Color gridColor = Colors.black,
-  }) : gridPaint = Paint()
-    ..color = gridColor
-    ..style = PaintingStyle.stroke;
+  })  : gridPaint = Paint()
+          ..color = gridColor
+          ..style = PaintingStyle.stroke,
+        super(
+        // anchor: Anchor.center,
+        // size: Vector2(columns * cellSize, rows * cellSize),
+        // position: Vector2(columns / 2, rows / 2),
+        );
 
   @override
   void render(Canvas canvas) {

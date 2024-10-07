@@ -14,27 +14,6 @@ class SkinEditorInitialEvent extends SkinEditorEvent {
   List<Object?> get props => [pathDefault, context];
 }
 
-class SkinEditorUpdateAvailableModelEvent extends SkinEditorEvent {
-  final String skinPath;
-  final String dataPath;
-  final int indexPart;
-
-  const SkinEditorUpdateAvailableModelEvent({required this.skinPath, required this.dataPath, required this.indexPart});
-
-  @override
-  List<Object?> get props => [skinPath, dataPath, indexPart];
-}
-
-class SkinEditorBlendColorEvent extends SkinEditorEvent {
-  final Uint8List data;
-  final int indexPart;
-
-  const SkinEditorBlendColorEvent(this.indexPart, {required this.data});
-
-  @override
-  List<Object?> get props => [data];
-}
-
 class SkinEditorIsShowPartEvent extends SkinEditorEvent {
   final List<int> indexPart;
 
@@ -43,6 +22,41 @@ class SkinEditorIsShowPartEvent extends SkinEditorEvent {
   @override
   List<Object?> get props => [indexPart];
 }
+
+class SkinEditorUpdatePartEvent extends SkinEditorEvent {
+  final List<Part> parts;
+
+  const SkinEditorUpdatePartEvent(this.parts);
+
+  @override
+  List<Object?> get props => [parts];
+}
+
+class SkinEditorUpdateCategoryEvent extends SkinEditorEvent {
+  final String category;
+
+  const SkinEditorUpdateCategoryEvent(this.category);
+
+  @override
+  List<Object?> get props => [category];
+}
+
+class SkinEditorSwitchAllPartsPropertiesEvent extends SkinEditorEvent {
+  final bool value;
+  final String property;
+
+  const SkinEditorSwitchAllPartsPropertiesEvent({
+    required this.value,
+    required this.property,
+  });
+
+  @override
+  List<Object?> get props => [
+        value,
+        property,
+      ];
+}
+
 /// ---------------------
 /// From this, we use to update state not relate to ProjectItem
 
@@ -77,5 +91,3 @@ class SkinEditorSwitchIsShowPartEvent extends SkinEditorEvent {
   @override
   List<Object?> get props => [indexPart];
 }
-
-

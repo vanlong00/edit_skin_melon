@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:json_view/json_view.dart';
 
 class ViewJsonScreen extends StatelessWidget {
-  const ViewJsonScreen({super.key});
+  final Map<String, dynamic> json;
+
+  const ViewJsonScreen({super.key, required this.json});
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +15,7 @@ class ViewJsonScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Skin Editor"),
       ),
-      body: BlocSelector<SkinEditorBloc, SkinEditorState, ProjectItem?>(
-        selector: (SkinEditorState state) => state.projectItem,
-        builder: (context, state) {
-          return JsonView(
-            json: state?.toMap(),
-          );
-        },
-      ),
+      body: JsonView(json: json),
     );
   }
 }

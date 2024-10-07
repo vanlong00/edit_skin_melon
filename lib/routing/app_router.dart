@@ -1,6 +1,8 @@
+import 'package:edit_skin_melon/core/utils/helpers/navigation_helper.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/screens/skin_editor_completed_screen.dart';
 import 'package:edit_skin_melon/features/skin_editor/screens/view_json_screen.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
 import 'package:edit_skin_melon/tools/web_tools.dart';
@@ -36,11 +38,15 @@ class AppRouter {
           ],
           child: const SkinEditorScreen(),
         );
-      case AppRoutes.viewJson:
+      case AppRoutes.skinEditorCompleted:
+        final args = settings.arguments as SkinEditorBloc;
         return BlocProvider.value(
-          value: getIt<SkinEditorBloc>(),
-          child: const ViewJsonScreen(),
+          value: args,
+          child: const SkinEditorCompletedScreen(),
         );
+      case AppRoutes.viewJson:
+        final args = settings.arguments as Map<String, dynamic>;
+        return ViewJsonScreen(json: args);
       case AppRoutes.webTools:
         return const WebTools();
       default:

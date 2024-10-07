@@ -35,6 +35,8 @@ class FoundationComponent extends Component with HasGameRef<MelonGame> {
     return super.onLoad();
   }
 
+  /// ---------------------
+  /// Skin Editor
   Future<void> onInitialStateSkinEditor(SkinEditorState state) async {
     gameRef.isDrawable = state.isDrawable;
   }
@@ -54,6 +56,18 @@ class FoundationComponent extends Component with HasGameRef<MelonGame> {
     }
   }
 
+  /// ---------------------
+  /// Skin Part
+  void onNewStateSkinPart(SkinPartState state) {
+    updateParts(state.parts);
+  }
+
+  void onInitialStateSkinPart(SkinPartState state) {
+    updateParts(state.parts);
+  }
+
+  /// ---------------------
+  /// Function
   void updateParts(List<Part>? parts) {
     if (partComponent.isNotEmpty) return;
 
@@ -64,7 +78,7 @@ class FoundationComponent extends Component with HasGameRef<MelonGame> {
         final part = PartComponent(
           parts[i],
           position: position,
-          priority: 50 - i,
+          index: i,
         );
         partComponent.add(part);
         previousPosition = position; // Update previousPosition for the next iteration
@@ -116,14 +130,5 @@ class FoundationComponent extends Component with HasGameRef<MelonGame> {
       y = previousPosition.y + 0.26;
     }
     return Vector2(x, y);
-  }
-
-  void onNewStateSkinPart(SkinPartState state) {
-    // updateParts(state.parts);
-  }
-
-  void onInitialStateSkinPart(SkinPartState state) {
-    updateParts(state.parts);
-
   }
 }

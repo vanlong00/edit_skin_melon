@@ -47,7 +47,7 @@ class ModHuman extends Equatable {
         canBlink: json["canBlink"],
         eyeLid: ItemColor.fromMap(json["eyeLid"]),
         bloodColor: ItemColor.fromMap(json["bloodColor"]),
-        eyePos: List<ItemPos>.from(json["eyePos"].map((x) => ItemPos.fromMap(x))),
+        eyePos: json["eyePos"] != null ? List<ItemPos>.from(json["eyePos"].map((x) => ItemPos.fromMap(x))) : null,
         secondTextures: List<String>.from(json["secondTextures"].map((x) => x)),
         thirdTextures: List<String>.from(json["thirdTextures"].map((x) => x)),
       );

@@ -97,8 +97,8 @@ class ProjectItem extends Equatable {
         iconHeight: json["iconHeight"],
         parts: List<Part>.from(json["parts"].map((x) => Part.fromMap(x))),
         modHuman: List<ModHuman>.from(json["modHuman"].map((x) => ModHuman.fromMap(x))),
-        modFirearms: List<dynamic>.from(json["modFirearms"].map((x) => x)),
-        metadata: MetaData.fromMap(json["metadata"]),
+        modFirearms: json["modFirearms"] != null ? List<dynamic>.from(json["modFirearms"].map((x) => x)) : null,
+        metadata: json["modFirearms"] != null ? MetaData.fromMap(json["metadata"]) : null,
         colorData: json["colorData"] != null ? List<dynamic>.from(json["colorData"].map((x) => x)) : null,
         scriptsData: json["ScriptsData"] != null ? List<dynamic>.from(json["ScriptsData"].map((x) => x)) : null,
       );
