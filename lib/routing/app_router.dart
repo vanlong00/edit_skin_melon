@@ -1,4 +1,6 @@
-import 'package:edit_skin_melon/core/utils/helpers/navigation_helper.dart';
+import 'dart:developer' as dev;
+
+import 'package:edit_skin_melon/features/home/home_screen.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
@@ -16,13 +18,26 @@ import '../widgets/error_widgets/error_no_route_widget.dart';
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     return MaterialPageRoute(
-      builder: (context) => _getWidgetForRoute(settings),
+      builder: (context) {
+        return PopScope(
+          canPop: false,
+          onPopInvoked: (canPop) async {
+            /// Do something when the back button is pressed
+            /// For example, show a dialog
+            /// Or navigate to a different screen
+            dev.log('PopScope: $canPop');
+          },
+          child: _getWidgetForRoute(settings),
+        );
+      },
       settings: settings,
     );
   }
 
   static _getWidgetForRoute(RouteSettings settings) {
     switch (settings.name) {
+      case AppRoutes.home:
+        return const HomeScreen();
       case AppRoutes.skinEditor:
         return MultiBlocProvider(
           providers: [
@@ -47,6 +62,8 @@ class AppRouter {
       case AppRoutes.viewJson:
         final args = settings.arguments as Map<String, dynamic>;
         return ViewJsonScreen(json: args);
+
+      /// Web Tools
       case AppRoutes.webTools:
         return const WebTools();
       default:

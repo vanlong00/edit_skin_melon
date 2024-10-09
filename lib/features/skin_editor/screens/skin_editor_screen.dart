@@ -22,7 +22,7 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<SkinEditorBloc>().add(SkinEditorInitialEvent("assets/textures/default.melmod", context: context));
+    context.read<SkinEditorBloc>().add(SkinEditorInitialEvent("assets/textures/melontemplate.melmod", context: context));
     context.read<SkinItemBloc>().add(SkinItemInitData());
   }
 

@@ -29,8 +29,8 @@ class MelonGame extends FlameGame with ScaleDetector {
 
   @override
   Future<void> onLoad() async {
-    camera.viewfinder.zoom = 10;
-    camera.moveTo(Vector2(0, 18));
+    camera.viewfinder.zoom = 6;
+    camera.moveTo(Vector2(8, 30));
 
     world.add(FoundationComponent());
 
