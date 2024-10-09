@@ -33,7 +33,7 @@ class _AnimatedSizeWidgetState extends State<AnimatedSizeWidget> with SingleTick
     );
 
     if (widget.isVisible) {
-      _controller.forward();
+      _controller.forward(from: 1.0);
     }
   }
 

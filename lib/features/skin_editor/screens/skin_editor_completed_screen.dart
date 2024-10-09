@@ -1,20 +1,34 @@
 import 'dart:typed_data';
 
+import 'package:edit_skin_melon/core/utils/helpers/image_picker_helper.dart';
 import 'package:edit_skin_melon/features/skin_editor/utils/constant.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/animated_size_widget.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/widgets/app_text_field_widget/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:image/image.dart' as img;
 
 import '../blocs/skin_editor/skin_editor_bloc.dart';
 
-class SkinEditorCompletedScreen extends StatelessWidget {
+class SkinEditorCompletedScreen extends StatefulWidget {
   const SkinEditorCompletedScreen({super.key});
 
   @override
+  State<SkinEditorCompletedScreen> createState() => _SkinEditorCompletedScreenState();
+}
+
+class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
+  final GlobalKey<AppTextFieldWidgetState> _keyName = GlobalKey();
+  final GlobalKey<AppTextFieldWidgetState> _keyCategoryCustom = GlobalKey();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  late BuildContext context;
+
+  @override
   Widget build(BuildContext context) {
+    this.context = context;
     return Scaffold(
       appBar: buildAppBar(),
       body: Padding(
@@ -23,17 +37,20 @@ class SkinEditorCompletedScreen extends StatelessWidget {
           right: 24,
           left: 24,
         ),
-        child: Column(
-          children: [
-            _buildJsonViewerButton(context),
-            _buildNameTextField(),
-            _buildTypeText(),
-            _buildCategoryText(),
-            _buildCustomCategoryField(),
-            _buildIcon(context),
-            _buildSwitchCanBurn(),
-            _buildSwitchCanFloat()
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildJsonViewerButton(),
+              _buildNameTextField(),
+              _buildTypeText(),
+              _buildCategoryText(),
+              _buildCustomCategoryField(),
+              _buildIcon(),
+              _buildSwitchCanBurn(),
+              _buildSwitchCanFloat()
+            ],
+          ),
         ),
       ),
     );
@@ -41,59 +58,75 @@ class SkinEditorCompletedScreen extends StatelessWidget {
 
   Row _buildSwitchCanBurn() {
     return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('canBurn:'),
-              BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-                selector: (state) => state.projectItem?.parts?.first.canBurn ?? false,
-                builder: (context, canBurn) {
-                  return Switch.adaptive(
-                    value: canBurn,
-                    onChanged: (value) {
-                      context.read<SkinEditorBloc>().add(
-                            SkinEditorSwitchAllPartsPropertiesEvent(
-                              property: "canBurn",
-                              value: value,
-                            ),
-                          );
-                    },
-                  );
-                },
-              ),
-            ],
-          );
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text('canBurn:'),
+        BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
+          selector: (state) => state.projectItem?.parts?.first.canBurn ?? false,
+          builder: (context, canBurn) {
+            return Switch.adaptive(
+              value: canBurn,
+              onChanged: (value) {
+                context.read<SkinEditorBloc>().add(
+                      SkinEditorSwitchAllPartsPropertiesEvent(
+                        property: "canBurn",
+                        value: value,
+                      ),
+                    );
+              },
+            );
+          },
+        ),
+      ],
+    );
   }
 
   Row _buildSwitchCanFloat() {
     return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('canFloat:'),
-              BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-                selector: (state) => state.projectItem?.parts?.first.canFloat ?? false,
-                builder: (context, canFloat) {
-                  return Switch.adaptive(
-                    value: canFloat,
-                    onChanged: (value) {
-                      context.read<SkinEditorBloc>().add(
-                            SkinEditorSwitchAllPartsPropertiesEvent(
-                              property: "canFloat",
-                              value: value,
-                            ),
-                          );
-                    },
-                  );
-                },
-              ),
-            ],
-          );
-  }
-
-  Row _buildIcon(BuildContext context) {
-    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        const Text('canFloat:'),
+        BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
+          selector: (state) => state.projectItem?.parts?.first.canFloat ?? false,
+          builder: (context, canFloat) {
+            return Switch.adaptive(
+              value: canFloat,
+              onChanged: (value) {
+                context.read<SkinEditorBloc>().add(
+                      SkinEditorSwitchAllPartsPropertiesEvent(
+                        property: "canFloat",
+                        value: value,
+                      ),
+                    );
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Row _buildIcon() {
+    return Row(
+      children: [
         const Text("Icon:"),
+        const Spacer(),
+        TextButton(
+          onPressed: () async {
+            Uint8List? icon = await ImagePickerHelper.pickImageBytes();
+
+            if (!context.mounted) return;
+            context.read<SkinEditorBloc>().add(SkinEditorChangeIconEvent(icon));
+          },
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          child: Text("Change".toUpperCase()),
+        ),
+        const Gap(8),
         BlocSelector<SkinEditorBloc, SkinEditorState, List<int>>(
           selector: (state) => state.projectItem?.icon ?? AppEditorConstant.iconDefault,
           builder: (context, icon) {
@@ -109,16 +142,6 @@ class SkinEditorCompletedScreen extends StatelessWidget {
             );
           },
         ),
-        TextButton(
-          onPressed: () {},
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          child: Text("Change".toUpperCase()),
-        )
       ],
     );
   }
@@ -129,12 +152,12 @@ class SkinEditorCompletedScreen extends StatelessWidget {
       builder: (context, record) {
         return AnimatedSizeWidget(
           isVisible: record.$1,
-          child: Row(
-            children: [
-              const Text("Custom Category:"),
-              const Gap(8),
-              Expanded(child: TextFormField()),
-            ],
+          child: AppTextFieldWidget.string(
+            key: _keyCategoryCustom,
+            validator: (value) {
+              return null;
+            },
+            label: "Category Custom:",
           ),
         );
       },
@@ -159,7 +182,7 @@ class SkinEditorCompletedScreen extends StatelessWidget {
               }).toList(),
               onChanged: (String? value) {
                 if (value == null) return;
-                context.read<SkinEditorBloc>().add(SkinEditorUpdateCategoryEvent(value!));
+                context.read<SkinEditorBloc>().add(SkinEditorUpdateCategoryEvent(value));
               },
             );
           },
@@ -174,28 +197,21 @@ class SkinEditorCompletedScreen extends StatelessWidget {
         const Text("Type:"),
         const Gap(8),
         BlocSelector<SkinEditorBloc, SkinEditorState, String>(
-          selector: (state) {
-            return state.projectItem?.type ?? "";
-          },
-          builder: (context, type) {
-            return Text(type);
-          },
+          selector: (state) => state.projectItem?.type ?? "",
+          builder: (_, type) => Text(type),
         ),
       ],
     );
   }
 
-  Row _buildNameTextField() {
-    return Row(
-      children: [
-        const Text("Name:"),
-        const Gap(8),
-        Expanded(child: TextFormField()),
-      ],
+  Widget _buildNameTextField() {
+    return AppTextFieldWidget.string(
+      key: _keyName,
+      label: "Name:",
     );
   }
 
-  TextButton _buildJsonViewerButton(BuildContext context) {
+  TextButton _buildJsonViewerButton() {
     return TextButton(
       onPressed: () {
         Navigator.pushNamed(
@@ -218,6 +234,28 @@ class SkinEditorCompletedScreen extends StatelessWidget {
     return AppBar(
       title: const Text("Create Skin"),
       centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) {
+              return;
+            }
+            String name = _keyName.currentState!.value;
+            String categoryCustomName = _keyCategoryCustom.currentState!.value;
+
+            print("Name: $name");
+            print("Category Custom: $categoryCustomName");
+
+            context.read<SkinEditorBloc>().add(
+                  SkinEditorSaveEvent(
+                    name: name,
+                    categoryCustom: categoryCustomName,
+                  ),
+                );
+          },
+          icon: const Icon(Icons.save),
+        ),
+      ],
     );
   }
 }

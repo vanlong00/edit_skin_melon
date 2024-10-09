@@ -141,6 +141,9 @@ class PartSpriteComponent extends SpriteComponent
       parent.part = newPart;
       sprite = await createSpriteFromData(parent.part.mainTextureUint8List!);
       size = sprite!.originalSize * AppGameConstant.MAX_PER_UINT / parent.part.pixelsPerUnit!;
+      // update the grid layer
+      updateGridLayer(gameRef.skinEditorBloc.state);
+
       isEventTexture = false;
     }
   }
@@ -160,10 +163,10 @@ class PartSpriteComponent extends SpriteComponent
 
   /// ----------------- Function Component -----------------
   void updateGridLayer(SkinEditorState state) {
+    removeWhere((component) => component is GridComponent);
+
     if (state.isShowGrid) {
       showGridLayer();
-    } else {
-      removeWhere((component) => component is GridComponent);
     }
   }
 

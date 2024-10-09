@@ -47,12 +47,14 @@ dependencies:
   image: ^4.2.0
   sizer: ^2.0.15
   image_picker: ^1.0.8
-  path_provider: ^2.1.3
+  path_provider: ^2.1.4
   permission_handler: ^11.3.1
   share_plus: ^7.2.2
   replay_bloc: ^0.2.7
   file_picker: ^8.0.0+1
   gap: ^3.0.1
+  name_plus: ^0.0.3
+
 
 dev_dependencies:
   flutter_test:

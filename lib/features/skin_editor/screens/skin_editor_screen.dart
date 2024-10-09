@@ -1,13 +1,14 @@
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/widgets/list_skin_widget.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
-import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 
 import '../widgets/animated_size_widget.dart';
+import '../widgets/part_visible_button.dart';
 import '../widgets/view_game_widget.dart';
 
 class SkinEditorScreen extends StatefulWidget {
@@ -45,18 +46,27 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
       body: Stack(
         children: [
           const ViewGameWidget(),
-          Column(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildColorPalette(),
-              const Align(
-                alignment: Alignment.centerRight,
-                child: PartSelectionButton(),
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildColorPalette(),
+                    Row(
+                      children: [
+                        const PartVisibleButton(),
+                        _buildGridButton(),
+                        const Spacer(),
+                        _buildUndoButton(),
+                        _buildRedoButton(),
+                      ],
+                    ),
+                  ],
+                ),
               ),
+              const ListSkinWidget()
             ],
-          ),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: ListSkinWidget(),
           ),
         ],
       ),
@@ -131,39 +141,6 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
             );
           },
         ),
-        BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-          selector: (state) => state.isShowGrid,
-          builder: (context, isShowGrid) {
-            return IconButton(
-              onPressed: () {
-                context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsShowGridEvent());
-              },
-              isSelected: isShowGrid,
-              icon: const Icon(Icons.grid_off_outlined),
-              selectedIcon: const Icon(Icons.grid_on),
-            );
-          },
-        ),
-        BlocBuilder<SkinPartBloc, SkinPartState>(
-          builder: (context, state) {
-            final bloc = context.read<SkinPartBloc>();
-
-            return IconButton(
-              onPressed: bloc.canUndo ? bloc.undo : null,
-              icon: const Icon(Icons.undo),
-            );
-          },
-        ),
-        BlocBuilder<SkinPartBloc, SkinPartState>(
-          builder: (context, state) {
-            final bloc = context.read<SkinPartBloc>();
-
-            return IconButton(
-              onPressed: bloc.canRedo ? bloc.redo : null,
-              icon: const Icon(Icons.redo),
-            );
-          },
-        ),
         IconButton(
           onPressed: () {
             context.read<SkinEditorBloc>().add(
@@ -176,150 +153,51 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
               arguments: context.read<SkinEditorBloc>(),
             );
           },
-          icon: const Icon(Icons.check),
+          icon: const Icon(Icons.navigate_next_outlined),
         ),
       ],
     );
   }
-}
 
-class ListSkinWidget extends StatelessWidget {
-  const ListSkinWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 100.w,
-      child: BlocBuilder<SkinItemBloc, SkinItemState>(
-        builder: (context, state) {
-          if (state is SkinItemLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (state is SkinItemLoaded) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: BlocSelector<SkinItemBloc, SkinItemState, int>(
-                selector: (state) => state is SkinItemLoaded ? state.indexPart : 0,
-                builder: (context, indexPart) {
-                  return Row(
-                    children: [
-                      Text(state.skinsModel.keys.toList()[indexPart]),
-                      ...state.skinsModel[state.skinsModel.keys.toList()[indexPart]]!["thumb"]!.map((e) {
-                        return GestureDetector(
-                          onTap: () {
-                            context.read<SkinPartBloc>().add(
-                                  SkinPartUpdateAvailableModelEvent(
-                                    skinPath: e,
-                                    dataPath: state.skinsModel[state.skinsModel.keys.toList()[indexPart]]!["data"]![
-                                        state.skinsModel[state.skinsModel.keys.toList()[indexPart]]!["thumb"]!
-                                            .indexOf(e)],
-                                    indexPart: indexPart,
-                                  ),
-                                );
-                          },
-                          child: Container(
-                            width: 8.h,
-                            height: 8.h,
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: AppColor.backgroundGame,
-                              border: Border.all(color: Colors.black),
-                            ),
-                            child: Image.asset(
-                              e,
-                              filterQuality: FilterQuality.none,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ],
-                  );
-                },
-              ),
-            );
-          }
-
-          return const SizedBox();
-        },
-      ),
-    );
-  }
-}
-
-class PartSelectionButton extends StatelessWidget {
-  const PartSelectionButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    List<(String, List<int>)> items = [
-      ("head", [0]),
-      ("body1", [1]),
-      ("body2", [2]),
-      ("body3", [3]),
-      ("leg1", [4, 7]),
-      ("leg2", [5, 8]),
-      ("leg3", [6, 9]),
-      ("arm1", [10, 12]),
-      ("arm2", [11, 13]),
-    ];
-
-    return IconButton(
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          showDragHandle: true,
-          isScrollControlled: true,
-          builder: (BuildContext _) {
-            return BlocProvider.value(
-              value: context.read<SkinEditorBloc>(),
-              child: SizedBox(
-                height: 30.h,
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 8.0,
-                    childAspectRatio: 4.0,
-                  ),
-                  itemCount: items.length,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-                  itemBuilder: (__, index) {
-                    var item = items[index];
-                    return BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-                      selector: (state) => item.$2.every((element) => state.isShowPart[element]),
-                      builder: (context, isSelected) {
-                        return GestureDetector(
-                          onTap: () => context.read<SkinEditorBloc>().add(SkinEditorIsShowPartEvent(item.$2)),
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: isSelected ? Theme.of(context).colorScheme.primaryContainer : Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            margin: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Text(
-                              item.$1,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            );
+  BlocSelector<SkinEditorBloc, SkinEditorState, bool> _buildGridButton() {
+    return BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
+      selector: (state) => state.isShowGrid,
+      builder: (context, isShowGrid) {
+        return IconButton(
+          onPressed: () {
+            context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsShowGridEvent());
           },
+          icon: isShowGrid ? const Icon(Icons.grid_off_outlined) : const Icon(Icons.grid_on_outlined),
         );
       },
-      icon: const Icon(Icons.remove_red_eye_outlined),
+    );
+  }
+
+  BlocBuilder<SkinPartBloc, SkinPartState> _buildUndoButton() {
+    return BlocBuilder<SkinPartBloc, SkinPartState>(
+      builder: (context, state) {
+        final bloc = context.read<SkinPartBloc>();
+
+        return IconButton(
+          onPressed: bloc.canUndo ? bloc.undo : null,
+          icon: const Icon(Icons.undo),
+        );
+      },
+    );
+  }
+
+  BlocBuilder<SkinPartBloc, SkinPartState> _buildRedoButton() {
+    return BlocBuilder<SkinPartBloc, SkinPartState>(
+      builder: (context, state) {
+        final bloc = context.read<SkinPartBloc>();
+
+        return IconButton(
+          onPressed: bloc.canRedo ? bloc.redo : null,
+          icon: const Icon(Icons.redo),
+        );
+      },
     );
   }
 }
+
+

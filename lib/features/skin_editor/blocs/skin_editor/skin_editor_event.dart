@@ -14,6 +14,31 @@ class SkinEditorInitialEvent extends SkinEditorEvent {
   List<Object?> get props => [pathDefault, context];
 }
 
+class SkinEditorSaveEvent extends SkinEditorEvent {
+  final String name;
+  final String? categoryCustom;
+
+  const SkinEditorSaveEvent({
+    required this.name,
+    this.categoryCustom,
+  });
+
+  @override
+  List<Object?> get props => [
+        name,
+        categoryCustom,
+      ];
+}
+
+class SkinEditorChangeIconEvent extends SkinEditorEvent {
+  final Uint8List? icon;
+
+  SkinEditorChangeIconEvent(this.icon);
+
+  @override
+  List<Object?> get props => [icon];
+}
+
 class SkinEditorIsShowPartEvent extends SkinEditorEvent {
   final List<int> indexPart;
 
