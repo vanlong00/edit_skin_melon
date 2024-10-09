@@ -2,6 +2,7 @@ import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading
 import 'package:edit_skin_melon/routing/app_router.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 
 import 'core/di/di.dart';
@@ -24,8 +25,7 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, deviceType) => MaterialApp(
         title: 'Flutter Demo',
         onGenerateRoute: AppRouter.generateRoute,
-        initialRoute: AppRoutes.home,
-        themeMode: ThemeMode.dark,
+        initialRoute: AppRoutes.splash,
         // initialRoute: Platform.isMacOS ? AppRoutes.webTools : AppRoutes.skinEditor,
         navigatorKey: getIt<GlobalKey<NavigatorState>>(),
         builder: EasyLoading.init(),
