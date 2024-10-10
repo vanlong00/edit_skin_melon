@@ -1,5 +1,6 @@
 import 'dart:developer' as dev;
 
+import 'package:edit_skin_melon/features/home/bloc/melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/home_screen.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
@@ -40,7 +41,14 @@ class AppRouter {
       case AppRoutes.splash:
         return const SplashScreen();
       case AppRoutes.home:
-        return const HomeScreen();
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => getIt<MelonModsBloc>(),
+            ),
+          ],
+          child: const HomeScreen(),
+        );
       case AppRoutes.skinEditor:
         return MultiBlocProvider(
           providers: [

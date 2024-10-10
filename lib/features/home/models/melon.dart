@@ -9,7 +9,7 @@ class Melon {
   final List<String>? images;
   final String author;
   final String description;
-  final String videoCode;
+  final String? videoCode;
   final String fileUrl;
   final String thumbnailUrl;
   final String? modVersion;
@@ -31,7 +31,7 @@ class Melon {
     this.images,
     required this.author,
     required this.description,
-    required this.videoCode,
+    this.videoCode,
     required this.fileUrl,
     required this.thumbnailUrl,
     this.modVersion,

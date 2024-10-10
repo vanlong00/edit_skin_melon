@@ -13,7 +13,7 @@ Melon _$MelonFromJson(Map<String, dynamic> json) => Melon(
           (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
       author: json['author'] as String,
       description: json['description'] as String,
-      videoCode: json['videoCode'] as String,
+      videoCode: json['videoCode'] as String?,
       fileUrl: json['fileUrl'] as String,
       thumbnailUrl: json['thumbnailUrl'] as String,
       modVersion: json['modVersion'] as String?,

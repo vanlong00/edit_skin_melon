@@ -19,13 +19,17 @@ class ApiService {
     await _cacheManager.clearAll();
   }
 
-  Future<void> deleteCacheEndpointDataOwner() async {
-  }
+  Future<void> deleteCacheEndpointDataOwner() async {}
 
-  Future<dynamic> getRequest(String endpoint, {Options? options}) async {
+  Future<dynamic> getRequest(
+    String endpoint, {
+    Options? options,
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
       final response = await _dio.get(
         endpoint,
+        queryParameters: queryParameters,
         options: options ??
             buildCacheOptions(
               const Duration(days: 3),
@@ -45,7 +49,7 @@ class ApiService {
     } on DioException catch (e) {
       _handleDioError(e);
     } catch (e) {
-      throw FailureException(500, 'An unexpected error occurred. Please try again later.');
+      log('Error: $e');
     }
   }
 
