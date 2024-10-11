@@ -1,31 +1,31 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'melon.g.dart';
+part 'melon_model.g.dart';
 
 @JsonSerializable()
-class Melon {
-  final int id;
-  final String name;
+class MelonModel {
+  final int? id;
+  final String? name;
   final List<String>? images;
-  final String author;
-  final String description;
+  final String? author;
+  final String? description;
   final String? videoCode;
-  final String fileUrl;
-  final String thumbnailUrl;
+  final String? fileUrl;
+  final String? thumbnailUrl;
   final String? modVersion;
-  final int downloadCount;
-  final DateTime uploadDate;
-  final DateTime updatedDate;
+  final int? downloadCount;
+  final DateTime? uploadDate;
+  final DateTime? updatedDate;
   final DateTime? deletedAt;
-  final int type;
-  final bool isVerify;
-  final bool isHide;
-  final bool isCopyright;
-  final int reportCount;
-  final Category? category;
+  final int? type;
+  final bool? isVerify;
+  final bool? isHide;
+  final bool? isCopyright;
+  final int? reportCount;
+  final CategoryModel? category;
   final List<String>? tags;
 
-  Melon({
+  MelonModel({
     required this.id,
     required this.name,
     this.images,
@@ -48,22 +48,22 @@ class Melon {
     required this.tags,
   });
 
-  factory Melon.fromJson(Map<String, dynamic> json) => _$MelonFromJson(json);
+  factory MelonModel.fromJson(Map<String, dynamic> json) => _$MelonModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MelonToJson(this);
+  Map<String, dynamic> toJson() => _$MelonModelToJson(this);
 }
 
 @JsonSerializable()
-class Category {
+class CategoryModel {
   final int id;
   final String name;
 
-  Category({
+  CategoryModel({
     required this.id,
     required this.name,
   });
 
-  factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);
+  factory CategoryModel.fromJson(Map<String, dynamic> json) => _$CategoryModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CategoryToJson(this);
+  Map<String, dynamic> toJson() => _$CategoryModelToJson(this);
 }

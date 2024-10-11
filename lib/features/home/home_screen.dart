@@ -1,4 +1,5 @@
 import 'package:edit_skin_melon/features/home/pages/home_page.dart';
+import 'package:edit_skin_melon/widgets/app_keep_alive_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/workspace_page.dart';
@@ -36,11 +37,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        onPageChanged: _onPageChanged,
-        children: _pages,
+      body: SafeArea(
+        child: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          onPageChanged: _onPageChanged,
+          children: _pages.map((page) => AppKeepAliveWidget(child: page)).toList(),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,

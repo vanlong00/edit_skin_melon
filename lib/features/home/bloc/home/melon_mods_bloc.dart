@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:edit_skin_melon/core/utils/api_endpoints.dart';
-import 'package:edit_skin_melon/features/home/models/melon.dart';
+import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:edit_skin_melon/services/api_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +26,6 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
 
   Future<void> _onMelonModsInitialize(MelonModsInitialize event, Emitter<MelonModsState> emit) async {
     emit(MelonModsLoading());
-    await Future.delayed(const Duration(seconds: 6));
     try {
       final listMods = await _fetchModDatas();
       emit(MelonModsComplete(listMods));
@@ -47,9 +46,9 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
     // add(MelonModsInitialize());
   }
 
-  Future<List<Melon>> _fetchModDatas() async {
+  Future<List<MelonModel>> _fetchModDatas() async {
     final response = await _apiService.getRequest(
-      '${ApiEndpoints.endPointCategory}/',
+      '${ApiEndpoints.endPointCategory}/$_cate',
       queryParameters: {
         'limit': _limit,
         'page': _page,
@@ -61,7 +60,7 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
       },
     );
 
-    final melonsFromNetwork = response.map<Melon>((index) => Melon.fromJson(index)).toList();
+    final melonsFromNetwork = response.map<MelonModel>((index) => MelonModel.fromJson(index)).toList();
 
     _isLastPage = checkIsLastPage(melonsFromNetwork.length);
     _page++;

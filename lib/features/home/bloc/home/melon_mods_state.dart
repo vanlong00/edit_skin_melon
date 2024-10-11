@@ -15,7 +15,7 @@ final class MelonModsLoading extends MelonModsState {
 }
 
 final class MelonModsComplete extends MelonModsState {
-  final List<Melon> items;
+  final List<MelonModel> items;
 
   const MelonModsComplete(this.items);
 
@@ -33,9 +33,9 @@ final class MelonModsError extends MelonModsComplete {
 }
 
 final class MelonModsLoadNoMoreData extends MelonModsComplete {
-  const MelonModsLoadNoMoreData(List<Melon> items) : super(items);
+  const MelonModsLoadNoMoreData(List<MelonModel> items) : super(items);
 }
 
 final class MelonModsRefreshComplete extends MelonModsComplete {
-  const MelonModsRefreshComplete(List<Melon> items) : super(items);
+  const MelonModsRefreshComplete(List<MelonModel> items) : super(items);
 }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:edit_skin_melon/core/utils/helpers/image_picker_helper.dart';
+import 'package:edit_skin_melon/features/home/bloc/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/utils/constant.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/animated_size_widget.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
@@ -37,19 +38,26 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
           right: 24,
           left: 24,
         ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildJsonViewerButton(),
-              _buildNameTextField(),
-              _buildTypeText(),
-              _buildCategoryText(),
-              _buildCustomCategoryField(),
-              _buildIcon(),
-              _buildSwitchCanBurn(),
-              _buildSwitchCanFloat()
-            ],
+        child: BlocListener<SkinEditorBloc, SkinEditorState>(
+          listener: (context, state) {
+            if (state.status == SkinEditorStatusState.complete) {
+              Navigator.popUntil(context, (route) => route.settings.name == AppRoutes.home);
+            }
+          },
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildJsonViewerButton(),
+                _buildNameTextField(),
+                _buildTypeText(),
+                _buildCategoryText(),
+                _buildCustomCategoryField(),
+                _buildIcon(),
+                _buildSwitchCanBurn(),
+                _buildSwitchCanFloat()
+              ],
+            ),
           ),
         ),
       ),

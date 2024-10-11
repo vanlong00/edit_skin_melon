@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 
-import 'package:edit_skin_melon/features/home/bloc/melon_mods_bloc.dart';
+import 'package:edit_skin_melon/features/home/bloc/home/melon_mods_bloc.dart';
+import 'package:edit_skin_melon/features/home/bloc/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/home_screen.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/di/di.dart';
+import 'pop_routes.dart';
 
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
@@ -28,6 +30,14 @@ class AppRouter {
             /// For example, show a dialog
             /// Or navigate to a different screen
             dev.log('PopScope: $canPop');
+            if (!canPop) {
+              await popRoute(context);
+            } else {
+              if (!Navigator.of(context).canPop()) {
+                // AppDialogExitApp.show(context);
+                return;
+              }
+            }
           },
           child: _getWidgetForRoute(settings),
         );
@@ -46,20 +56,29 @@ class AppRouter {
             BlocProvider(
               create: (context) => getIt<MelonModsBloc>(),
             ),
+            BlocProvider(
+              create: (context) => getIt<WorkspaceBloc>(),
+            ),
+            BlocProvider(
+              create: (context) => getIt<SkinItemBloc>(),
+            ),
           ],
           child: const HomeScreen(),
         );
       case AppRoutes.skinEditor:
         return MultiBlocProvider(
           providers: [
-            BlocProvider(
-              create: (context) => getIt<SkinItemBloc>(),
+            BlocProvider.value(
+              value: getIt<SkinItemBloc>(),
             ),
             BlocProvider(
               create: (context) => getIt<SkinEditorBloc>(),
             ),
             BlocProvider(
               create: (context) => getIt<SkinPartBloc>(),
+            ),
+            BlocProvider.value(
+              value: getIt<WorkspaceBloc>(),
             ),
           ],
           child: const SkinEditorScreen(),

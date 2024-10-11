@@ -22,7 +22,9 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<SkinEditorBloc>().add(SkinEditorInitialEvent("assets/textures/melontemplate.melmod", context: context));
+    context
+        .read<SkinEditorBloc>()
+        .add(SkinEditorInitialEvent("assets/textures/melontemplate.melmod", context: context));
     context.read<SkinItemBloc>().add(SkinItemInitData());
   }
 
@@ -43,33 +45,38 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
-      body: Stack(
-        children: [
-          const ViewGameWidget(),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildColorPalette(),
-                    Row(
-                      children: [
-                        const PartVisibleButton(),
-                        _buildGridButton(),
-                        const Spacer(),
-                        _buildUndoButton(),
-                        _buildRedoButton(),
-                      ],
-                    ),
-                  ],
-                ),
+      body: _buildGameWidget(),
+    );
+  }
+
+  Stack _buildGameWidget() {
+    return Stack(
+      children: [
+        const ViewGameWidget(),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  _buildColorPalette(),
+                  Row(
+                    children: [
+                      const PartVisibleButton(),
+                      _buildGridButton(),
+                      _buildButtonDraw(),
+                      const Spacer(),
+                      _buildUndoButton(),
+                      _buildRedoButton(),
+                    ],
+                  ),
+                ],
               ),
-              const ListSkinWidget()
-            ],
-          ),
-        ],
-      ),
+            ),
+            const ListSkinWidget()
+          ],
+        ),
+      ],
     );
   }
 
@@ -126,21 +133,7 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text("Skin Editor"),
-      automaticallyImplyLeading: false,
       actions: [
-        BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-          selector: (state) => state.isDrawable,
-          builder: (context, isDrawable) {
-            return IconButton(
-              onPressed: () {
-                context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsDrawableEvent());
-              },
-              isSelected: isDrawable,
-              icon: const Icon(Icons.draw_outlined),
-              selectedIcon: const Icon(Icons.draw),
-            );
-          },
-        ),
         IconButton(
           onPressed: () {
             context.read<SkinEditorBloc>().add(
@@ -157,6 +150,22 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
         ),
       ],
     );
+  }
+
+  BlocSelector<SkinEditorBloc, SkinEditorState, bool> _buildButtonDraw() {
+    return BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
+        selector: (state) => state.isDrawable,
+        builder: (context, isDrawable) {
+          return IconButton(
+            onPressed: () {
+              context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsDrawableEvent());
+            },
+            isSelected: isDrawable,
+            icon: const Icon(Icons.draw_outlined),
+            selectedIcon: const Icon(Icons.draw),
+          );
+        },
+      );
   }
 
   BlocSelector<SkinEditorBloc, SkinEditorState, bool> _buildGridButton() {
@@ -199,5 +208,3 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
     );
   }
 }
-
-

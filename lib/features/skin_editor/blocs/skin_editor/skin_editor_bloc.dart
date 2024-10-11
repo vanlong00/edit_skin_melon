@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/core/utils/functions/asset_loader.dart';
 import 'package:edit_skin_melon/core/utils/helpers/base_x_codec_helper.dart';
 import 'package:edit_skin_melon/core/utils/helpers/storage_helper.dart';
+import 'package:edit_skin_melon/features/home/bloc/workspace/workspace_bloc.dart';
+import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
 import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading.dart';
@@ -14,8 +17,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:name_plus/name_plus.dart';
 import 'package:replay_bloc/replay_bloc.dart';
-
-import '../../utils/constant.dart';
 
 part 'skin_editor_event.dart';
 part 'skin_editor_state.dart';
@@ -47,6 +48,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     emit(state.copyWith(
       projectItem: projectItem,
       isShowPart: isShowPart,
+      status: SkinEditorStatusState.initial,
     ));
 
     EasyLoading.dismiss();
@@ -93,10 +95,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     }).toList();
 
     // get icon from first part (head)
-    List<int>? icon;
-    if (state.projectItem?.icon != AppEditorConstant.iconDefault) {
-      icon = event.parts.first.mainTextureUint8List;
-    }
+    List<int>? icon = event.parts.first.mainTextureUint8List;
 
     emit(
       state.copyWith(
@@ -145,13 +144,23 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
         ),
       );
 
-      await createFileMelMod(state.projectItem!, modFile.path);
+      await _createFileMelMod(state.projectItem!, modFile.path);
+
+      final WorkspaceModel workspaceModel = WorkspaceModel(
+        modFile.name,
+        Uint8List.fromList(state.projectItem?.icon ?? []),
+        modFile.path,
+      );
+
+      getIt<WorkspaceBloc>().add(AddWorkspaceEvent(workspaceModel));
+
+      emit(state.copyWith(status: SkinEditorStatusState.complete));
     } catch (e) {
       // snack bar error
     }
   }
 
-  Future<void> createFileMelMod(ProjectItem projectItem, String path) async {
+  Future<void> _createFileMelMod(ProjectItem projectItem, String path) async {
     var projectItemJson = await _preProcessProjectItem(projectItem);
     await _writeProjectItemToFile(projectItemJson, path);
   }
@@ -171,5 +180,11 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   Future<void> _writeProjectItemToFile(String projectItemJson, String path) async {
     final File file = File(path);
     await file.writeAsString(projectItemJson);
+  }
+}
+
+extension FileNameExtension on File {
+  String get name {
+    return path.split('/').last;
   }
 }
