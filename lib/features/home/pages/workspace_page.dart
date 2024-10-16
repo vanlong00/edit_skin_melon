@@ -1,4 +1,4 @@
-import 'package:edit_skin_melon/features/home/bloc/workspace/workspace_bloc.dart';
+import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -24,7 +24,8 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
     on<MelonModsLoadMore>(_onMelonModsLoadMore);
   }
 
-  Future<void> _onMelonModsInitialize(MelonModsInitialize event, Emitter<MelonModsState> emit) async {
+  Future<void> _onMelonModsInitialize(
+      MelonModsInitialize event, Emitter<MelonModsState> emit) async {
     emit(MelonModsLoading());
     try {
       final listMods = await _fetchModDatas();
@@ -34,9 +35,11 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
     }
   }
 
-  FutureOr<void> _onMelonModsLoadMore(MelonModsLoadMore event, Emitter<MelonModsState> emit) {}
+  FutureOr<void> _onMelonModsLoadMore(
+      MelonModsLoadMore event, Emitter<MelonModsState> emit) {}
 
-  FutureOr<void> _onMelonModsRefresh(MelonModsRefresh event, Emitter<MelonModsState> emit) {
+  FutureOr<void> _onMelonModsRefresh(
+      MelonModsRefresh event, Emitter<MelonModsState> emit) {
     // if (state is MelonModsComplete) {
     //   final items = (state as MelonModsComplete).items;
     //   items.clear();
@@ -60,7 +63,9 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
       },
     );
 
-    final melonsFromNetwork = response.map<MelonModel>((index) => MelonModel.fromJson(index)).toList();
+    final melonsFromNetwork = response
+        .map<MelonModel>((index) => MelonModel.fromJson(index))
+        .toList();
 
     _isLastPage = checkIsLastPage(melonsFromNetwork.length);
     _page++;

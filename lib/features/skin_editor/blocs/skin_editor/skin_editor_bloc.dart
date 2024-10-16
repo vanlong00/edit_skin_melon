@@ -6,7 +6,7 @@ import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/core/utils/functions/asset_loader.dart';
 import 'package:edit_skin_melon/core/utils/helpers/base_x_codec_helper.dart';
 import 'package:edit_skin_melon/core/utils/helpers/storage_helper.dart';
-import 'package:edit_skin_melon/features/home/bloc/workspace/workspace_bloc.dart';
+import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';

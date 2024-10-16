@@ -13,8 +13,8 @@ import 'package:flutter/material.dart' as _i4;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import '../../features/home/bloc/home/melon_mods_bloc.dart' as _i10;
-import '../../features/home/bloc/workspace/workspace_bloc.dart' as _i8;
+import '../../features/home/blocs/home/melon_mods_bloc.dart' as _i10;
+import '../../features/home/blocs/workspace/workspace_bloc.dart' as _i8;
 import '../../features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart'
     as _i5;
 import '../../features/skin_editor/blocs/skin_item/skin_item_bloc.dart' as _i6;

@@ -1,7 +1,7 @@
 import 'dart:developer' as dev;
 
-import 'package:edit_skin_melon/features/home/bloc/home/melon_mods_bloc.dart';
-import 'package:edit_skin_melon/features/home/bloc/workspace/workspace_bloc.dart';
+import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
+import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/home_screen.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';

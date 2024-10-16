@@ -1,4 +1,4 @@
-import 'package:edit_skin_melon/features/home/bloc/home/melon_mods_bloc.dart';
+import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -85,4 +85,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
