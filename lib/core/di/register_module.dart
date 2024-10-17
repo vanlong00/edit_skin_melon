@@ -20,10 +20,10 @@ abstract class RegisterModule {
     dio.options.receiveTimeout = const Duration(seconds: 3);
     dio.interceptors.add(
       PrettyDioLogger(
-        responseBody: true,
-        error: true,
-        compact: true,
-        maxWidth: 90,
+        responseBody: false,
+        // error: true,
+        // compact: true,
+        // maxWidth: 90,
         enabled: kDebugMode,
         filter: (options, args) {
           // don't print requests with uris containing '/posts'

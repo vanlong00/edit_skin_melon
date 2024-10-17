@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:edit_skin_melon/core/utils/api_endpoints.dart';
+import 'package:edit_skin_melon/core/utils/helpers/version_data_helper.dart';
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:edit_skin_melon/services/api_service.dart';
 import 'package:equatable/equatable.dart';
@@ -13,12 +14,16 @@ part 'melon_mods_state.dart';
 @injectable
 class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
   final ApiService _apiService;
+  final VersionDataHelper _versionDataHelper;
   final int _limit = 30;
   final String _cate = 'Living';
   int _page = 0;
   bool _isLastPage = false;
 
-  MelonModsBloc(this._apiService) : super(MelonModsInitial()) {
+  MelonModsBloc(
+    this._apiService,
+    this._versionDataHelper,
+  ) : super(MelonModsInitial()) {
     on<MelonModsInitialize>(_onMelonModsInitialize);
     on<MelonModsRefresh>(_onMelonModsRefresh);
     on<MelonModsLoadMore>(_onMelonModsLoadMore);
@@ -31,27 +36,61 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
       final listMods = await _fetchModDatas();
       emit(MelonModsComplete(listMods));
     } on FailureException catch (e) {
-      emit(MelonModsError(e));
+      if (isFirstPage) {
+        // emit state error when first page
+        emit(MelonModsError(e));
+      } else {
+        // emit state error when load more
+        emit(MelonModsLoadNoMoreData((state as MelonModsComplete).items));
+      }
     }
   }
 
-  FutureOr<void> _onMelonModsLoadMore(
-      MelonModsLoadMore event, Emitter<MelonModsState> emit) {}
+  bool get isFirstPage => _page == 0;
 
-  FutureOr<void> _onMelonModsRefresh(
-      MelonModsRefresh event, Emitter<MelonModsState> emit) {
-    // if (state is MelonModsComplete) {
-    //   final items = (state as MelonModsComplete).items;
-    //   items.clear();
-    //   emit(MelonModsRefreshComplete(items));
-    // }
-    // _page = 0;
-    // add(MelonModsInitialize());
+  FutureOr<void> _onMelonModsLoadMore(
+      MelonModsLoadMore event, Emitter<MelonModsState> emit) async {
+    emit(MelonModsLoadMoreLoading((state as MelonModsComplete).items));
+
+    if (_isLastPage) {
+      // Todo: emit state is lastPage
+      emit(MelonModsLoadNoMoreData((state as MelonModsComplete).items));
+    } else {
+      try {
+        final currentItem = (state as MelonModsComplete).items;
+
+        final items = await _fetchModDatas();
+
+        currentItem.addAll(items);
+
+        emit(MelonModsLoadMoreComplete(currentItem));
+      } catch (e) {
+        emit(MelonModsLoadMoreError((state as MelonModsComplete).items));
+      }
+    }
+  }
+
+  Future<FutureOr<void>> _onMelonModsRefresh(
+      MelonModsRefresh event, Emitter<MelonModsState> emit) async {
+    emit(MelonModsLoadMoreLoading((state as MelonModsComplete).items));
+
+    _page = 0;
+    _isLastPage = false;
+
+    try {
+      await _versionDataHelper.check();
+
+      final items = await _fetchModDatas();
+
+      emit(MelonModsRefreshComplete(items));
+    } catch (e) {
+      emit(MelonMOdsRefreshError((state as MelonModsComplete).items));
+    }
   }
 
   Future<List<MelonModel>> _fetchModDatas() async {
     final response = await _apiService.getRequest(
-      '${ApiEndpoints.endPointCategory}/$_cate',
+      ApiEndpoints.endPointCategory,
       queryParameters: {
         'limit': _limit,
         'page': _page,

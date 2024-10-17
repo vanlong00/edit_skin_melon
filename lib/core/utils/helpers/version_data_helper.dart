@@ -3,18 +3,17 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache_fix/dio_http_cache.dart';
 import 'package:edit_skin_melon/core/utils/api_endpoints.dart';
+import 'package:edit_skin_melon/services/api_service.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'api_service.dart';
-
 @lazySingleton
-class PreInitData {
+class VersionDataHelper {
   final ApiService _apiService;
 
-  PreInitData(this._apiService);
+  VersionDataHelper(this._apiService);
 
-  Future<void> initialize() async {
+  Future<void> check() async {
     final prefs = await SharedPreferences.getInstance();
     final localVersion = prefs.getString('versionData');
 
@@ -25,6 +24,7 @@ class PreInitData {
             Options(extra: {DIO_CACHE_KEY_TRY_CACHE: false}), // Disable cache
       );
       final networkVersion = response;
+
       if (networkVersion != localVersion) {
         // Update local version data
         prefs.setString('versionData', networkVersion);

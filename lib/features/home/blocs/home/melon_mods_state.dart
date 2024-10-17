@@ -32,10 +32,26 @@ final class MelonModsError extends MelonModsComplete {
   List<Object> get props => [failure];
 }
 
+final class MelonModsRefreshComplete extends MelonModsComplete {
+  const MelonModsRefreshComplete(List<MelonModel> items) : super(items);
+}
+
+final class MelonMOdsRefreshError extends MelonModsComplete {
+  const MelonMOdsRefreshError(List<MelonModel> items) : super(items);
+}
+
 final class MelonModsLoadNoMoreData extends MelonModsComplete {
   const MelonModsLoadNoMoreData(List<MelonModel> items) : super(items);
 }
 
-final class MelonModsRefreshComplete extends MelonModsComplete {
-  const MelonModsRefreshComplete(List<MelonModel> items) : super(items);
+final class MelonModsLoadMoreComplete extends MelonModsComplete {
+  const MelonModsLoadMoreComplete(List<MelonModel> items) : super(items);
+}
+
+final class MelonModsLoadMoreLoading extends MelonModsComplete {
+  const MelonModsLoadMoreLoading(List<MelonModel> items) : super(items);
+}
+
+final class MelonModsLoadMoreError extends MelonModsComplete {
+  const MelonModsLoadMoreError(List<MelonModel> items) : super(items);
 }
