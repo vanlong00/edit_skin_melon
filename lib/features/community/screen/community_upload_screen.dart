@@ -1,7 +1,12 @@
+import 'dart:math';
+
+import 'package:edit_skin_melon/features/community/blocs/upload/community_upload_bloc.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:edit_skin_melon/widgets/app_text_field_widget/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 
 class CommunityUploadScreen extends StatefulWidget {
@@ -153,20 +158,41 @@ class _CommunityUploadScreenState extends State<CommunityUploadScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('File Mod: (supported: .zip/.melmod)'),
-        _buildBlankSpace(),
-        Container(
-          width: 128,
-          height: 128,
-          decoration: BoxDecoration(
-            color: AppColor.backgroundGame,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(
-            Icons.attach_file_rounded,
-            size: 32,
-          ),
-        )
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('File Mod\n(supported: .zip/.melmod)'),
+            TextButton(
+              onPressed: () {
+                context.read<CommunityUploadBloc>().add(const CommunityUploadSelectFileEvent());
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Choose File'),
+                  const Gap(4),
+                  Transform.rotate(
+                    angle: -15 * (pi / 180), // Convert 45 degrees to radians
+                    child: const Icon(
+                      Icons.attach_file_rounded,
+                      size: 32,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        BlocSelector<CommunityUploadBloc, CommunityUploadState, XFile?>(
+          selector: (state) => state.fileUpload,
+          builder: (context, state) {
+            if (state == null) {
+              return const SizedBox();
+            }
+
+            return Text('File: ${state.name}');
+          },
+        ),
       ],
     );
   }

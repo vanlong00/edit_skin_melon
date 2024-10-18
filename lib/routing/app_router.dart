@@ -1,5 +1,6 @@
 import 'dart:developer' as dev;
 
+import 'package:edit_skin_melon/features/community/blocs/upload/community_upload_bloc.dart';
 import 'package:edit_skin_melon/features/community/screen/community_upload_screen.dart';
 import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
@@ -94,7 +95,10 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>;
         return ViewJsonScreen(json: args);
       case AppRoutes.communityUpload:
-        return const CommunityUploadScreen();
+        return BlocProvider(
+          create: (context) => getIt<CommunityUploadBloc>(),
+          child: const CommunityUploadScreen(),
+        );
 
       /// Web Tools
       case AppRoutes.webTools:
