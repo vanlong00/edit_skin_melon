@@ -1,13 +1,13 @@
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
-import 'package:edit_skin_melon/features/skin_editor/widgets/list_skin_widget.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../widgets/animated_size_widget.dart';
+import '../widgets/list_skin_widget.dart';
 import '../widgets/part_visible_button.dart';
 import '../widgets/view_game_widget.dart';
 
@@ -45,11 +45,11 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
-      body: _buildGameWidget(),
+      body: _buildGameWidget(context),
     );
   }
 
-  Stack _buildGameWidget() {
+  Stack _buildGameWidget(BuildContext context) {
     return Stack(
       children: [
         const ViewGameWidget(),
@@ -59,12 +59,12 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
             Expanded(
               child: Column(
                 children: [
-                  _buildColorPalette(),
                   Row(
                     children: [
                       const PartVisibleButton(),
                       _buildGridButton(),
                       _buildButtonDraw(),
+                      _buildColorPalette(context),
                       const Spacer(),
                       _buildUndoButton(),
                       _buildRedoButton(),
@@ -80,49 +80,44 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
     );
   }
 
-  BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)> _buildColorPalette() {
+  BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)> _buildColorPalette(BuildContext context) {
     return BlocSelector<SkinEditorBloc, SkinEditorState, (bool, Color)>(
       selector: (state) => (state.isDrawable, state.colorDraw),
-      builder: (context, record) {
+      builder: (_, record) {
         return AnimatedSizeWidget(
           isVisible: record.$1,
-          duration: const Duration(milliseconds: 500),
-          child: SizedBox(
-            height: 12.w,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(vertical: 2.w),
-              child: Row(
-                children: colorPalette.map((color) {
-                  return GestureDetector(
-                    onTap: () {
-                      context.read<SkinEditorBloc>().add(SkinEditorPickColorEvent(color));
+          duration: const Duration(milliseconds: 100),
+          child: IconButton(
+            onPressed: () => showDialogColor(context, record.$2),
+            icon: const Icon(Icons.palette_outlined),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<dynamic> showDialogColor(BuildContext context, Color pickerColor) {
+    return showDialog(
+      context: context,
+      builder: (__) {
+        return BlocProvider.value(
+          value: context.read<SkinEditorBloc>(),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AlertDialog(
+                  title: const Text('Pick a color!'),
+                  content: ColorPicker(
+                    pickerColor: pickerColor,
+                    onColorChanged: (value) {
+                      context.read<SkinEditorBloc>().add(SkinEditorPickColorEvent(value));
                     },
-                    child: AnimatedScale(
-                      scale: record.$2 == color ? 1.2 : 1,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 1.w),
-                        height: 8.w,
-                        width: 8.w,
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+                    enableAlpha: false,
+                    pickerAreaBorderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -135,11 +130,13 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
       title: const Text("Skin Editor"),
       actions: [
         IconButton(
-          onPressed: () {
-            context.read<SkinEditorBloc>().add(
-                  SkinEditorUpdatePartEvent(context.read<SkinPartBloc>().state.parts ?? []),
-                );
+          onPressed: () async {
+            context.read<SkinEditorBloc>().add(SkinEditorUpdatePartEvent(
+                  context.read<SkinPartBloc>().state.parts ?? [],
+                  context: context,
+                ));
 
+            if (!context.mounted) return;
             Navigator.pushNamed(
               context,
               AppRoutes.skinEditorCompleted,
@@ -154,18 +151,18 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
 
   BlocSelector<SkinEditorBloc, SkinEditorState, bool> _buildButtonDraw() {
     return BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-        selector: (state) => state.isDrawable,
-        builder: (context, isDrawable) {
-          return IconButton(
-            onPressed: () {
-              context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsDrawableEvent());
-            },
-            isSelected: isDrawable,
-            icon: const Icon(Icons.draw_outlined),
-            selectedIcon: const Icon(Icons.draw),
-          );
-        },
-      );
+      selector: (state) => state.isDrawable,
+      builder: (context, isDrawable) {
+        return IconButton(
+          onPressed: () {
+            context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsDrawableEvent());
+          },
+          isSelected: isDrawable,
+          icon: const Icon(Icons.draw_outlined),
+          selectedIcon: const Icon(Icons.draw),
+        );
+      },
+    );
   }
 
   BlocSelector<SkinEditorBloc, SkinEditorState, bool> _buildGridButton() {

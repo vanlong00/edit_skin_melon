@@ -25,12 +25,12 @@ class AppRouter {
       builder: (context) {
         return PopScope(
           canPop: false,
-          onPopInvoked: (canPop) async {
+          onPopInvoked: (didPop) async {
             /// Do something when the back button is pressed
             /// For example, show a dialog
             /// Or navigate to a different screen
-            dev.log('PopScope: $canPop');
-            if (!canPop) {
+            dev.log('PopScope: $didPop');
+            if (!didPop) {
               await popRoute(context);
             } else {
               if (!Navigator.of(context).canPop()) {

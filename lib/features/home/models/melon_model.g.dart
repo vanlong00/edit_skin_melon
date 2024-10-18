@@ -64,8 +64,8 @@ Map<String, dynamic> _$MelonModelToJson(MelonModel instance) =>
 
 CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>
     CategoryModel(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
+      id: (json['id'] as num?)?.toInt(),
+      name: json['name'] as String?,
     );
 
 Map<String, dynamic> _$CategoryModelToJson(CategoryModel instance) =>

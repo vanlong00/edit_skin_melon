@@ -3,22 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 part 'error_text.dart';
-
 part 'validator.dart';
 
 class AppTextFieldWidget extends StatefulWidget {
   const AppTextFieldWidget.string({
     super.key,
-    required this.label,
+    this.title,
     this.type = AppInputType.string,
     this.initialValue,
     this.onChanged,
     this.validator,
+    this.label,
   });
 
   final AppInputType type;
-  final String label;
+  final String? title;
   final String? initialValue;
+  final String? label;
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
 
@@ -79,6 +80,7 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
           errorText: _errorText.value != null ? "" : null,
           errorMaxLines: 1,
           errorStyle: const TextStyle(fontSize: 0),
+          label: Text(widget.label ?? ""),
         ),
       ),
     );
@@ -95,7 +97,7 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
     );
   }
 
-  Text _buildLabel() => Text(widget.label);
+  Widget _buildLabel() => widget.title != null ? Text(widget.title!) : const SizedBox();
 
   onCheckValidate(String? error) {
     if (_errorText.value != error) {

@@ -1,8 +1,14 @@
+import 'dart:typed_data';
+
+import 'package:edit_skin_melon/core/utils/helpers/export_game_helper.dart';
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
+import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:sizer/sizer.dart';
 
 class WorkspacePage extends StatelessWidget {
   const WorkspacePage({super.key});
@@ -31,30 +37,96 @@ class WorkspacePage extends StatelessWidget {
               );
             }
 
-            return SingleChildScrollView(
-              child: StaggeredGrid.count(
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                crossAxisCount: 2,
-                axisDirection: AxisDirection.down,
-                children: [
-                  for (final item in state.items)
-                    StaggeredGridTile.count(
-                      crossAxisCellCount: 1,
-                      mainAxisCellCount: 1,
-                      child: Container(
-                        color: Colors.blue,
-                        child: Center(
-                          child: Text(item.name ?? ''),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+            return MasonryGridView.count(
+              mainAxisSpacing: 8,
+              // TODO: Consider making this configurable
+              crossAxisSpacing: 8,
+              // TODO: Consider making this configurable
+              crossAxisCount: 2,
+              // TODO: Consider making this configurable
+              itemCount: state.items.length,
+              itemBuilder: (context, index) {
+                final item = state.items[index];
+                return SizedBox(
+                  height: index % 3 == 0 ? 448 : 384, // TODO: Consider making these heights configurable
+                  child: WorkspaceItem(item: item),
+                );
+              },
             );
           },
         ),
       ),
+    );
+  }
+}
+
+class WorkspaceItem extends StatelessWidget {
+  const WorkspaceItem({
+    super.key,
+    required this.item,
+  });
+
+  final WorkspaceModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColor.backgroundGame,
+        borderRadius: BorderRadius.circular(8), // TODO: Consider making this configurable
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          _buildImage(),
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.delete_outline_rounded),
+              iconSize: 32, // TODO: Consider making this configurable
+            ),
+          ),
+          Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              onPressed: () {
+                if (item.locatedAt == null || item.locatedAt!.isEmpty) {
+                  return;
+                }
+
+                ExportGameHelper.openWith(item.locatedAt!);
+              },
+              icon: const Icon(Icons.import_export_rounded),
+              iconSize: 32, // TODO: Consider making this configurable
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    return Image.memory(
+      item.image ?? Uint8List(0),
+      width: 100.w,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.none,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+
+        return AnimatedOpacity(
+          duration: const Duration(milliseconds: 300), // TODO: Consider making this configurable
+          opacity: frame == null ? 0 : 1,
+          child: child,
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(Icons.image);
+      },
     );
   }
 }

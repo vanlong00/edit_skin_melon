@@ -1,14 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:edit_skin_melon/core/utils/helpers/image_picker_helper.dart';
-import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/utils/constant.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/animated_size_widget.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:edit_skin_melon/widgets/app_text_field_widget/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:sizer/sizer.dart';
 
 import '../blocs/skin_editor/skin_editor_bloc.dart';
 
@@ -16,8 +17,7 @@ class SkinEditorCompletedScreen extends StatefulWidget {
   const SkinEditorCompletedScreen({super.key});
 
   @override
-  State<SkinEditorCompletedScreen> createState() =>
-      _SkinEditorCompletedScreenState();
+  State<SkinEditorCompletedScreen> createState() => _SkinEditorCompletedScreenState();
 }
 
 class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
@@ -32,6 +32,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
   Widget build(BuildContext context) {
     this.context = context;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: buildAppBar(),
       body: Padding(
         padding: const EdgeInsets.only(
@@ -42,8 +43,8 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
         child: BlocListener<SkinEditorBloc, SkinEditorState>(
           listener: (context, state) {
             if (state.status == SkinEditorStatusState.complete) {
-              Navigator.popUntil(
-                  context, (route) => route.settings.name == AppRoutes.home);
+              // TODO: navigate to home screen
+              Navigator.popUntil(context, (route) => route.settings.name == AppRoutes.home);
             }
           },
           child: Form(
@@ -57,7 +58,8 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
                 _buildCustomCategoryField(),
                 _buildIcon(),
                 _buildSwitchCanBurn(),
-                _buildSwitchCanFloat()
+                _buildSwitchCanFloat(),
+                _buildImageScreenShot(),
               ],
             ),
           ),
@@ -78,10 +80,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
               value: canBurn,
               onChanged: (value) {
                 context.read<SkinEditorBloc>().add(
-                      SkinEditorSwitchAllPartsPropertiesEvent(
-                        property: "canBurn",
-                        value: value,
-                      ),
+                      SkinEditorSwitchAllPartsPropertiesEvent(property: "canBurn", value: value),
                     );
               },
             );
@@ -97,8 +96,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
       children: [
         const Text('canFloat:'),
         BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-          selector: (state) =>
-              state.projectItem?.parts?.first.canFloat ?? false,
+          selector: (state) => state.projectItem?.parts?.first.canFloat ?? false,
           builder: (context, canFloat) {
             return Switch.adaptive(
               value: canFloat,
@@ -139,8 +137,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
         ),
         const Gap(8),
         BlocSelector<SkinEditorBloc, SkinEditorState, List<int>>(
-          selector: (state) =>
-              state.projectItem?.icon ?? AppEditorConstant.iconDefault,
+          selector: (state) => state.projectItem?.icon ?? AppEditorConstant.iconDefault,
           builder: (context, icon) {
             return Container(
               height: 64,
@@ -160,10 +157,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
 
   Widget _buildCustomCategoryField() {
     return BlocSelector<SkinEditorBloc, SkinEditorState, (bool, String)>(
-      selector: (state) => (
-        state.projectItem?.category == "Custom",
-        state.projectItem?.customCategory ?? ""
-      ),
+      selector: (state) => (state.projectItem?.category == "Custom", state.projectItem?.customCategory ?? ""),
       builder: (context, record) {
         return AnimatedSizeWidget(
           isVisible: record.$1,
@@ -172,7 +166,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
             validator: (value) {
               return null;
             },
-            label: "Category Custom:",
+            title: "Category Custom:",
           ),
         );
       },
@@ -197,9 +191,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
               }).toList(),
               onChanged: (String? value) {
                 if (value == null) return;
-                context
-                    .read<SkinEditorBloc>()
-                    .add(SkinEditorUpdateCategoryEvent(value));
+                context.read<SkinEditorBloc>().add(SkinEditorUpdateCategoryEvent(value));
               },
             );
           },
@@ -224,7 +216,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
   Widget _buildNameTextField() {
     return AppTextFieldWidget.string(
       key: _keyName,
-      label: "Name:",
+      title: "Name:",
     );
   }
 
@@ -260,9 +252,6 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
             String name = _keyName.currentState!.value;
             String categoryCustomName = _keyCategoryCustom.currentState!.value;
 
-            print("Name: $name");
-            print("Category Custom: $categoryCustomName");
-
             context.read<SkinEditorBloc>().add(
                   SkinEditorSaveEvent(
                     name: name,
@@ -273,6 +262,32 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
           icon: const Icon(Icons.save),
         ),
       ],
+    );
+  }
+
+  Widget _buildImageScreenShot() {
+    return Expanded(
+      child: SizedBox(
+        width: 100.w,
+        child: ColoredBox(
+          color: AppColor.backgroundGame,
+          child: BlocSelector<SkinEditorBloc, SkinEditorState, Uint8List>(
+            selector: (state) {
+              // TODO: return selected state
+              return state.imageScreenshot ?? Uint8List(0);
+            },
+            builder: (context, state) {
+              return Image.memory(
+                state,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.image, size: 48);
+                },
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

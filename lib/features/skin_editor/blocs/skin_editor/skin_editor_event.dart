@@ -14,6 +14,13 @@ class SkinEditorInitialEvent extends SkinEditorEvent {
   List<Object?> get props => [pathDefault, context];
 }
 
+class SkinEditorCaptureScreenEvent extends SkinEditorEvent {
+  const SkinEditorCaptureScreenEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class SkinEditorSaveEvent extends SkinEditorEvent {
   final String name;
   final String? categoryCustom;
@@ -50,11 +57,12 @@ class SkinEditorIsShowPartEvent extends SkinEditorEvent {
 
 class SkinEditorUpdatePartEvent extends SkinEditorEvent {
   final List<Part> parts;
+  final BuildContext context;
 
-  const SkinEditorUpdatePartEvent(this.parts);
+  const SkinEditorUpdatePartEvent(this.parts, {required this.context});
 
   @override
-  List<Object?> get props => [parts];
+  List<Object?> get props => [parts, context];
 }
 
 class SkinEditorUpdateCategoryEvent extends SkinEditorEvent {

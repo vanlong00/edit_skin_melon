@@ -78,7 +78,7 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
     _isLastPage = false;
 
     try {
-      await _versionDataHelper.check();
+      await _versionDataHelper.checkDataServer();
 
       final items = await _fetchModDatas();
 

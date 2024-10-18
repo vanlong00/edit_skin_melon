@@ -26,26 +26,26 @@ class MelonModel {
   final List<String>? tags;
 
   MelonModel({
-    required this.id,
-    required this.name,
+    this.id,
+    this.name,
     this.images,
-    required this.author,
-    required this.description,
+    this.author,
+    this.description,
     this.videoCode,
-    required this.fileUrl,
-    required this.thumbnailUrl,
+    this.fileUrl,
+    this.thumbnailUrl,
     this.modVersion,
-    required this.downloadCount,
-    required this.uploadDate,
-    required this.updatedDate,
+    this.downloadCount,
+    this.uploadDate,
+    this.updatedDate,
     this.deletedAt,
-    required this.type,
-    required this.isVerify,
-    required this.isHide,
-    required this.isCopyright,
-    required this.reportCount,
+    this.type,
+    this.isVerify,
+    this.isHide,
+    this.isCopyright,
+    this.reportCount,
     this.category,
-    required this.tags,
+    this.tags,
   });
 
   factory MelonModel.fromJson(Map<String, dynamic> json) => _$MelonModelFromJson(json);
@@ -55,12 +55,12 @@ class MelonModel {
 
 @JsonSerializable()
 class CategoryModel {
-  final int id;
-  final String name;
+  final int? id;
+  final String? name;
 
   CategoryModel({
-    required this.id,
-    required this.name,
+    this.id,
+    this.name,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) => _$CategoryModelFromJson(json);

@@ -15,8 +15,7 @@ class HomeListMelon extends StatefulWidget {
 }
 
 class _HomeListMelonState extends State<HomeListMelon> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -36,21 +35,22 @@ class _HomeListMelonState extends State<HomeListMelon> {
       },
       child: SmartRefresher(
         enablePullDown: true,
-        enablePullUp: true,
-        header: ClassicHeader(),
+        enablePullUp: widget.melonList.isNotEmpty,
+        physics: const ClampingScrollPhysics(),
+        header: const MaterialClassicHeader(),
         footer: CustomFooter(
           builder: (context, mode) {
             Widget body;
             if (mode == LoadStatus.idle) {
-              body = Text("Pull up load");
+              body = const Text("Pull up load");
             } else if (mode == LoadStatus.loading) {
-              body = CircularProgressIndicator();
+              body = const CircularProgressIndicator();
             } else if (mode == LoadStatus.failed) {
-              body = Text("Load Failed!Click retry!");
+              body = const Text("Load Failed!Click retry!");
             } else if (mode == LoadStatus.canLoading) {
-              body = Text("Release to load more");
+              body = const Text("Release to load more");
             } else {
-              body = Text("No more Data");
+              body = const Text("No more Data");
             }
             return Container(
               height: 55.0,
