@@ -20,7 +20,13 @@ class WorkspacePage extends StatelessWidget {
         title: const Text('Workspace Page'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.drive_file_move_sharp),
+            icon: const Icon(Icons.upload_rounded),
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.communityUpload);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.file_open_rounded),
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.skinEditor);
             },
@@ -83,7 +89,9 @@ class WorkspaceItem extends StatelessWidget {
           Align(
             alignment: Alignment.topRight,
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                context.read<WorkspaceBloc>().add(RemoveWorkspaceEvent(item));
+              },
               icon: const Icon(Icons.delete_outline_rounded),
               iconSize: 32, // TODO: Consider making this configurable
             ),

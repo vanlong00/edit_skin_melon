@@ -9,3 +9,13 @@ String? isString(String? string) {
   }
   return null;
 }
+
+String? isName(String? string) {
+  if (string == null || string.isEmpty) {
+    return 'Field is required';
+  }
+  if (string.length < 8) {
+    return 'Field must be at least 8 characters';
+  }
+  return null;
+}

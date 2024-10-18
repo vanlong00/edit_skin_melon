@@ -14,12 +14,40 @@ class AppTextFieldWidget extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.label,
+    this.maxLines,
+    this.minLines,
+  });
+
+  const AppTextFieldWidget.multiline({
+    super.key,
+    this.title,
+    this.type = AppInputType.multiline,
+    this.initialValue,
+    this.onChanged,
+    this.validator,
+    this.label,
+    this.maxLines,
+    this.minLines,
+  });
+
+  const AppTextFieldWidget.name({
+    super.key,
+    this.title,
+    this.type = AppInputType.name,
+    this.initialValue,
+    this.onChanged,
+    this.validator,
+    this.label,
+    this.maxLines,
+    this.minLines,
   });
 
   final AppInputType type;
   final String? title;
   final String? initialValue;
   final String? label;
+  final int? maxLines;
+  final int? minLines;
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
 
@@ -59,11 +87,13 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
       child: TextFormField(
         controller: _controller,
         focusNode: _focusNode,
-        keyboardType: TextInputType.text,
+        keyboardType: _getTextInputType(),
         autovalidateMode: AutovalidateMode.onUserInteraction,
         initialValue: widget.initialValue,
         onChanged: widget.onChanged,
         onTapOutside: (event) => _focusNode.unfocus(),
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
         validator: (value) {
           String? error;
 
@@ -81,6 +111,7 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
           errorMaxLines: 1,
           errorStyle: const TextStyle(fontSize: 0),
           label: Text(widget.label ?? ""),
+          alignLabelWithHint: true,
         ),
       ),
     );
@@ -88,12 +119,10 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
 
   bool get isValidator => widget.validator != null;
 
-  Align _buildErrorText() {
+  Widget _buildErrorText() {
     return Align(
       alignment: Alignment.centerRight,
-      child: _ErrorText(
-        animatedString: _errorText,
-      ),
+      child: _ErrorText(animatedString: _errorText),
     );
   }
 
@@ -111,6 +140,23 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
     switch (widget.type) {
       case AppInputType.string:
         return isString(string);
+      case AppInputType.name:
+        return isName(string);
+      case AppInputType.multiline:
+        return isString(string);
+      default:
+        return null;
+    }
+  }
+
+  TextInputType? _getTextInputType() {
+    switch (widget.type) {
+      case AppInputType.string:
+        return TextInputType.text;
+      case AppInputType.name:
+        return TextInputType.name;
+      case AppInputType.multiline:
+        return TextInputType.multiline;
       default:
         return null;
     }

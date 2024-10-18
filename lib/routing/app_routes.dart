@@ -7,4 +7,6 @@ class AppRoutes {
 
   static const String viewJson = '/view_json';
   static const String webTools = '/web_tools';
+
+  static const String communityUpload = '/community_upload';
 }
