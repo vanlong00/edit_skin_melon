@@ -142,7 +142,11 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
             return Container(
               height: 64,
               width: 64,
-              color: Colors.black38,
+              decoration: BoxDecoration(
+                color: AppColor.backgroundGame,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              clipBehavior: Clip.hardEdge,
               child: Image.memory(
                 Uint8List.fromList(icon),
                 filterQuality: FilterQuality.none,
@@ -267,25 +271,27 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
 
   Widget _buildImageScreenShot() {
     return Expanded(
-      child: SizedBox(
+      child: Container(
         width: 100.w,
-        child: ColoredBox(
+        decoration: BoxDecoration(
           color: AppColor.backgroundGame,
-          child: BlocSelector<SkinEditorBloc, SkinEditorState, Uint8List>(
-            selector: (state) {
-              // TODO: return selected state
-              return state.imageScreenshot ?? Uint8List(0);
-            },
-            builder: (context, state) {
-              return Image.memory(
-                state,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.image, size: 48);
-                },
-              );
-            },
-          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: BlocSelector<SkinEditorBloc, SkinEditorState, Uint8List>(
+          selector: (state) {
+            // TODO: return selected state
+            return state.imageScreenshot ?? Uint8List(0);
+          },
+          builder: (context, state) {
+            return Image.memory(
+              state,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.image, size: 48);
+              },
+            );
+          },
         ),
       ),
     );

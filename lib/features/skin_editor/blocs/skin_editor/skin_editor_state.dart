@@ -16,6 +16,7 @@ class SkinEditorState extends Equatable {
   final List<bool> isShowPart;
   final SkinEditorStatusState status;
   final Uint8List? imageScreenshot;
+  final List<Color>? historyColorDraw;
 
   const SkinEditorState({
     this.projectItem,
@@ -26,6 +27,7 @@ class SkinEditorState extends Equatable {
     this.isShowPart = const [],
     this.status = SkinEditorStatusState.loading,
     this.imageScreenshot,
+    this.historyColorDraw,
   });
 
   SkinEditorState copyWith({
@@ -38,6 +40,7 @@ class SkinEditorState extends Equatable {
     List<bool>? isShowPart,
     SkinEditorStatusState? status,
     Uint8List? imageScreenshot,
+    List<Color>? historyColorDraw,
   }) {
     return SkinEditorState(
       projectItem: projectItem ?? this.projectItem,
@@ -48,6 +51,7 @@ class SkinEditorState extends Equatable {
       isShowSelectionPart: isShowSelectionPart ?? this.isShowSelectionPart,
       status: status ?? this.status,
       imageScreenshot: imageScreenshot ?? this.imageScreenshot,
+      historyColorDraw: historyColorDraw ?? this.historyColorDraw,
     );
   }
 
@@ -62,6 +66,7 @@ class SkinEditorState extends Equatable {
       isShowSelectionPart,
       status,
       imageScreenshot,
+      historyColorDraw,
     ];
   }
 }

@@ -45,6 +45,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     on<SkinEditorIsShowPartEvent>(_onSkinEditorIsShowPartEvent);
     on<SkinEditorSwitchIsDrawableEvent>(_onSkinEditorSwitchIsDrawableEvent);
     on<SkinEditorPickColorEvent>(_onSkinEditorPickColorEvent);
+    on<SkinEditorAddHistoryColorEvent>(_onSkinEditorAddHistoryColorEvent);
     on<SkinEditorSwitchIsShowGridEvent>(_onSkinEditorSwitchIsShowGridEvent);
   }
 
@@ -143,6 +144,8 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   }
 
   Future<FutureOr<void>> _onSkinEditorSaveEvent(SkinEditorSaveEvent event, Emitter<SkinEditorState> emit) async {
+    EasyLoading.show();
+
     final dir = await StorageHelper.getSavedDirectory();
     final dirMods = Directory("${dir.path}/Mods");
     if (!dirMods.existsSync()) await dirMods.create();
@@ -173,6 +176,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     } catch (e) {
       // snack bar error
     }
+    EasyLoading.dismiss();
   }
 
   Future<void> _createFileMelMod(ProjectItem projectItem, String path) async {
@@ -223,6 +227,13 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
         isCapture: true,
       ),
     );
+  }
+
+  FutureOr<void> _onSkinEditorAddHistoryColorEvent(
+      SkinEditorAddHistoryColorEvent event, Emitter<SkinEditorState> emit) {
+    final historyColorDraw = List<Color>.from(state.historyColorDraw ?? []);
+    historyColorDraw.add(state.colorDraw);
+    emit(state.copyWith(historyColorDraw: historyColorDraw));
   }
 }
 

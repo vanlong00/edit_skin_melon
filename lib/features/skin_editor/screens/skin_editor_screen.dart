@@ -100,8 +100,9 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
     return showDialog(
       context: context,
       builder: (__) {
+        final SkinEditorBloc bloc = context.read<SkinEditorBloc>();
         return BlocProvider.value(
-          value: context.read<SkinEditorBloc>(),
+          value: bloc,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -111,8 +112,9 @@ class _SkinEditorScreenState extends State<SkinEditorScreen> {
                   content: ColorPicker(
                     pickerColor: pickerColor,
                     onColorChanged: (value) {
-                      context.read<SkinEditorBloc>().add(SkinEditorPickColorEvent(value));
+                      bloc.add(SkinEditorPickColorEvent(value));
                     },
+                    colorHistory: bloc.state.historyColorDraw,
                     enableAlpha: false,
                     pickerAreaBorderRadius: BorderRadius.circular(8),
                   ),

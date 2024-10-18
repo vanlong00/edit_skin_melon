@@ -109,6 +109,11 @@ class SkinEditorPickColorEvent extends SkinEditorEvent {
   List<Object?> get props => [color];
 }
 
+class SkinEditorAddHistoryColorEvent extends SkinEditorEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class SkinEditorSwitchIsShowGridEvent extends SkinEditorEvent {
   const SkinEditorSwitchIsShowGridEvent();
 

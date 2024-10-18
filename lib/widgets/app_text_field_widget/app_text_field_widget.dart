@@ -110,7 +110,7 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
           errorText: _errorText.value != null ? "" : null,
           errorMaxLines: 1,
           errorStyle: const TextStyle(fontSize: 0),
-          label: Text(widget.label ?? ""),
+          label: (widget.label != null) ? Text(widget.label!) : null,
           alignLabelWithHint: true,
         ),
       ),
