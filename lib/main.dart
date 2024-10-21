@@ -1,8 +1,9 @@
-import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading.dart';
 import 'package:edit_skin_melon/routing/app_router.dart';
 import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/widgets/loading_widgets/loading_animate_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
@@ -13,14 +14,25 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getApplicationDocumentsDirectory(),
+    storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
   );
 
   configureDependencies();
 
   runApp(const MyApp());
+  configLoading();
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..indicatorWidget = const LoadingAnimateWidgets()
+    ..loadingStyle = EasyLoadingStyle.custom
+    ..backgroundColor = Colors.transparent
+    ..indicatorColor = Colors.transparent
+    ..boxShadow = []
+    ..maskType = EasyLoadingMaskType.custom
+    ..maskColor = const Color(0xff464A71).withOpacity(0.25)
+    ..textColor = Colors.black;
 }
 
 class MyApp extends StatelessWidget {

@@ -20,7 +20,7 @@ abstract class RegisterModule {
     dio.options.receiveTimeout = const Duration(seconds: 3);
     dio.interceptors.add(
       PrettyDioLogger(
-        responseBody: false,
+        responseBody: true,
         // error: true,
         // compact: true,
         // maxWidth: 90,

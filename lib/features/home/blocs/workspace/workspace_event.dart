@@ -21,3 +21,21 @@ class RemoveWorkspaceEvent extends WorkspaceEvent {
   @override
   List<Object?> get props => [workspace];
 }
+
+class AddMelonEvent extends WorkspaceEvent {
+  final MelonModel melon;
+
+  const AddMelonEvent(this.melon);
+
+  @override
+  List<Object?> get props => [melon];
+}
+
+class RemoveMelonEvent extends WorkspaceEvent {
+  final MelonModel melon;
+
+  const RemoveMelonEvent(this.melon);
+
+  @override
+  List<Object?> get props => [melon];
+}

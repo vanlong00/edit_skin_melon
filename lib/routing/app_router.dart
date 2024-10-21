@@ -2,9 +2,12 @@ import 'dart:developer' as dev;
 
 import 'package:edit_skin_melon/features/community/blocs/upload/community_upload_bloc.dart';
 import 'package:edit_skin_melon/features/community/screen/community_upload_screen.dart';
+import 'package:edit_skin_melon/features/detail/detail_screen.dart';
+import 'package:edit_skin_melon/features/detail/import_screen.dart';
 import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/home_screen.dart';
+import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
@@ -19,6 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/di/di.dart';
+import '../features/detail/blocs/detail_bloc.dart';
+import '../features/home/models/melon_model.dart';
 import 'pop_routes.dart';
 
 class AppRouter {
@@ -95,10 +100,28 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>;
         return ViewJsonScreen(json: args);
       case AppRoutes.communityUpload:
+        final item = settings.arguments as WorkspaceModel?;
+
         return BlocProvider(
           create: (context) => getIt<CommunityUploadBloc>(),
-          child: const CommunityUploadScreen(),
+          child: CommunityUploadScreen(workspaceModel: item),
         );
+      case AppRoutes.detail:
+        final melonModel = settings.arguments as MelonModel;
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => getIt<DetailBloc>(),
+            ),
+            BlocProvider.value(
+              value: getIt<WorkspaceBloc>(),
+            ),
+          ],
+          child: DetailScreen(melonModel: melonModel),
+        );
+      case AppRoutes.import:
+        final melonModel = settings.arguments as MelonModel;
+        return ImportScreen(melonModel: melonModel);
 
       /// Web Tools
       case AppRoutes.webTools:

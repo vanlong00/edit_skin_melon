@@ -16,7 +16,6 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
   final ApiService _apiService;
   final VersionDataHelper _versionDataHelper;
   final int _limit = 30;
-  final String _cate = 'Living';
   int _page = 0;
   bool _isLastPage = false;
 

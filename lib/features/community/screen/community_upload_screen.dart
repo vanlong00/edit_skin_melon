@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:edit_skin_melon/features/community/blocs/upload/community_upload_bloc.dart';
+import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:edit_skin_melon/widgets/app_text_field_widget/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 
 class CommunityUploadScreen extends StatefulWidget {
-  const CommunityUploadScreen({super.key});
+  final WorkspaceModel? workspaceModel;
+
+  const CommunityUploadScreen({super.key, this.workspaceModel});
 
   @override
   State<CommunityUploadScreen> createState() => _CommunityUploadScreenState();
@@ -23,43 +27,71 @@ class _CommunityUploadScreenState extends State<CommunityUploadScreen> {
   final GlobalKey<AppTextFieldWidgetState> _keyDescription = GlobalKey();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    context.read<CommunityUploadBloc>().add(CommunityUploadInitEvent(widget.workspaceModel));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: _buildAppBar(),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTFName(),
-                      _buildBlankSpace(),
-                      _buildTFAuthor(),
-                      _buildBlankSpace(),
-                      _buildTFDescription(),
-                      _buildBlankSpace(),
-                      _buildThumbnailImage(),
-                      _buildBlankSpace(),
-                      _buildOptionalImage(),
-                      _buildBlankSpace(),
-                      _buildFileMod(),
-                      _buildBlankSpace(),
-                    ],
+      body: BlocListener<CommunityUploadBloc, CommunityUploadState>(
+        listenWhen: _funcListenWhen,
+        listener: _funcListener,
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTFName(),
+                        _buildBlankSpace(),
+                        _buildTFAuthor(),
+                        _buildBlankSpace(),
+                        _buildTFDescription(),
+                        _buildBlankSpace(),
+                        _buildThumbnailImage(),
+                        _buildBlankSpace(),
+                        _buildOptionalImage(),
+                        _buildBlankSpace(),
+                        _buildFileMod(),
+                        _buildBlankSpace(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              _buildButtonSubmit(),
-            ],
+                _buildButtonSubmit(),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _funcListener(context, state) {
+    if (state.status == CommunityUploadStatus.submitSuccess) {
+      Navigator.of(context).pop();
+    } else if (state.status == CommunityUploadStatus.submitFailed) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.errorMessage ?? 'Failed to submit'),
+        ),
+      );
+    }
+  }
+
+  bool _funcListenWhen(previous, current) {
+    return previous.status != current.status;
   }
 
   Gap _buildBlankSpace() => const Gap(8);
@@ -69,7 +101,13 @@ class _CommunityUploadScreenState extends State<CommunityUploadScreen> {
       width: 100.w,
       child: ElevatedButton(
         onPressed: () {
-          if (_formKey.currentState!.validate()) {}
+          if (_formKey.currentState!.validate()) {
+            context.read<CommunityUploadBloc>().add(CommunityUploadSubmitEvent(
+                  name: _keyName.currentState!.value,
+                  author: _keyAuthor.currentState!.value,
+                  description: _keyDescription.currentState!.value,
+                ));
+          }
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -123,9 +161,24 @@ class _CommunityUploadScreenState extends State<CommunityUploadScreen> {
             color: AppColor.backgroundGame,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
-            Icons.image_rounded,
-            size: 32,
+          child: BlocSelector<CommunityUploadBloc, CommunityUploadState, Uint8List?>(
+            selector: (state) {
+              return state.imageThumbnail;
+            },
+            builder: (context, state) {
+              if (state == null) {
+                return const Icon(
+                  Icons.image_rounded,
+                  size: 32,
+                );
+              }
+
+              return Image.memory(
+                state,
+                filterQuality: FilterQuality.none,
+                fit: BoxFit.contain,
+              );
+            },
           ),
         )
       ],

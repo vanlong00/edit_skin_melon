@@ -1,5 +1,5 @@
 import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
-import 'package:edit_skin_melon/features/home/models/melon_model.dart';
+import 'package:edit_skin_melon/features/home/widgets/home/melon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -33,8 +33,10 @@ class _HomeListMelonState extends State<HomeListMelon> {
           _refreshController.refreshFailed();
         }
       },
+      // SmartRefresh Widget has problem in material ui 3.
+      // Todo: Find another solution to fix this
       child: SmartRefresher(
-        enablePullDown: true,
+        enablePullDown: false,
         enablePullUp: widget.melonList.isNotEmpty,
         physics: const ClampingScrollPhysics(),
         header: const MaterialClassicHeader(),
@@ -52,7 +54,7 @@ class _HomeListMelonState extends State<HomeListMelon> {
             } else {
               body = const Text("No more Data");
             }
-            return Container(
+            return SizedBox(
               height: 55.0,
               child: Center(child: body),
             );
@@ -70,7 +72,7 @@ class _HomeListMelonState extends State<HomeListMelon> {
               StaggeredGridTile.count(
                 crossAxisCellCount: 1,
                 mainAxisCellCount: 1,
-                child: ItemModWidget(item: item),
+                child: MelonWidget(item: item),
               ),
           ],
         ),
@@ -84,31 +86,5 @@ class _HomeListMelonState extends State<HomeListMelon> {
 
   Future<void> _onRefresh() async {
     context.read<MelonModsBloc>().add(MelonModsRefresh());
-  }
-}
-
-class ItemModWidget extends StatelessWidget {
-  const ItemModWidget({
-    super.key,
-    required this.item,
-  });
-
-  final MelonModel item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          const Spacer(),
-          Text(item.name ?? ''),
-        ],
-      ),
-    );
   }
 }

@@ -12,11 +12,11 @@ import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dar
 import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
-import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:injectable/injectable.dart';
 import 'package:name_plus/name_plus.dart';
 import 'package:path_provider/path_provider.dart';

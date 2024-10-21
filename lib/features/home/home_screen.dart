@@ -1,3 +1,4 @@
+import 'package:edit_skin_melon/features/home/pages/history_page.dart';
 import 'package:edit_skin_melon/features/home/pages/home_page.dart';
 import 'package:edit_skin_melon/widgets/app_keep_alive_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = <Widget>[
     const HomePage(),
     const WorkspacePage(),
+    const HistoryPage(),
   ];
 
   void _onPageChanged(int index) {
@@ -56,6 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.workspaces_filled),
             label: 'Workspace',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
           ),
         ],
       ),

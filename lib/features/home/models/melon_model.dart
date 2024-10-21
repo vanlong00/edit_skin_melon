@@ -24,6 +24,7 @@ class MelonModel {
   final int? reportCount;
   final CategoryModel? category;
   final List<String>? tags;
+  final bool? isLivingSkin;
 
   MelonModel({
     this.id,
@@ -46,6 +47,7 @@ class MelonModel {
     this.reportCount,
     this.category,
     this.tags,
+    this.isLivingSkin,
   });
 
   factory MelonModel.fromJson(Map<String, dynamic> json) => _$MelonModelFromJson(json);
