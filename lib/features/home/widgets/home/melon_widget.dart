@@ -1,7 +1,7 @@
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../routing/app_routes.dart';
+import '../../../../routing/app_route_name.dart';
 
 class MelonWidget extends StatelessWidget {
   const MelonWidget({
@@ -33,7 +33,7 @@ class MelonWidget extends StatelessWidget {
 
   void _funcToNavigate(BuildContext context) {
     Navigator.of(context).pushNamed(
-      AppRoutes.detail,
+      AppRouteName.detail,
       arguments: item,
     );
   }

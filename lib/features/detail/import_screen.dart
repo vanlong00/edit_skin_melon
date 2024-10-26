@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:edit_skin_melon/core/utils/helpers/export_game_helper.dart';
@@ -105,10 +106,10 @@ class ImportItemWidget extends StatelessWidget {
         ProjectItem projectItem = ProjectItem.fromJson(contents);
         return projectItem;
       } else {
-        print('File does not exist');
+        log('File does not exist');
       }
     } catch (e) {
-      print('Error reading file: ${e.toString()}');
+      log('Error reading file: ${e.toString()}');
     }
     return null;
   }

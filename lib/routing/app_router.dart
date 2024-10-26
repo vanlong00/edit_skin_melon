@@ -15,7 +15,7 @@ import 'package:edit_skin_melon/features/skin_editor/screens/skin_editor_complet
 import 'package:edit_skin_melon/features/skin_editor/screens/skin_editor_screen.dart';
 import 'package:edit_skin_melon/features/skin_editor/screens/view_json_screen.dart';
 import 'package:edit_skin_melon/features/splash/splash_screen.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/tools/web_tools.dart';
 import 'package:edit_skin_melon/widgets/error_widgets/error_no_route_widget.dart';
 import 'package:flutter/material.dart';
@@ -55,9 +55,9 @@ class AppRouter {
 
   static _getWidgetForRoute(RouteSettings settings) {
     switch (settings.name) {
-      case AppRoutes.splash:
+      case AppRouteName.splash:
         return const SplashScreen();
-      case AppRoutes.home:
+      case AppRouteName.home:
         return MultiBlocProvider(
           providers: [
             BlocProvider(
@@ -72,7 +72,7 @@ class AppRouter {
           ],
           child: const HomeScreen(),
         );
-      case AppRoutes.skinEditor:
+      case AppRouteName.skinEditor:
         return MultiBlocProvider(
           providers: [
             BlocProvider.value(
@@ -90,23 +90,23 @@ class AppRouter {
           ],
           child: const SkinEditorScreen(),
         );
-      case AppRoutes.skinEditorCompleted:
+      case AppRouteName.skinEditorCompleted:
         final args = settings.arguments as SkinEditorBloc;
         return BlocProvider.value(
           value: args,
           child: const SkinEditorCompletedScreen(),
         );
-      case AppRoutes.viewJson:
+      case AppRouteName.viewJson:
         final args = settings.arguments as Map<String, dynamic>;
         return ViewJsonScreen(json: args);
-      case AppRoutes.communityUpload:
+      case AppRouteName.communityUpload:
         final item = settings.arguments as WorkspaceModel?;
 
         return BlocProvider(
           create: (context) => getIt<CommunityUploadBloc>(),
           child: CommunityUploadScreen(workspaceModel: item),
         );
-      case AppRoutes.detail:
+      case AppRouteName.detail:
         final melonModel = settings.arguments as MelonModel;
         return MultiBlocProvider(
           providers: [
@@ -119,12 +119,12 @@ class AppRouter {
           ],
           child: DetailScreen(melonModel: melonModel),
         );
-      case AppRoutes.import:
+      case AppRouteName.import:
         final melonModel = settings.arguments as MelonModel;
         return ImportScreen(melonModel: melonModel);
 
       /// Web Tools
-      case AppRoutes.webTools:
+      case AppRouteName.webTools:
         return const WebTools();
       default:
         return const AppErrorNoRouteWidget();

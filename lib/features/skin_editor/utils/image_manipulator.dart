@@ -29,7 +29,6 @@ class ImageManipulator {
   /// @param brushSize The size of the brush.
   /// @return The modified image.
   static img.Image applyBrush(int localX, int localY, Color newColor, img.Image pix, int brushSize) {
-    print('local: $localX, $localY');
     for (var i = 0; i <= brushSize; i++) {
       for (var j = 0; j <= brushSize; j++) {
         int y = localY + i;

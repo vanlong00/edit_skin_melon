@@ -1,5 +1,5 @@
 import 'package:edit_skin_melon/routing/app_router.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/widgets/loading_widgets/loading_animate_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getApplicationDocumentsDirectory(),
   );
 
   configureDependencies();
@@ -45,7 +47,7 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, deviceType) => MaterialApp(
         title: 'Flutter Demo',
         onGenerateRoute: AppRouter.generateRoute,
-        initialRoute: AppRoutes.splash,
+        initialRoute: AppRouteName.splash,
         // initialRoute: Platform.isMacOS ? AppRoutes.webTools : AppRoutes.skinEditor,
         navigatorKey: getIt<GlobalKey<NavigatorState>>(),
         builder: EasyLoading.init(),

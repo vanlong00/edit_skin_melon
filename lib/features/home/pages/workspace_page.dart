@@ -1,5 +1,5 @@
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -34,7 +34,9 @@ class WorkspacePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = state.workSpaceItems[index];
                 return SizedBox(
-                  height: index % 3 == 0 ? 384 : 320, // TODO: Consider making these heights configurable
+                  height: index % 3 == 0
+                      ? 384
+                      : 320, // TODO: Consider making these heights configurable
                   child: WorkspaceItem(item: item),
                 );
               },
@@ -52,12 +54,10 @@ class WorkspacePage extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.file_open_rounded),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.skinEditor);
+            Navigator.pushNamed(context, AppRouteName.skinEditor);
           },
         ),
       ],
     );
   }
 }
-
-

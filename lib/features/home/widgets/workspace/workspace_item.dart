@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:edit_skin_melon/core/utils/helpers/export_game_helper.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +23,8 @@ class WorkspaceItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColor.backgroundGame,
-        borderRadius: BorderRadius.circular(8), // TODO: Consider making this configurable
+        borderRadius:
+            BorderRadius.circular(8), // TODO: Consider making this configurable
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(
@@ -34,7 +35,8 @@ class WorkspaceItem extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.communityUpload, arguments: item);
+                Navigator.pushNamed(context, AppRouteName.communityUpload,
+                    arguments: item);
               },
               icon: const Icon(Icons.upload_rounded),
               iconSize: 32, // TODO: Consider making this configurable
@@ -81,7 +83,8 @@ class WorkspaceItem extends StatelessWidget {
         }
 
         return AnimatedOpacity(
-          duration: const Duration(milliseconds: 300), // TODO: Consider making this configurable
+          duration: const Duration(
+              milliseconds: 300), // TODO: Consider making this configurable
           opacity: frame == null ? 0 : 1,
           child: child,
         );

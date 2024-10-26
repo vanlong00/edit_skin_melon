@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:edit_skin_melon/core/utils/helpers/image_picker_helper.dart';
 import 'package:edit_skin_melon/features/skin_editor/utils/constant.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/animated_size_widget.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:edit_skin_melon/widgets/app_text_field_widget/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,8 @@ class SkinEditorCompletedScreen extends StatefulWidget {
   const SkinEditorCompletedScreen({super.key});
 
   @override
-  State<SkinEditorCompletedScreen> createState() => _SkinEditorCompletedScreenState();
+  State<SkinEditorCompletedScreen> createState() =>
+      _SkinEditorCompletedScreenState();
 }
 
 class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
@@ -44,7 +45,8 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
           listener: (context, state) {
             if (state.status == SkinEditorStatusState.complete) {
               // TODO: navigate to home screen
-              Navigator.popUntil(context, (route) => route.settings.name == AppRoutes.home);
+              Navigator.popUntil(
+                  context, (route) => route.settings.name == AppRouteName.home);
             }
           },
           child: Form(
@@ -80,7 +82,8 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
               value: canBurn,
               onChanged: (value) {
                 context.read<SkinEditorBloc>().add(
-                      SkinEditorSwitchAllPartsPropertiesEvent(property: "canBurn", value: value),
+                      SkinEditorSwitchAllPartsPropertiesEvent(
+                          property: "canBurn", value: value),
                     );
               },
             );
@@ -96,7 +99,8 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
       children: [
         const Text('canFloat:'),
         BlocSelector<SkinEditorBloc, SkinEditorState, bool>(
-          selector: (state) => state.projectItem?.parts?.first.canFloat ?? false,
+          selector: (state) =>
+              state.projectItem?.parts?.first.canFloat ?? false,
           builder: (context, canFloat) {
             return Switch.adaptive(
               value: canFloat,
@@ -137,7 +141,8 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
         ),
         const Gap(8),
         BlocSelector<SkinEditorBloc, SkinEditorState, List<int>>(
-          selector: (state) => state.projectItem?.icon ?? AppEditorConstant.iconDefault,
+          selector: (state) =>
+              state.projectItem?.icon ?? AppEditorConstant.iconDefault,
           builder: (context, icon) {
             return Container(
               height: 64,
@@ -161,7 +166,10 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
 
   Widget _buildCustomCategoryField() {
     return BlocSelector<SkinEditorBloc, SkinEditorState, (bool, String)>(
-      selector: (state) => (state.projectItem?.category == "Custom", state.projectItem?.customCategory ?? ""),
+      selector: (state) => (
+        state.projectItem?.category == "Custom",
+        state.projectItem?.customCategory ?? ""
+      ),
       builder: (context, record) {
         return AnimatedSizeWidget(
           isVisible: record.$1,
@@ -195,7 +203,9 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
               }).toList(),
               onChanged: (String? value) {
                 if (value == null) return;
-                context.read<SkinEditorBloc>().add(SkinEditorUpdateCategoryEvent(value));
+                context
+                    .read<SkinEditorBloc>()
+                    .add(SkinEditorUpdateCategoryEvent(value));
               },
             );
           },
@@ -229,7 +239,7 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
       onPressed: () {
         Navigator.pushNamed(
           context,
-          AppRoutes.viewJson,
+          AppRouteName.viewJson,
           arguments: context.read<SkinEditorBloc>().state.projectItem?.toMap(),
         );
       },

@@ -36,10 +36,9 @@ class _HomeListMelonState extends State<HomeListMelon> {
       // SmartRefresh Widget has problem in material ui 3.
       // Todo: Find another solution to fix this
       child: SmartRefresher(
-        enablePullDown: false,
+        enablePullDown: true,
         enablePullUp: widget.melonList.isNotEmpty,
         physics: const ClampingScrollPhysics(),
-        header: const MaterialClassicHeader(),
         footer: CustomFooter(
           builder: (context, mode) {
             Widget body;

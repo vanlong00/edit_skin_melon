@@ -1,6 +1,6 @@
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -37,7 +37,9 @@ class DetailButtonWidget extends StatelessWidget {
   ElevatedButton _buildDownloadButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        context.read<DetailBloc>().add(DetailStartedDownload(melonModel.fileUrl));
+        context
+            .read<DetailBloc>()
+            .add(DetailStartedDownload(melonModel.fileUrl));
       },
       style: _buildStyleFrom(),
       child: Text('Download'.toUpperCase()),
@@ -47,7 +49,8 @@ class DetailButtonWidget extends StatelessWidget {
   ElevatedButton _buildImportButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.of(context).pushNamed(AppRoutes.import, arguments: melonModel);
+        Navigator.of(context)
+            .pushNamed(AppRouteName.import, arguments: melonModel);
       },
       style: _buildStyleFrom(),
       child: Text('Import'.toUpperCase()),
