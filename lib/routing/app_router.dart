@@ -1,9 +1,9 @@
 import 'dart:developer' as dev;
 
-import 'package:edit_skin_melon/features/community/blocs/upload/community_upload_bloc.dart';
-import 'package:edit_skin_melon/features/community/screen/community_upload_screen.dart';
+import 'package:edit_skin_melon/features/community_upload/screen/community_upload_screen.dart';
 import 'package:edit_skin_melon/features/detail/detail_screen.dart';
 import 'package:edit_skin_melon/features/detail/import_screen.dart';
+import 'package:edit_skin_melon/features/home/blocs/community/community_melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/home_screen.dart';
@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/di/di.dart';
+import '../features/community_upload/blocs/community_upload_bloc.dart';
 import '../features/detail/blocs/detail_bloc.dart';
 import '../features/home/models/melon_model.dart';
 import 'pop_routes.dart';
@@ -62,6 +63,9 @@ class AppRouter {
           providers: [
             BlocProvider(
               create: (context) => getIt<MelonModsBloc>(),
+            ),
+            BlocProvider(
+              create: (context) => getIt<CommunityMelonModsBloc>(),
             ),
             BlocProvider(
               create: (context) => getIt<WorkspaceBloc>(),

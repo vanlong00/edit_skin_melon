@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:edit_skin_melon/features/community/blocs/upload/community_upload_bloc.dart';
 import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:edit_skin_melon/widgets/app_text_field_widget/app_text_field_widget.dart';
@@ -10,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
+
+import '../blocs/community_upload_bloc.dart';
 
 class CommunityUploadScreen extends StatefulWidget {
   final WorkspaceModel? workspaceModel;

@@ -1,4 +1,4 @@
-import 'package:edit_skin_melon/features/home/widgets/home/melon_widget.dart';
+import 'package:edit_skin_melon/features/home/widgets/melon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

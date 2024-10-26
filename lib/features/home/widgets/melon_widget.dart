@@ -1,7 +1,7 @@
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../routing/app_route_name.dart';
+import '../../../routing/app_route_name.dart';
 
 class MelonWidget extends StatelessWidget {
   const MelonWidget({

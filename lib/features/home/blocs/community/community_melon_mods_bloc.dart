@@ -8,11 +8,11 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-part 'melon_mods_event.dart';
-part 'melon_mods_state.dart';
+part 'community_melon_mods_event.dart';
+part 'community_melon_mods_state.dart';
 
 @injectable
-class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
+class CommunityMelonModsBloc extends Bloc<CommunityMelonModsEvent, CommunityMelonModsState> {
   final ApiService _apiService;
   final VersionDataHelper _versionDataHelper;
   final int _limit = 30;
@@ -20,59 +20,59 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
   int _page = 0;
   bool _isLastPage = false;
 
-  MelonModsBloc(
+  CommunityMelonModsBloc(
     this._apiService,
     this._versionDataHelper,
-  ) : super(MelonModsInitial()) {
-    on<MelonModsInitialize>(_onMelonModsInitialize);
-    on<MelonModsRefresh>(_onMelonModsRefresh);
-    on<MelonModsLoadMore>(_onMelonModsLoadMore);
+  ) : super(CommunityMelonModsInitial()) {
+    on<CommunityMelonModsInitialize>(_onCommunityMelonModsInitialize);
+    on<CommunityMelonModsRefresh>(_onCommunityMelonModsRefresh);
+    on<CommunityMelonModsLoadMore>(_onCommunityMelonModsLoadMore);
   }
 
-  Future<void> _onMelonModsInitialize(
-      MelonModsInitialize event, Emitter<MelonModsState> emit) async {
-    emit(MelonModsLoading());
+  Future<void> _onCommunityMelonModsInitialize(
+      CommunityMelonModsInitialize event, Emitter<CommunityMelonModsState> emit) async {
+    emit(CommunityMelonModsLoading());
     try {
       final listMods = await _fetchModDatas();
-      emit(MelonModsComplete(listMods));
+      emit(CommunityMelonModsComplete(listMods));
     } on FailureException catch (e) {
       if (isFirstPage) {
         // emit state error when first page
-        emit(MelonModsError(e));
+        emit(CommunityMelonModsError(e));
       } else {
         // emit state error when load more
-        emit(MelonModsLoadNoMoreData((state as MelonModsComplete).items));
+        emit(CommunityMelonModsLoadNoMoreData((state as CommunityMelonModsComplete).items));
       }
     }
   }
 
   bool get isFirstPage => _page == 0;
 
-  FutureOr<void> _onMelonModsLoadMore(
-      MelonModsLoadMore event, Emitter<MelonModsState> emit) async {
-    emit(MelonModsLoadMoreLoading((state as MelonModsComplete).items));
+  FutureOr<void> _onCommunityMelonModsLoadMore(
+      CommunityMelonModsLoadMore event, Emitter<CommunityMelonModsState> emit) async {
+    emit(CommunityMelonModsLoadMoreLoading((state as CommunityMelonModsComplete).items));
 
     if (_isLastPage) {
       // Todo: emit state is lastPage
-      emit(MelonModsLoadNoMoreData((state as MelonModsComplete).items));
+      emit(CommunityMelonModsLoadNoMoreData((state as CommunityMelonModsComplete).items));
     } else {
       try {
-        final currentItem = (state as MelonModsComplete).items;
+        final currentItem = (state as CommunityMelonModsComplete).items;
 
         final items = await _fetchModDatas();
 
         currentItem.addAll(items);
 
-        emit(MelonModsLoadMoreComplete(currentItem));
+        emit(CommunityMelonModsLoadMoreComplete(currentItem));
       } catch (e) {
-        emit(MelonModsLoadMoreError((state as MelonModsComplete).items));
+        emit(CommunityMelonModsLoadMoreError((state as CommunityMelonModsComplete).items));
       }
     }
   }
 
-  Future<FutureOr<void>> _onMelonModsRefresh(
-      MelonModsRefresh event, Emitter<MelonModsState> emit) async {
-    emit(MelonModsLoadMoreLoading((state as MelonModsComplete).items));
+  Future<FutureOr<void>> _onCommunityMelonModsRefresh(
+      CommunityMelonModsRefresh event, Emitter<CommunityMelonModsState> emit) async {
+    emit(CommunityMelonModsLoadMoreLoading((state as CommunityMelonModsComplete).items));
 
     _page = 0;
     _isLastPage = false;
@@ -82,9 +82,9 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
 
       final items = await _fetchModDatas();
 
-      emit(MelonModsRefreshComplete(items));
+      emit(CommunityMelonModsRefreshComplete(items));
     } catch (e) {
-      emit(MelonMOdsRefreshError((state as MelonModsComplete).items));
+      emit(CommunityMelonModsRefreshError((state as CommunityMelonModsComplete).items));
     }
   }
 
@@ -96,9 +96,10 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
         'page': _page,
         'order_by': 'newst',
         'order_type': 'DESC',
-        'type': 0,
+        'type': 1,
         'is_verify': true,
         'isHide': false,
+        'isLivingSkin': true
       },
     );
 

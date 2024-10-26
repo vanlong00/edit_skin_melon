@@ -36,6 +36,7 @@ MelonModel _$MelonModelFromJson(Map<String, dynamic> json) => MelonModel(
           ? null
           : CategoryModel.fromJson(json['category'] as Map<String, dynamic>),
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      isLivingSkin: json['isLivingSkin'] as bool?,
     );
 
 Map<String, dynamic> _$MelonModelToJson(MelonModel instance) =>
@@ -60,6 +61,7 @@ Map<String, dynamic> _$MelonModelToJson(MelonModel instance) =>
       'reportCount': instance.reportCount,
       'category': instance.category,
       'tags': instance.tags,
+      'isLivingSkin': instance.isLivingSkin,
     };
 
 CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>

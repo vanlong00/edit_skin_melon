@@ -1,35 +1,36 @@
-import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
+import 'package:edit_skin_melon/features/home/blocs/community/community_melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/widgets/melon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
-class HomeListMelon extends StatefulWidget {
+class CommunityListMelon extends StatefulWidget {
   final List<dynamic> melonList;
 
-  const HomeListMelon({super.key, required this.melonList});
+  const CommunityListMelon({super.key, required this.melonList});
 
   @override
-  State<HomeListMelon> createState() => _HomeListMelonState();
+  State<CommunityListMelon> createState() => _CommunityListMelonState();
 }
 
-class _HomeListMelonState extends State<HomeListMelon> {
-  final RefreshController _refreshController = RefreshController(initialRefresh: false);
+class _CommunityListMelonState extends State<CommunityListMelon> {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<MelonModsBloc, MelonModsState>(
+    return BlocListener<CommunityMelonModsBloc, CommunityMelonModsState>(
       listener: (context, state) async {
-        if (state is MelonModsLoadMoreComplete) {
+        if (state is CommunityMelonModsLoadMoreComplete) {
           _refreshController.loadComplete();
-        } else if (state is MelonModsLoadNoMoreData) {
+        } else if (state is CommunityMelonModsLoadNoMoreData) {
           _refreshController.loadNoData();
-        } else if (state is MelonModsLoadMoreError) {
+        } else if (state is CommunityMelonModsLoadMoreError) {
           _refreshController.loadFailed();
-        } else if (state is MelonModsRefreshComplete) {
+        } else if (state is CommunityMelonModsRefreshComplete) {
           _refreshController.refreshCompleted();
-        } else if (state is MelonMOdsRefreshError) {
+        } else if (state is CommunityMelonModsRefreshError) {
           _refreshController.refreshFailed();
         }
       },
@@ -64,18 +65,23 @@ class _HomeListMelonState extends State<HomeListMelon> {
         onLoading: _onLoading,
         child: widget.melonList.isEmpty
             ? _buildEmptyWidget()
-            : StaggeredGrid.count(
+            : MasonryGridView.count(
                 mainAxisSpacing: 8,
+                // TODO: Consider making this configurable
                 crossAxisSpacing: 8,
+                // TODO: Consider making this configurable
                 crossAxisCount: 2,
-                children: [
-                  for (final item in widget.melonList)
-                    StaggeredGridTile.count(
-                      crossAxisCellCount: 1,
-                      mainAxisCellCount: 1,
-                      child: MelonWidget(item: item),
-                    ),
-                ],
+                // TODO: Consider making this configurable
+                itemCount: widget.melonList.length,
+                itemBuilder: (context, index) {
+                  final item = widget.melonList[index];
+                  return SizedBox(
+                    height: index % 3 == 0
+                        ? 384
+                        : 320, // TODO: Consider making these heights configurable
+                    child: MelonWidget(item: item),
+                  );
+                },
               ),
       ),
     );
@@ -91,10 +97,10 @@ class _HomeListMelonState extends State<HomeListMelon> {
   }
 
   Future<void> _onLoading() async {
-    context.read<MelonModsBloc>().add(MelonModsLoadMore());
+    context.read<CommunityMelonModsBloc>().add(CommunityMelonModsLoadMore());
   }
 
   Future<void> _onRefresh() async {
-    context.read<MelonModsBloc>().add(MelonModsRefresh());
+    context.read<CommunityMelonModsBloc>().add(CommunityMelonModsRefresh());
   }
 }

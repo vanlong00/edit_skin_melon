@@ -18,9 +18,7 @@ class WorkspacePage extends StatelessWidget {
         child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
           builder: (context, state) {
             if (state.workSpaceItems.isEmpty) {
-              return const Center(
-                child: Text('No data'),
-              );
+              return _buildEmptyWidget();
             }
 
             return MasonryGridView.count(
@@ -58,6 +56,15 @@ class WorkspacePage extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyWidget() {
+    return const Center(
+      child: Text(
+        'No items available',
+        style: TextStyle(fontSize: 18, color: Colors.grey),
+      ),
     );
   }
 }
