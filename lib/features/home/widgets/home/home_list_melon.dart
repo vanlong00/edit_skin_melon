@@ -73,7 +73,7 @@ class _HomeListMelonState extends State<HomeListMelon> {
                     StaggeredGridTile.count(
                       crossAxisCellCount: 1,
                       mainAxisCellCount: 1,
-                      child: MelonWidget(item: item),
+                      child: MelonWidget.home(item: item),
                     ),
                 ],
               ),

@@ -79,7 +79,7 @@ class _CommunityListMelonState extends State<CommunityListMelon> {
                     height: index % 3 == 0
                         ? 384
                         : 320, // TODO: Consider making these heights configurable
-                    child: MelonWidget(item: item),
+                    child: MelonWidget.community(item: item),
                   );
                 },
               ),
