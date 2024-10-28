@@ -1,5 +1,5 @@
-import 'package:edit_skin_melon/routing/app_router.dart';
 import 'package:edit_skin_melon/routing/app_route_name.dart';
+import 'package:edit_skin_melon/routing/app_router.dart';
 import 'package:edit_skin_melon/widgets/loading_widgets/loading_animate_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getApplicationDocumentsDirectory(),
+    storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
   );
 
   configureDependencies();
@@ -33,7 +31,7 @@ void configLoading() {
     ..indicatorColor = Colors.transparent
     ..boxShadow = []
     ..maskType = EasyLoadingMaskType.custom
-    ..maskColor = const Color(0xff464A71).withOpacity(0.25)
+    ..maskColor = Colors.black.withOpacity(0.24)
     ..textColor = Colors.black;
 }
 

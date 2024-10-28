@@ -1,6 +1,7 @@
 import 'package:edit_skin_melon/features/home/widgets/melon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../blocs/workspace/workspace_bloc.dart';
 
@@ -16,18 +17,16 @@ class HistoryPage extends StatelessWidget {
         child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
           builder: (context, state) {
             if (state.melonItems.isEmpty) {
-              return const Center(
-                child: Text('No data'),
-              );
+              return _buildEmptyWidget();
             }
 
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            return MasonryGridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 1,
               ),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
               itemCount: state.melonItems.length,
               itemBuilder: (context, index) {
                 final item = state.melonItems[index];
@@ -43,6 +42,15 @@ class HistoryPage extends StatelessWidget {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text('History Page'),
+    );
+  }
+
+  Widget _buildEmptyWidget() {
+    return const Center(
+      child: Text(
+        'No items available',
+        style: TextStyle(fontSize: 18, color: Colors.grey),
+      ),
     );
   }
 }

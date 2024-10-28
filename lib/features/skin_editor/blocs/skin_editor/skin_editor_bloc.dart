@@ -22,6 +22,7 @@ import 'package:name_plus/name_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:replay_bloc/replay_bloc.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:path/path.dart' as path;
 
 import '../../widgets/melon_game_widget.dart';
 
@@ -147,12 +148,12 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     EasyLoading.show();
 
     final dir = await StorageHelper.getSavedDirectory();
-    final dirMods = Directory("${dir.path}/Mods");
-    if (!dirMods.existsSync()) await dirMods.create();
+    final dirEdits = Directory(path.join(dir.path, 'Edits'));
+    if (!dirEdits.existsSync()) await dirEdits.create();
 
     try {
       final uniqueId = "${event.name}${DateTime.now().year}${DateTime.now().millisecondsSinceEpoch}";
-      final modFile = await File("${dir.path}/Mods").namePlus("${event.name}.melmod", format: '(d)', space: false);
+      final modFile = await File(dirEdits.path).namePlus("${event.name}.melmod", format: '(d)', space: false);
 
       // Update projectItem with new name and custom category
       state.copyWith(

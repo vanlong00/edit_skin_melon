@@ -5,6 +5,7 @@ import 'package:edit_skin_melon/core/utils/helpers/export_game_helper.dart';
 import 'package:edit_skin_melon/core/utils/helpers/storage_helper.dart';
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
+import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
@@ -40,6 +41,7 @@ class _ImportScreenState extends State<ImportScreen> {
       }
     } catch (e) {
       // Handle the error appropriately
+      log('Error getting import data: ${e.toString()}');
     }
     return importedFiles;
   }
@@ -49,6 +51,7 @@ class _ImportScreenState extends State<ImportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.melonModel.name ?? ''),
+        titleSpacing: 0.0,
       ),
       body: FutureBuilder<List<String>>(
         future: _getImportData(),
@@ -90,9 +93,12 @@ class ImportItemWidget extends StatelessWidget {
 
   bool get isMelsave => path.extension(pathItem) == '.melsave';
 
-  Future<String> _readFileContents(String filePath) async {
+  Future<ProjectItem> _readFileContents(String filePath) async {
     final file = File(filePath);
-    return file.readAsStringSync();
+
+    ProjectItem projectItem = ProjectItem.fromJson(await file.readAsString());
+
+    return projectItem;
   }
 
   Future<ProjectItem?> readFilePath() async {
@@ -101,10 +107,9 @@ class ImportItemWidget extends StatelessWidget {
       final file = File(pathItem);
       if (await file.exists()) {
         // Read the file
-        String contents = await compute(_readFileContents, pathItem);
+        ProjectItem item = await compute(_readFileContents, pathItem);
 
-        ProjectItem projectItem = ProjectItem.fromJson(contents);
-        return projectItem;
+        return item;
       } else {
         log('File does not exist');
       }
@@ -133,10 +138,12 @@ class ImportItemWidget extends StatelessWidget {
 
   Container _buildIcon() {
     return Container(
-      width: 128,
-      height: 128,
+      width: 92,
+      height: 92,
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
+        color: AppColor.backgroundGame,
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(8),
       ),

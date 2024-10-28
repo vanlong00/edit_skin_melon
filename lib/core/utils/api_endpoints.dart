@@ -6,6 +6,7 @@ class ApiEndpoints {
   static const String endPointGetVersion = '/melon/getVersion'; // Endpoint for Data Owner
 
   static const String endPointCategory = '/melon/category_filter/Living';
+  static const String endPointSearchCategory = '/melon/category_filter_search/Living';
 
   static const String endPointCreateByUser = '/melon/create-by-user';
 }

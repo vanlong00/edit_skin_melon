@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:edit_skin_melon/core/utils/helpers/export_game_helper.dart';
 import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
+import 'package:edit_skin_melon/widgets/app_dialog/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -23,8 +24,7 @@ class WorkspaceItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColor.backgroundGame,
-        borderRadius:
-            BorderRadius.circular(8), // TODO: Consider making this configurable
+        borderRadius: BorderRadius.circular(8), // TODO: Consider making this configurable
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(
@@ -35,8 +35,7 @@ class WorkspaceItem extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, AppRouteName.communityUpload,
-                    arguments: item);
+                Navigator.pushNamed(context, AppRouteName.communityUpload, arguments: item);
               },
               icon: const Icon(Icons.upload_rounded),
               iconSize: 32, // TODO: Consider making this configurable
@@ -46,7 +45,15 @@ class WorkspaceItem extends StatelessWidget {
             alignment: Alignment.topRight,
             child: IconButton(
               onPressed: () {
-                context.read<WorkspaceBloc>().add(RemoveWorkspaceEvent(item));
+                AppDialog.showActionDialog(
+                  context,
+                  title: "Delete",
+                  content: "Are you sure you want to delete this workspace?",
+                  actionColor: Theme.of(context).colorScheme.error,
+                  onAction: () {
+                    context.read<WorkspaceBloc>().add(RemoveWorkspaceEvent(item));
+                  },
+                );
               },
               icon: const Icon(Icons.delete_outline_rounded),
               iconSize: 32, // TODO: Consider making this configurable
@@ -83,8 +90,7 @@ class WorkspaceItem extends StatelessWidget {
         }
 
         return AnimatedOpacity(
-          duration: const Duration(
-              milliseconds: 300), // TODO: Consider making this configurable
+          duration: const Duration(milliseconds: 300), // TODO: Consider making this configurable
           opacity: frame == null ? 0 : 1,
           child: child,
         );

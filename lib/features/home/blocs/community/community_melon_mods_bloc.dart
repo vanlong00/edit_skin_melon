@@ -15,7 +15,7 @@ part 'community_melon_mods_state.dart';
 class CommunityMelonModsBloc extends Bloc<CommunityMelonModsEvent, CommunityMelonModsState> {
   final ApiService _apiService;
   final VersionDataHelper _versionDataHelper;
-  final int _limit = 30;
+  final int _limit = 50;
   
   int _page = 0;
   bool _isLastPage = false;

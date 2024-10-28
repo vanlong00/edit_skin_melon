@@ -38,8 +38,7 @@ class WorkspaceBloc extends HydratedBloc<WorkspaceEvent, WorkspaceState> {
   }
 
   FutureOr<void> _onAddWorkspace(AddWorkspaceEvent event, Emitter<WorkspaceState> emit) {
-    final updatedItems = List<WorkspaceModel>.from(state.workSpaceItems)
-      ..add(event.workspace);
+    final updatedItems = [event.workspace, ...state.workSpaceItems];
     emit(state.copyWith(workSpaceItems: updatedItems));
   }
 
@@ -67,7 +66,6 @@ class WorkspaceBloc extends HydratedBloc<WorkspaceEvent, WorkspaceState> {
       return;
     }
 
-    print('Add Melon Event');
     final updatedItems = [event.melon, ...state.melonItems];
     emit(state.copyWith(melonItems: updatedItems));
   }

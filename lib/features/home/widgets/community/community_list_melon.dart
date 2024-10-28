@@ -15,8 +15,7 @@ class CommunityListMelon extends StatefulWidget {
 }
 
 class _CommunityListMelonState extends State<CommunityListMelon> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +36,8 @@ class _CommunityListMelonState extends State<CommunityListMelon> {
       // SmartRefresh Widget has problem in material ui 3.
       // Todo: Find another solution to fix this
       child: SmartRefresher(
-        enablePullDown: true,
-        enablePullUp: widget.melonList.isNotEmpty,
+        enablePullDown: false,
+        enablePullUp: widget.melonList.isNotEmpty && widget.melonList.length > 3,
         physics: const ClampingScrollPhysics(),
         footer: CustomFooter(
           builder: (context, mode) {
@@ -65,21 +64,22 @@ class _CommunityListMelonState extends State<CommunityListMelon> {
         onLoading: _onLoading,
         child: widget.melonList.isEmpty
             ? _buildEmptyWidget()
-            : MasonryGridView.count(
+            : MasonryGridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
                 mainAxisSpacing: 8,
-                // TODO: Consider making this configurable
                 crossAxisSpacing: 8,
-                // TODO: Consider making this configurable
-                crossAxisCount: 2,
-                // TODO: Consider making this configurable
                 itemCount: widget.melonList.length,
                 itemBuilder: (context, index) {
                   final item = widget.melonList[index];
                   return SizedBox(
-                    height: index % 3 == 0
-                        ? 384
-                        : 320, // TODO: Consider making these heights configurable
-                    child: MelonWidget.community(item: item),
+                    // height: index % 2 == 0 ? 384 : 320, // TODO: Consider making these heights configurable
+                    child: MelonWidget.community(
+                      item: item,
+                      isMoreSpace: index % 2 != 0,
+                    ),
                   );
                 },
               ),

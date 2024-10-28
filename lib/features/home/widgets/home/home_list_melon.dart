@@ -64,18 +64,18 @@ class _HomeListMelonState extends State<HomeListMelon> {
         onLoading: _onLoading,
         child: widget.melonList.isEmpty
             ? _buildEmptyWidget()
-            : StaggeredGrid.count(
+            : MasonryGridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                crossAxisCount: 2,
-                children: [
-                  for (final item in widget.melonList)
-                    StaggeredGridTile.count(
-                      crossAxisCellCount: 1,
-                      mainAxisCellCount: 1,
-                      child: MelonWidget.home(item: item),
-                    ),
-                ],
+                itemCount: widget.melonList.length,
+                itemBuilder: (context, index) {
+                  final item = widget.melonList[index];
+                  return MelonWidget.home(item: item);
+                },
               ),
       ),
     );

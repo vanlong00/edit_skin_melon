@@ -1,7 +1,12 @@
 import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
 import 'package:edit_skin_melon/features/home/widgets/home/home_list_melon.dart';
+import 'package:edit_skin_melon/features/search/blocs/search_bloc.dart';
+import 'package:edit_skin_melon/widgets/app_dialog/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sizer/sizer.dart';
+
+import '../../search/custom_search_delegate.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -49,6 +54,14 @@ class _HomePageState extends State<HomePage> {
   AppBar _buildAppBar() {
     return AppBar(
       title: const Text('Home Page'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            showSearch(context: context, delegate: CustomSearchDelegate(searchBloc: context.read<SearchBloc>()));
+          },
+        ),
+      ],
     );
   }
 

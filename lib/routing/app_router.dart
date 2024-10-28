@@ -25,6 +25,7 @@ import '../core/di/di.dart';
 import '../features/community_upload/blocs/community_upload_bloc.dart';
 import '../features/detail/blocs/detail_bloc.dart';
 import '../features/home/models/melon_model.dart';
+import '../features/search/blocs/search_bloc.dart';
 import 'pop_routes.dart';
 
 class AppRouter {
@@ -73,6 +74,9 @@ class AppRouter {
             BlocProvider(
               create: (context) => getIt<SkinItemBloc>(),
             ),
+            BlocProvider(
+              create: (context) => getIt<SearchBloc>(),
+            ),
           ],
           child: const HomeScreen(),
         );
@@ -119,6 +123,9 @@ class AppRouter {
             ),
             BlocProvider.value(
               value: getIt<WorkspaceBloc>(),
+            ),
+            BlocProvider.value(
+              value: getIt<MelonModsBloc>(),
             ),
           ],
           child: DetailScreen(melonModel: melonModel),

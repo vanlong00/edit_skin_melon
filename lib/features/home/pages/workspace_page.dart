@@ -32,9 +32,7 @@ class WorkspacePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = state.workSpaceItems[index];
                 return SizedBox(
-                  height: index % 3 == 0
-                      ? 384
-                      : 320, // TODO: Consider making these heights configurable
+                  height: index % 2 == 0 ? 384 : 320, // TODO: Consider making these heights configurable
                   child: WorkspaceItem(item: item),
                 );
               },

@@ -24,7 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
     const HistoryPage(),
   ];
 
-  void _onPageChanged(int index) {
+  void _onPageChanged(int index, BuildContext context) {
+    /// Close the drawer if it is open
+    if (Navigator.canPop(context) && _currentPage == 0) {
+      Navigator.of(context).pop();
+    }
+
     setState(() {
       _currentPage = index;
     });
@@ -41,14 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          onPageChanged: _onPageChanged,
-          children:
-              _pages.map((page) => AppKeepAliveWidget(child: page)).toList(),
-        ),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (value) => _onPageChanged(value, context),
+        children: _pages.map((page) => AppKeepAliveWidget(child: page)).toList(),
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (value) => _onItemTapped(value),

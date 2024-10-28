@@ -1,8 +1,11 @@
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
+import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../routing/app_route_name.dart';
+import '../../../widgets/app_image_network_widget.dart';
 
 enum MelonWidgetType { home, community }
 
@@ -11,16 +14,19 @@ class MelonWidget extends StatelessWidget {
     super.key,
     required this.item,
     this.type = MelonWidgetType.home,
+    this.isMoreSpace = false,
   });
 
   const MelonWidget.community({
     super.key,
     required this.item,
     this.type = MelonWidgetType.community,
+    this.isMoreSpace = false,
   });
 
   final MelonModel item;
   final MelonWidgetType type;
+  final bool isMoreSpace;
 
   @override
   Widget build(BuildContext context) {
@@ -30,28 +36,36 @@ class MelonWidget extends StatelessWidget {
     );
   }
 
+  bool get isLivingMods => item.isLivingSkin == true;
+
   Container _buildWidgetType() {
     switch (type) {
       case MelonWidgetType.community:
         return _buildCommunityWidget();
       case MelonWidgetType.home:
         return Container(
-          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: AppColor.backgroundGame,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
-            children: [
-              const Spacer(),
-              Text(item.name ?? ''),
-            ],
+          clipBehavior: Clip.hardEdge,
+          child: AspectRatio(
+            aspectRatio: 9 / 16,
+            child: AppImageNetworkWidget(
+              imageUrl: item.thumbnailUrl ?? '',
+              fit: isLivingMods ? BoxFit.contain : BoxFit.cover,
+              width: 100.w,
+            ),
           ),
         );
     }
   }
 
   void _funcToNavigate(BuildContext context) {
+    if (Navigator.canPop(context)) {
+      Navigator.of(context).pop();
+    }
+
     Navigator.of(context).pushNamed(
       AppRouteName.detail,
       arguments: item,
@@ -61,30 +75,17 @@ class MelonWidget extends StatelessWidget {
   Container _buildCommunityWidget() {
     return Container(
       padding: const EdgeInsets.all(8),
+      margin: EdgeInsets.only(top: isMoreSpace ? 56 : 0),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: AppColor.backgroundGame,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Image.network(
-        item.thumbnailUrl ?? '',
+      child: AppImageNetworkWidget(
         width: 100.w,
-        fit: BoxFit.contain,
+        height: 100.h,
+        fit: BoxFit.cover,
         filterQuality: FilterQuality.none,
-        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-          if (wasSynchronouslyLoaded) {
-            return child;
-          }
-
-          return AnimatedOpacity(
-            // TODO: Consider making this configurable
-            duration: const Duration(milliseconds: 300),
-            opacity: frame == null ? 0 : 1,
-            child: child,
-          );
-        },
-        errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.image);
-        },
+        imageUrl: item.thumbnailUrl ?? '',
       ),
     );
   }
