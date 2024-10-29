@@ -1,5 +1,5 @@
 import 'package:edit_skin_melon/features/home/blocs/home/melon_mods_bloc.dart';
-import 'package:edit_skin_melon/features/home/models/melon_model.dart';
+import 'package:edit_skin_melon/features/home/widgets/melon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -15,8 +15,7 @@ class HomeListMelon extends StatefulWidget {
 }
 
 class _HomeListMelonState extends State<HomeListMelon> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -34,25 +33,27 @@ class _HomeListMelonState extends State<HomeListMelon> {
           _refreshController.refreshFailed();
         }
       },
+      // SmartRefresh Widget has problem in material ui 3.
+      // Todo: Find another solution to fix this
       child: SmartRefresher(
         enablePullDown: true,
-        enablePullUp: true,
-        header: ClassicHeader(),
+        enablePullUp: widget.melonList.isNotEmpty,
+        physics: const ClampingScrollPhysics(),
         footer: CustomFooter(
           builder: (context, mode) {
             Widget body;
             if (mode == LoadStatus.idle) {
-              body = Text("Pull up load");
+              body = const Text("Pull up load");
             } else if (mode == LoadStatus.loading) {
-              body = CircularProgressIndicator();
+              body = const CircularProgressIndicator();
             } else if (mode == LoadStatus.failed) {
-              body = Text("Load Failed!Click retry!");
+              body = const Text("Load Failed!Click retry!");
             } else if (mode == LoadStatus.canLoading) {
-              body = Text("Release to load more");
+              body = const Text("Release to load more");
             } else {
-              body = Text("No more Data");
+              body = const Text("No more Data");
             }
-            return Container(
+            return SizedBox(
               height: 55.0,
               child: Center(child: body),
             );
@@ -61,19 +62,30 @@ class _HomeListMelonState extends State<HomeListMelon> {
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
-        child: StaggeredGrid.count(
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          crossAxisCount: 2,
-          children: [
-            for (final item in widget.melonList)
-              StaggeredGridTile.count(
-                crossAxisCellCount: 1,
-                mainAxisCellCount: 1,
-                child: ItemModWidget(item: item),
+        child: widget.melonList.isEmpty
+            ? _buildEmptyWidget()
+            : MasonryGridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                itemCount: widget.melonList.length,
+                itemBuilder: (context, index) {
+                  final item = widget.melonList[index];
+                  return MelonWidget.home(item: item);
+                },
               ),
-          ],
-        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyWidget() {
+    return const Center(
+      child: Text(
+        'No items available',
+        style: TextStyle(fontSize: 18, color: Colors.grey),
       ),
     );
   }
@@ -84,31 +96,5 @@ class _HomeListMelonState extends State<HomeListMelon> {
 
   Future<void> _onRefresh() async {
     context.read<MelonModsBloc>().add(MelonModsRefresh());
-  }
-}
-
-class ItemModWidget extends StatelessWidget {
-  const ItemModWidget({
-    super.key,
-    required this.item,
-  });
-
-  final MelonModel item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          const Spacer(),
-          Text(item.name ?? ''),
-        ],
-      ),
-    );
   }
 }

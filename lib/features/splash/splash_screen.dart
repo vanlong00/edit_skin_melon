@@ -1,5 +1,5 @@
 import 'package:edit_skin_melon/core/di/di.dart';
-import 'package:edit_skin_melon/routing/app_routes.dart';
+import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/services/pre_init_data.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +17,8 @@ class _SplashScreenState extends State<SplashScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await getIt<PreInitData>().initialize();
 
-
       if (!context.mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      Navigator.pushReplacementNamed(context, AppRouteName.home);
     });
   }
 

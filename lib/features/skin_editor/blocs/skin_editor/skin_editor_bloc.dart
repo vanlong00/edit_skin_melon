@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:edit_skin_melon/core/di/di.dart';
 import 'package:edit_skin_melon/core/utils/functions/asset_loader.dart';
 import 'package:edit_skin_melon/core/utils/helpers/base_x_codec_helper.dart';
@@ -10,31 +12,41 @@ import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dar
 import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
-import 'package:edit_skin_melon/packages/flutter_easyloading/flutter_easyloading.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:injectable/injectable.dart';
 import 'package:name_plus/name_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:replay_bloc/replay_bloc.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:path/path.dart' as path;
+
+import '../../widgets/melon_game_widget.dart';
 
 part 'skin_editor_event.dart';
 part 'skin_editor_state.dart';
 
 @injectable
 class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
+  final ScreenshotController screenshotController = ScreenshotController();
+  Uint8List? imageScreenshot;
+
   SkinEditorBloc() : super(const SkinEditorState()) {
     on<SkinEditorInitialEvent>(_onSkinEditorInitialEvent);
     on<SkinEditorUpdatePartEvent>(_onSkinEditorUpdatePartEvent);
     on<SkinEditorUpdateCategoryEvent>(_onSkinEditorUpdateCategoryEvent);
     on<SkinEditorSwitchAllPartsPropertiesEvent>(_onSkinEditorSwitchAllPartsPropertiesEvent);
     on<SkinEditorChangeIconEvent>(_onSkinEditorChangeIconEvent);
-    on<SkinEditorSaveEvent>(_onSkinEditorSaveEvent);
+    on<SkinEditorSaveEvent>(_onSkinEditorSaveEvent, transformer: droppable());
 
     /// ---------------------
     on<SkinEditorIsShowPartEvent>(_onSkinEditorIsShowPartEvent);
     on<SkinEditorSwitchIsDrawableEvent>(_onSkinEditorSwitchIsDrawableEvent);
     on<SkinEditorPickColorEvent>(_onSkinEditorPickColorEvent);
+    on<SkinEditorAddHistoryColorEvent>(_onSkinEditorAddHistoryColorEvent);
     on<SkinEditorSwitchIsShowGridEvent>(_onSkinEditorSwitchIsShowGridEvent);
   }
 
@@ -84,6 +96,11 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   }
 
   FutureOr<void> _onSkinEditorUpdatePartEvent(SkinEditorUpdatePartEvent event, Emitter<SkinEditorState> emit) async {
+    emit(state.copyWith(
+      isShowPart: state.isShowPart.map((e) => true).toList(),
+      isShowGrid: false,
+    ));
+
     if (event.parts.isEmpty) return;
 
     var parts = event.parts.map((element) {
@@ -97,12 +114,12 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     // get icon from first part (head)
     List<int>? icon = event.parts.first.mainTextureUint8List;
 
+    await _captureScreen(event.context);
+
     emit(
       state.copyWith(
-        projectItem: state.projectItem?.copyWith(
-          icon: icon,
-          parts: parts,
-        ),
+        projectItem: state.projectItem?.copyWith(icon: icon, parts: parts),
+        imageScreenshot: imageScreenshot,
       ),
     );
   }
@@ -128,13 +145,15 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   }
 
   Future<FutureOr<void>> _onSkinEditorSaveEvent(SkinEditorSaveEvent event, Emitter<SkinEditorState> emit) async {
+    EasyLoading.show();
+
     final dir = await StorageHelper.getSavedDirectory();
-    final dirMods = Directory("${dir.path}/Mods");
-    if (!dirMods.existsSync()) await dirMods.create();
+    final dirEdits = Directory(path.join(dir.path, 'Edits'));
+    if (!dirEdits.existsSync()) await dirEdits.create();
 
     try {
       final uniqueId = "${event.name}${DateTime.now().year}${DateTime.now().millisecondsSinceEpoch}";
-      final modFile = await File("${dir.path}/Mods").namePlus("${event.name}.melmod", format: '(d)', space: false);
+      final modFile = await File(dirEdits.path).namePlus("${event.name}.melmod", format: '(d)', space: false);
 
       // Update projectItem with new name and custom category
       state.copyWith(
@@ -147,9 +166,9 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
       await _createFileMelMod(state.projectItem!, modFile.path);
 
       final WorkspaceModel workspaceModel = WorkspaceModel(
-        modFile.name,
-        Uint8List.fromList(state.projectItem?.icon ?? []),
-        modFile.path,
+        name: modFile.name,
+        image: state.imageScreenshot,
+        locatedAt: modFile.path,
       );
 
       getIt<WorkspaceBloc>().add(AddWorkspaceEvent(workspaceModel));
@@ -158,6 +177,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
     } catch (e) {
       // snack bar error
     }
+    EasyLoading.dismiss();
   }
 
   Future<void> _createFileMelMod(ProjectItem projectItem, String path) async {
@@ -180,6 +200,41 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
   Future<void> _writeProjectItemToFile(String projectItemJson, String path) async {
     final File file = File(path);
     await file.writeAsString(projectItemJson);
+  }
+
+  Future<void> _captureScreen(BuildContext context) async {
+    await screenshotController
+        .captureFromWidget(_buildCaptureWidget(context),
+            context: context, delay: const Duration(milliseconds: 20), pixelRatio: 0.6)
+        .then((Uint8List? image) async {
+      if (image != null) {
+        log('Image captured');
+
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = await File('${directory.path}/image.jpg').create();
+        log('Image path: ${imagePath.path}');
+        await imagePath.writeAsBytes(image);
+
+        imageScreenshot = image;
+      }
+    });
+  }
+
+  GameWidget<MelonGame> _buildCaptureWidget(BuildContext context) {
+    return GameWidget(
+      game: MelonGame(
+        skinEditorBloc: context.read<SkinEditorBloc>(),
+        skinPartBloc: context.read<SkinPartBloc>(),
+        isCapture: true,
+      ),
+    );
+  }
+
+  FutureOr<void> _onSkinEditorAddHistoryColorEvent(
+      SkinEditorAddHistoryColorEvent event, Emitter<SkinEditorState> emit) {
+    final historyColorDraw = List<Color>.from(state.historyColorDraw ?? []);
+    historyColorDraw.add(state.colorDraw);
+    emit(state.copyWith(historyColorDraw: historyColorDraw));
   }
 }
 

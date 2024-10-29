@@ -13,7 +13,7 @@ class VersionDataHelper {
 
   VersionDataHelper(this._apiService);
 
-  Future<void> check() async {
+  Future<void> checkDataServer() async {
     final prefs = await SharedPreferences.getInstance();
     final localVersion = prefs.getString('versionData');
 

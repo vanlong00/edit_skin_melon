@@ -12,7 +12,11 @@ class WorkspaceModel {
   final Uint8List? image;
   final String? locatedAt;
 
-  WorkspaceModel(this.name, this.image, this.locatedAt);
+  WorkspaceModel({
+    this.name,
+    this.image,
+    this.locatedAt,
+  });
 
   factory WorkspaceModel.fromJson(Map<String, dynamic> json) => _$WorkspaceModelFromJson(json);
 

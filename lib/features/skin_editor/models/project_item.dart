@@ -92,13 +92,15 @@ class ProjectItem extends Equatable {
         category: json["category"],
         customCategory: json["customCategory"],
         isActivated: json["isActivated"],
-        icon: List<int>.from(json["icon"].map((x) => x)),
+        icon: json["icon"] == null ? List<int>.from([]) : List<int>.from(json["icon"]!.map((x) => x)),
         iconWidth: json["iconWidth"],
         iconHeight: json["iconHeight"],
-        parts: List<Part>.from(json["parts"].map((x) => Part.fromMap(x))),
-        modHuman: List<ModHuman>.from(json["modHuman"].map((x) => ModHuman.fromMap(x))),
-        modFirearms: json["modFirearms"] != null ? List<dynamic>.from(json["modFirearms"].map((x) => x)) : null,
-        metadata: json["modFirearms"] != null ? MetaData.fromMap(json["metadata"]) : null,
+        parts:
+            json["parts"] == null ? List<Part>.from([]) : List<Part>.from(json["parts"]!.map((x) => Part.fromMap(x))),
+        modHuman:
+            json["modHuman"] == null ? [] : List<ModHuman>.from(json["modHuman"]!.map((x) => ModHuman.fromMap(x))),
+        modFirearms: json["modFirearms"],
+        metadata: json["metadata"] == null ? null : MetaData.fromMap(json["metadata"]),
         colorData: json["colorData"] != null ? List<dynamic>.from(json["colorData"].map((x) => x)) : null,
         scriptsData: json["ScriptsData"] != null ? List<dynamic>.from(json["ScriptsData"].map((x) => x)) : null,
       );

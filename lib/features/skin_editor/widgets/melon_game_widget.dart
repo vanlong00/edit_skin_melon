@@ -8,7 +8,6 @@ import 'package:edit_skin_melon/features/skin_editor/widgets/components/part_spr
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:flutter/foundation.dart';
 
 class MelonGame extends FlameGame with ScaleDetector {
   late double startZoom;
@@ -18,19 +17,30 @@ class MelonGame extends FlameGame with ScaleDetector {
 
   PartSpriteComponent? spriteComponent;
   bool? isDrawable;
+  final bool isCapture;
 
   MelonGame({
     required this.skinEditorBloc,
     required this.skinPartBloc,
+    this.isCapture = false,
   });
 
   @override
   Color backgroundColor() => AppColor.backgroundGame;
 
+  void setupCamera() {
+    if (isCapture) {
+      camera.viewfinder.zoom = 10.5;
+      camera.moveTo(Vector2(0, 32));
+    } else {
+      camera.viewfinder.zoom = 6;
+      camera.moveTo(Vector2(8, 30));
+    }
+  }
+
   @override
   Future<void> onLoad() async {
-    camera.viewfinder.zoom = 6;
-    camera.moveTo(Vector2(8, 30));
+    setupCamera();
 
     world.add(FoundationComponent());
 

@@ -3,22 +3,51 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 part 'error_text.dart';
-
 part 'validator.dart';
 
 class AppTextFieldWidget extends StatefulWidget {
   const AppTextFieldWidget.string({
     super.key,
-    required this.label,
+    this.title,
     this.type = AppInputType.string,
     this.initialValue,
     this.onChanged,
     this.validator,
+    this.label,
+    this.maxLines,
+    this.minLines,
+  });
+
+  const AppTextFieldWidget.multiline({
+    super.key,
+    this.title,
+    this.type = AppInputType.multiline,
+    this.initialValue,
+    this.onChanged,
+    this.validator,
+    this.label,
+    this.maxLines,
+    this.minLines,
+  });
+
+  const AppTextFieldWidget.name({
+    super.key,
+    this.title,
+    this.type = AppInputType.name,
+    this.initialValue,
+    this.onChanged,
+    this.validator,
+    this.label,
+    this.maxLines,
+    this.minLines,
   });
 
   final AppInputType type;
-  final String label;
+  final String? title;
   final String? initialValue;
+  final String? label;
+  final int? maxLines;
+  final int? minLines;
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
 
@@ -58,11 +87,13 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
       child: TextFormField(
         controller: _controller,
         focusNode: _focusNode,
-        keyboardType: TextInputType.text,
+        keyboardType: _getTextInputType(),
         autovalidateMode: AutovalidateMode.onUserInteraction,
         initialValue: widget.initialValue,
         onChanged: widget.onChanged,
         onTapOutside: (event) => _focusNode.unfocus(),
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
         validator: (value) {
           String? error;
 
@@ -79,6 +110,8 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
           errorText: _errorText.value != null ? "" : null,
           errorMaxLines: 1,
           errorStyle: const TextStyle(fontSize: 0),
+          label: (widget.label != null) ? Text(widget.label!) : null,
+          alignLabelWithHint: true,
         ),
       ),
     );
@@ -86,16 +119,14 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
 
   bool get isValidator => widget.validator != null;
 
-  Align _buildErrorText() {
+  Widget _buildErrorText() {
     return Align(
       alignment: Alignment.centerRight,
-      child: _ErrorText(
-        animatedString: _errorText,
-      ),
+      child: _ErrorText(animatedString: _errorText),
     );
   }
 
-  Text _buildLabel() => Text(widget.label);
+  Widget _buildLabel() => widget.title != null ? Text(widget.title!) : const SizedBox();
 
   onCheckValidate(String? error) {
     if (_errorText.value != error) {
@@ -109,6 +140,23 @@ class AppTextFieldWidgetState extends State<AppTextFieldWidget> {
     switch (widget.type) {
       case AppInputType.string:
         return isString(string);
+      case AppInputType.name:
+        return isName(string);
+      case AppInputType.multiline:
+        return isString(string);
+      default:
+        return null;
+    }
+  }
+
+  TextInputType? _getTextInputType() {
+    switch (widget.type) {
+      case AppInputType.string:
+        return TextInputType.text;
+      case AppInputType.name:
+        return TextInputType.name;
+      case AppInputType.multiline:
+        return TextInputType.multiline;
       default:
         return null;
     }

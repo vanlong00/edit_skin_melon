@@ -11,12 +11,12 @@ import 'package:injectable/injectable.dart';
 part 'melon_mods_event.dart';
 part 'melon_mods_state.dart';
 
-@injectable
+@lazySingleton
 class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
   final ApiService _apiService;
   final VersionDataHelper _versionDataHelper;
-  final int _limit = 30;
-  final String _cate = 'Living';
+  final int _limit = 50;
+  
   int _page = 0;
   bool _isLastPage = false;
 
@@ -53,7 +53,6 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
     emit(MelonModsLoadMoreLoading((state as MelonModsComplete).items));
 
     if (_isLastPage) {
-      // Todo: emit state is lastPage
       emit(MelonModsLoadNoMoreData((state as MelonModsComplete).items));
     } else {
       try {
@@ -61,9 +60,7 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
 
         final items = await _fetchModDatas();
 
-        currentItem.addAll(items);
-
-        emit(MelonModsLoadMoreComplete(currentItem));
+        emit(MelonModsLoadMoreComplete([...currentItem,...items]));
       } catch (e) {
         emit(MelonModsLoadMoreError((state as MelonModsComplete).items));
       }
@@ -78,7 +75,7 @@ class MelonModsBloc extends Bloc<MelonModsEvent, MelonModsState> {
     _isLastPage = false;
 
     try {
-      await _versionDataHelper.check();
+      await _versionDataHelper.checkDataServer();
 
       final items = await _fetchModDatas();
 

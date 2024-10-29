@@ -1,1 +1,1 @@
-enum AppInputType { string }
+enum AppInputType { string, name, multiline }
