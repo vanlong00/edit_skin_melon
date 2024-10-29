@@ -17,7 +17,7 @@ abstract class RegisterModule {
     final dio = Dio();
     dio.options.baseUrl = ApiEndpoints.baseUrl;
     dio.options.connectTimeout = const Duration(seconds: 5);
-    dio.options.receiveTimeout = const Duration(seconds: 3);
+    dio.options.receiveTimeout = const Duration(seconds: 5);
     dio.interceptors.add(
       PrettyDioLogger(
         responseBody: false,

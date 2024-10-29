@@ -1,10 +1,50 @@
 import 'package:edit_skin_melon/core/utils/app_string.dart';
-import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 class AppDialog {
+  static void showExitDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Exit App"),
+          content: const Text("Are you sure you want to exit the app?"),
+          actions: [
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.all(4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                backgroundColor: Colors.grey,
+              ),
+              child: const Text("Cancel"),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.all(4),
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text("Exit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   static void showActionDialog(
     BuildContext context, {
     required String title,

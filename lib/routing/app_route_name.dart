@@ -2,6 +2,7 @@ class AppRouteName {
   static const String splash = '/';
   static const String home = '/home';
   static const String detail = '/detail';
+  static const String detailMore = '/detailMore';
   static const String import = '/import';
 
   static const String skinEditor = '/skin_editor';

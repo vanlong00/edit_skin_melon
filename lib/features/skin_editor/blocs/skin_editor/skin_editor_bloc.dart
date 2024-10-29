@@ -10,6 +10,7 @@ import 'package:edit_skin_melon/core/utils/helpers/base_x_codec_helper.dart';
 import 'package:edit_skin_melon/core/utils/helpers/storage_helper.dart';
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
 import 'package:equatable/equatable.dart';
@@ -19,10 +20,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:injectable/injectable.dart';
 import 'package:name_plus/name_plus.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:replay_bloc/replay_bloc.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:path/path.dart' as path;
 
 import '../../widgets/melon_game_widget.dart';
 
@@ -83,7 +84,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
 
   FutureOr<void> _onSkinEditorSwitchIsDrawableEvent(
       SkinEditorSwitchIsDrawableEvent event, Emitter<SkinEditorState> emit) {
-    emit(state.copyWith(isDrawable: !state.isDrawable));
+    emit(state.copyWith(isDrawable: event.isDrawable ?? !state.isDrawable));
   }
 
   FutureOr<void> _onSkinEditorPickColorEvent(SkinEditorPickColorEvent event, Emitter<SkinEditorState> emit) {
@@ -204,27 +205,39 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
 
   Future<void> _captureScreen(BuildContext context) async {
     await screenshotController
-        .captureFromWidget(_buildCaptureWidget(context),
-            context: context, delay: const Duration(milliseconds: 20), pixelRatio: 0.6)
+        .captureFromWidget(
+      _buildCaptureWidget(context),
+      context: context,
+      delay: const Duration(milliseconds: 20),
+      pixelRatio: 1,
+      targetSize: const Size(412, 900),
+    )
         .then((Uint8List? image) async {
       if (image != null) {
         log('Image captured');
 
         final directory = await getApplicationDocumentsDirectory();
         final imagePath = await File('${directory.path}/image.jpg').create();
+
+        // img.Image? decodeImage = img.decodeImage(image);
+        // if (decodeImage != null) {
+        //
+        //   decodeImage = img.copyResize(decodeImage, width: 256);
+        //   image = Uint8List.fromList(img.encodePng(decodeImage));
+        // }
         log('Image path: ${imagePath.path}');
         await imagePath.writeAsBytes(image);
-
         imageScreenshot = image;
       }
     });
   }
 
-  GameWidget<MelonGame> _buildCaptureWidget(BuildContext context) {
+  Widget _buildCaptureWidget(BuildContext context) {
     return GameWidget(
       game: MelonGame(
         skinEditorBloc: context.read<SkinEditorBloc>(),
         skinPartBloc: context.read<SkinPartBloc>(),
+        skinItemBloc: context.read<SkinItemBloc>(),
         isCapture: true,
       ),
     );

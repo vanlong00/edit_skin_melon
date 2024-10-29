@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/utils/constant.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/components/foundation_component.dart';
@@ -14,6 +15,7 @@ class MelonGame extends FlameGame with ScaleDetector {
 
   final SkinEditorBloc skinEditorBloc;
   final SkinPartBloc skinPartBloc;
+  final SkinItemBloc skinItemBloc;
 
   PartSpriteComponent? spriteComponent;
   bool? isDrawable;
@@ -22,6 +24,7 @@ class MelonGame extends FlameGame with ScaleDetector {
   MelonGame({
     required this.skinEditorBloc,
     required this.skinPartBloc,
+    required this.skinItemBloc,
     this.isCapture = false,
   });
 
@@ -44,6 +47,7 @@ class MelonGame extends FlameGame with ScaleDetector {
 
     world.add(FoundationComponent());
 
+    print("MelonGame onLoad: $isCapture");
     // debugMode = kDebugMode;
     return super.onLoad();
   }

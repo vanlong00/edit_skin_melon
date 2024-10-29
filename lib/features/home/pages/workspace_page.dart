@@ -2,7 +2,6 @@ import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dar
 import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../widgets/workspace/workspace_item.dart';
 
@@ -21,20 +20,17 @@ class WorkspacePage extends StatelessWidget {
               return _buildEmptyWidget();
             }
 
-            return MasonryGridView.count(
-              mainAxisSpacing: 8,
-              // TODO: Consider making this configurable
-              crossAxisSpacing: 8,
-              // TODO: Consider making this configurable
-              crossAxisCount: 2,
-              // TODO: Consider making this configurable
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 9 / 16,
+              ),
               itemCount: state.workSpaceItems.length,
               itemBuilder: (context, index) {
                 final item = state.workSpaceItems[index];
-                return SizedBox(
-                  height: index % 2 == 0 ? 384 : 320, // TODO: Consider making these heights configurable
-                  child: WorkspaceItem(item: item),
-                );
+                return WorkspaceItem(item: item);
               },
             );
           },
