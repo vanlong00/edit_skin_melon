@@ -74,12 +74,9 @@ class _CommunityListMelonState extends State<CommunityListMelon> {
                 itemCount: widget.melonList.length,
                 itemBuilder: (context, index) {
                   final item = widget.melonList[index];
-                  return SizedBox(
-                    // height: index % 2 == 0 ? 384 : 320, // TODO: Consider making these heights configurable
-                    child: MelonWidget.community(
-                      item: item,
-                      isMoreSpace: index % 2 != 0,
-                    ),
+                  return MelonWidget.community(
+                    item: item,
+                    isMoreSpace: index % 2 != 0,
                   );
                 },
               ),

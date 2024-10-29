@@ -288,12 +288,16 @@ class _SkinEditorCompletedScreenState extends State<SkinEditorCompletedScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         clipBehavior: Clip.hardEdge,
-        child: BlocSelector<SkinEditorBloc, SkinEditorState, Uint8List>(
+        child: BlocSelector<SkinEditorBloc, SkinEditorState, Uint8List?>(
           selector: (state) {
             // TODO: return selected state
-            return state.imageScreenshot ?? Uint8List(0);
+            return state.imageScreenshot;
           },
           builder: (context, state) {
+            if (state == null) {
+              return const Icon(Icons.image, size: 48);
+            }
+
             return Image.memory(
               state,
               fit: BoxFit.contain,

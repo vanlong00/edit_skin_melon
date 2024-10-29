@@ -29,30 +29,52 @@ import '../features/search/blocs/search_bloc.dart';
 import 'pop_routes.dart';
 
 class AppRouter {
+  static void _onPopInvoked(BuildContext context, bool didPop) async {
+    /// Do something when the back button is pressed
+    /// For example, show a dialog
+    /// Or navigate to a different screen
+    dev.log('PopScope: $didPop');
+    if (!didPop) {
+      await popRoute(context);
+    } else {
+      if (!Navigator.of(context).canPop()) {
+        // AppDialogExitApp.show(context);
+        return;
+      }
+    }
+  }
+
   static Route<dynamic>? generateRoute(RouteSettings settings) {
-    return MaterialPageRoute(
-      builder: (context) {
-        return PopScope(
-          canPop: false,
-          onPopInvoked: (didPop) async {
-            /// Do something when the back button is pressed
-            /// For example, show a dialog
-            /// Or navigate to a different screen
-            dev.log('PopScope: $didPop');
-            if (!didPop) {
-              await popRoute(context);
-            } else {
-              if (!Navigator.of(context).canPop()) {
-                // AppDialogExitApp.show(context);
-                return;
-              }
-            }
+    switch (settings.name) {
+      case AppRouteName.detailMore:
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => _getWidgetForRoute(settings),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
           },
-          child: _getWidgetForRoute(settings),
         );
-      },
-      settings: settings,
-    );
+      default:
+        return MaterialPageRoute(
+          builder: (context) {
+            return PopScope(
+              canPop: false,
+              onPopInvoked: (didPop) => _onPopInvoked(context, didPop),
+              child: _getWidgetForRoute(settings),
+            );
+          },
+          settings: settings,
+        );
+    }
   }
 
   static _getWidgetForRoute(RouteSettings settings) {
@@ -114,8 +136,12 @@ class AppRouter {
           create: (context) => getIt<CommunityUploadBloc>(),
           child: CommunityUploadScreen(workspaceModel: item),
         );
+      case AppRouteName.detailMore:
       case AppRouteName.detail:
-        final melonModel = settings.arguments as MelonModel;
+        final arg = settings.arguments as Map<String, dynamic>;
+        final melonModel = arg['item'] as MelonModel;
+        final tag = arg['tag'] as String?;
+
         return MultiBlocProvider(
           providers: [
             BlocProvider(
@@ -128,7 +154,10 @@ class AppRouter {
               value: getIt<MelonModsBloc>(),
             ),
           ],
-          child: DetailScreen(melonModel: melonModel),
+          child: DetailScreen(
+            melonModel: melonModel,
+            tagImage: tag,
+          ),
         );
       case AppRouteName.import:
         final melonModel = settings.arguments as MelonModel;

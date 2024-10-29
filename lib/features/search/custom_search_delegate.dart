@@ -68,10 +68,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
             itemCount: state.results.length,
             itemBuilder: (context, index) {
               final item = state.results[index];
-              return MelonWidget.home(
-                item: item,
-                isMoreSpace: index % 2 != 0,
-              );
+              return MelonWidget.home(item: item);
             },
           );
         } else if (state is SearchError) {

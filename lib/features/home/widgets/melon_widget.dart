@@ -1,13 +1,12 @@
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../routing/app_route_name.dart';
 import '../../../widgets/app_image_network_widget.dart';
 
-enum MelonWidgetType { home, community }
+enum MelonWidgetType { home, community, tryMore }
 
 class MelonWidget extends StatelessWidget {
   const MelonWidget.home({
@@ -21,6 +20,13 @@ class MelonWidget extends StatelessWidget {
     super.key,
     required this.item,
     this.type = MelonWidgetType.community,
+    this.isMoreSpace = false,
+  });
+
+  const MelonWidget.more({
+    super.key,
+    required this.item,
+    this.type = MelonWidgetType.tryMore,
     this.isMoreSpace = false,
   });
 
@@ -38,38 +44,65 @@ class MelonWidget extends StatelessWidget {
 
   bool get isLivingMods => item.isLivingSkin == true;
 
-  Container _buildWidgetType() {
+  Widget _buildWidgetType() {
     switch (type) {
       case MelonWidgetType.community:
         return _buildCommunityWidget();
       case MelonWidgetType.home:
+        return _buildHomeWidget();
+      case MelonWidgetType.tryMore:
         return Container(
           decoration: BoxDecoration(
             color: AppColor.backgroundGame,
             borderRadius: BorderRadius.circular(8),
           ),
           clipBehavior: Clip.hardEdge,
-          child: AspectRatio(
-            aspectRatio: 9 / 16,
-            child: AppImageNetworkWidget(
-              imageUrl: item.thumbnailUrl ?? '',
-              fit: isLivingMods ? BoxFit.contain : BoxFit.cover,
-              width: 100.w,
-            ),
+          child: AppImageNetworkWidget(
+            imageUrl: item.thumbnailUrl ?? '',
+            fit: isLivingMods ? BoxFit.contain : BoxFit.cover,
+            width: 100.w,
           ),
         );
     }
   }
 
-  void _funcToNavigate(BuildContext context) {
-    if (Navigator.canPop(context)) {
-      Navigator.of(context).pop();
-    }
-
-    Navigator.of(context).pushNamed(
-      AppRouteName.detail,
-      arguments: item,
+  Widget _buildHomeWidget() {
+    return Hero(
+      tag: "home-${item.id}",
+      transitionOnUserGestures: true,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColor.backgroundGame,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: AspectRatio(
+          aspectRatio: 9 / 16,
+          child: AppImageNetworkWidget(
+            imageUrl: item.thumbnailUrl ?? '',
+            fit: isLivingMods ? BoxFit.contain : BoxFit.cover,
+            width: 100.w,
+          ),
+        ),
+      ),
     );
+  }
+
+  void _funcToNavigate(BuildContext context) {
+    switch (type) {
+      case MelonWidgetType.tryMore:
+        Navigator.of(context).pushNamed(
+          AppRouteName.detailMore,
+          arguments: {'item': item},
+        );
+        break;
+      default:
+        Navigator.of(context).pushNamed(
+          AppRouteName.detail,
+          arguments: {'item': item, 'tag': 'home-${item.id}'},
+        );
+        break;
+    }
   }
 
   Container _buildCommunityWidget() {

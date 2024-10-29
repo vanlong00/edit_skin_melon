@@ -6,7 +6,7 @@ import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dar
 import 'package:edit_skin_melon/features/home/models/melon_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:gap/gap.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/app_image_network_widget.dart';
@@ -16,8 +16,13 @@ import 'widgets/detail_button_widget.dart';
 
 class DetailScreen extends StatefulWidget {
   final MelonModel melonModel;
+  final String? tagImage;
 
-  const DetailScreen({super.key, required this.melonModel});
+  const DetailScreen({
+    super.key,
+    required this.melonModel,
+    this.tagImage,
+  });
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -35,7 +40,6 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
       body: _buildBody(),
     );
   }
@@ -52,7 +56,7 @@ class _DetailScreenState extends State<DetailScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildContent(),
+          _buildContent(context),
           _buildButton(),
         ],
       ),
@@ -63,37 +67,76 @@ class _DetailScreenState extends State<DetailScreen> {
     return DetailButtonWidget(widget.melonModel);
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
+    final EdgeInsets paddingSA = MediaQuery.paddingOf(context);
     return Expanded(
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Stack(
           children: [
-            _buildImages(),
-            ReadMoreWidget(
-              scrollController: _scrollController,
+            SingleChildScrollView(
+              controller: _scrollController,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAuthorAndDownloadCount(),
-                  Text('Created: ${widget.melonModel.uploadDate?.toLocal() ?? '???'}'),
-                  Text('Description:\n${widget.melonModel.description}'),
+                  Gap(paddingSA.top),
+                  _buildImages(),
+                  const Gap(8),
+                  _buildReadMore(),
+                  const Divider(thickness: 2, height: 16,),
+                  _buildTryMore(),
                 ],
               ),
             ),
-            _buildTryMore(),
+            Positioned(
+              top: paddingSA.top,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  weight: 800,
+                ),
+                iconSize: 16,
+                color: Colors.black,
+                alignment: Alignment.center,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: const CircleBorder(),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
+  ReadMoreWidget _buildReadMore() {
+    return ReadMoreWidget(
+      scrollController: _scrollController,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildAuthorAndDownloadCount(),
+          Text('Created: ${widget.melonModel.uploadDate?.toLocal() ?? '???'}'),
+          Text('Description:\n${widget.melonModel.description}'),
+        ],
+      ),
+    );
+  }
+
   Widget _buildImages() {
-    return AspectRatio(
-      aspectRatio: 12 / 16,
-      child: ColoredBox(
-        color: Colors.black,
+    return Hero(
+      tag: widget.tagImage ?? 'detail-${widget.melonModel.id}',
+      child: Container(
+        width: 100.w,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        clipBehavior: Clip.hardEdge,
         child: AppImageNetworkWidget(
           imageUrl: widget.melonModel.thumbnailUrl ?? '',
           fit: !isLivingSkin ? BoxFit.cover : BoxFit.contain,
@@ -105,42 +148,50 @@ class _DetailScreenState extends State<DetailScreen> {
 
   bool get isLivingSkin => widget.melonModel.isLivingSkin ?? false;
 
-  Column _buildTryMore() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('You may also like:'),
-        BlocSelector<MelonModsBloc, MelonModsState, List<MelonModel>>(
-          selector: (state) {
-            if (state is MelonModsComplete) {
-              final items = List<MelonModel>.from(state.items)..shuffle();
-              items.remove(widget.melonModel);
-              return items;
-            }
-            return [];
-          },
-          builder: (context, items) {
-            return MasonryGridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+  Widget _buildTryMore() {
+    return FutureBuilder(
+        future: Future.delayed(const Duration(milliseconds: 1200)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('You may also like:'),
+              const Gap(8),
+              BlocSelector<MelonModsBloc, MelonModsState, List<MelonModel>>(
+                selector: (state) {
+                  if (state is MelonModsComplete) {
+                    final items = List<MelonModel>.from(state.items)..shuffle();
+                    items.remove(widget.melonModel);
+                    return items;
+                  }
+                  return [];
+                },
+                builder: (context, items) {
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 12 / 16,
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return MelonWidget.more(item: item);
+                    },
+                  );
+                },
               ),
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return MelonWidget.home(
-                  item: item,
-                  isMoreSpace: index % 2 != 0,
-                );
-              },
-            );
-          },
-        ),
-      ],
-    );
+            ],
+          );
+        });
   }
 
   List<T> getRandomItems<T>(List<T> list, {int count = 4}) {
@@ -155,8 +206,18 @@ class _DetailScreenState extends State<DetailScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Author: ${widget.melonModel.author ?? '???'}'),
-        Text('Downloads: ${widget.melonModel.downloadCount ?? 0}'),
+        Row(
+          children: [
+            const Icon(Icons.person_rounded),
+            Text(widget.melonModel.author ?? '???'),
+          ],
+        ),
+        Row(
+          children: [
+            const Icon(Icons.download_rounded),
+            Text('${widget.melonModel.downloadCount ?? 0}'),
+          ],
+        ),
       ],
     );
   }
