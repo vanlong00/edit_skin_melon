@@ -10,6 +10,7 @@ import 'package:edit_skin_melon/core/utils/helpers/base_x_codec_helper.dart';
 import 'package:edit_skin_melon/core/utils/helpers/storage_helper.dart';
 import 'package:edit_skin_melon/features/home/blocs/workspace/workspace_bloc.dart';
 import 'package:edit_skin_melon/features/home/models/workspace_model.dart';
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/models/models.dart';
 import 'package:equatable/equatable.dart';
@@ -17,7 +18,6 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:image/image.dart' as img;
 import 'package:injectable/injectable.dart';
 import 'package:name_plus/name_plus.dart';
 import 'package:path/path.dart' as path;
@@ -84,7 +84,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
 
   FutureOr<void> _onSkinEditorSwitchIsDrawableEvent(
       SkinEditorSwitchIsDrawableEvent event, Emitter<SkinEditorState> emit) {
-    emit(state.copyWith(isDrawable: !state.isDrawable));
+    emit(state.copyWith(isDrawable: event.isDrawable ?? !state.isDrawable));
   }
 
   FutureOr<void> _onSkinEditorPickColorEvent(SkinEditorPickColorEvent event, Emitter<SkinEditorState> emit) {
@@ -237,6 +237,7 @@ class SkinEditorBloc extends Bloc<SkinEditorEvent, SkinEditorState> {
       game: MelonGame(
         skinEditorBloc: context.read<SkinEditorBloc>(),
         skinPartBloc: context.read<SkinPartBloc>(),
+        skinItemBloc: context.read<SkinItemBloc>(),
         isCapture: true,
       ),
     );

@@ -17,6 +17,7 @@ import 'package:edit_skin_melon/features/skin_editor/screens/view_json_screen.da
 import 'package:edit_skin_melon/features/splash/splash_screen.dart';
 import 'package:edit_skin_melon/routing/app_route_name.dart';
 import 'package:edit_skin_melon/tools/web_tools.dart';
+import 'package:edit_skin_melon/widgets/app_dialog/app_dialog.dart';
 import 'package:edit_skin_melon/widgets/error_widgets/error_no_route_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,22 +34,27 @@ class AppRouter {
     /// Do something when the back button is pressed
     /// For example, show a dialog
     /// Or navigate to a different screen
-    dev.log('PopScope: $didPop');
     if (!didPop) {
       await popRoute(context);
     } else {
       if (!Navigator.of(context).canPop()) {
-        // AppDialogExitApp.show(context);
+        AppDialog.showExitDialog(context);
         return;
       }
     }
   }
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
+    Widget buildPage(BuildContext context) => PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) => _onPopInvoked(context, didPop),
+          child: _getWidgetForRoute(settings),
+        );
+
     switch (settings.name) {
       case AppRouteName.detailMore:
         return PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => _getWidgetForRoute(settings),
+          pageBuilder: (context, animation, secondaryAnimation) => buildPage(context),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;
@@ -65,13 +71,7 @@ class AppRouter {
         );
       default:
         return MaterialPageRoute(
-          builder: (context) {
-            return PopScope(
-              canPop: false,
-              onPopInvoked: (didPop) => _onPopInvoked(context, didPop),
-              child: _getWidgetForRoute(settings),
-            );
-          },
+          builder: (context) => buildPage(context),
           settings: settings,
         );
     }

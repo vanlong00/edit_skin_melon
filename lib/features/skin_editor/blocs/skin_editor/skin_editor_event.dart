@@ -94,10 +94,12 @@ class SkinEditorSwitchAllPartsPropertiesEvent extends SkinEditorEvent {
 /// From this, we use to update state not relate to ProjectItem
 
 class SkinEditorSwitchIsDrawableEvent extends SkinEditorEvent {
-  const SkinEditorSwitchIsDrawableEvent();
+  final bool? isDrawable;
+
+  const SkinEditorSwitchIsDrawableEvent({this.isDrawable});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [isDrawable];
 }
 
 class SkinEditorPickColorEvent extends SkinEditorEvent {

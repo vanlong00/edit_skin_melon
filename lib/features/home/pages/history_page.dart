@@ -30,7 +30,7 @@ class HistoryPage extends StatelessWidget {
               itemCount: state.melonItems.length,
               itemBuilder: (context, index) {
                 final item = state.melonItems[index];
-                return MelonWidget.home(item: item);
+                return MelonWidget.history(item: item);
               },
             );
           },

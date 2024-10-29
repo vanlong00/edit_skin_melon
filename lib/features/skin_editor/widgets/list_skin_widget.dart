@@ -1,3 +1,4 @@
+import 'package:edit_skin_melon/features/skin_editor/blocs/skin_editor/skin_editor_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_bloc.dart';
 import 'package:edit_skin_melon/features/skin_editor/blocs/skin_part/skin_part_bloc.dart';
 import 'package:edit_skin_melon/theme/app_color.dart';
@@ -35,6 +36,7 @@ class ListSkinWidget extends StatelessWidget {
                       ...state.skinsModel[state.skinsModel.keys.toList()[indexPart]]!["thumb"]!.map((e) {
                         return GestureDetector(
                           onTap: () {
+                            context.read<SkinEditorBloc>().add(const SkinEditorSwitchIsDrawableEvent(isDrawable: false));
                             context.read<SkinPartBloc>().add(
                               SkinPartUpdateAvailableModelEvent(
                                 skinPath: e,

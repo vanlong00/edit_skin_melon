@@ -7,6 +7,7 @@ import 'package:edit_skin_melon/features/skin_editor/blocs/skin_item/skin_item_b
 import 'package:edit_skin_melon/features/skin_editor/widgets/components/part_component.dart';
 import 'package:edit_skin_melon/features/skin_editor/widgets/melon_game_widget.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame_bloc/flame_bloc.dart';
@@ -35,8 +36,13 @@ class PartSpriteComponent extends SpriteComponent
   /// ----------------- Tap Detector -----------------
   @override
   void onTapUp(TapUpEvent event) {
+    if (!isVisible) return;
+
     // TODO: implement onTapUp
-    getIt<SkinItemBloc>().add(SkinItemSelect(indexPart: index));
+    if (gameRef.isDrawable == false) {
+      getIt<SkinItemBloc>().add(SkinItemSelect(indexPart: index));
+    }
+
     super.onTapUp(event);
   }
 
@@ -52,6 +58,7 @@ class PartSpriteComponent extends SpriteComponent
       updateSpriteWithBrush(localPos);
 
       resetPixData();
+      return;
     }
 
     super.onTapDown(event);
@@ -100,6 +107,15 @@ class PartSpriteComponent extends SpriteComponent
         bloc: gameRef.skinEditorBloc,
       ),
     );
+
+    add(
+      FlameBlocListener<SkinItemBloc, SkinItemState>(
+        onNewState: onNewStateSkinItem,
+        listenWhen: listenWhenSkinItem,
+        onInitialState: onInitialStateSkinItem,
+        bloc: gameRef.skinItemBloc,
+      ),
+    );
   }
 
   /// ----------------- SkinEditorBloc -----------------
@@ -107,6 +123,19 @@ class PartSpriteComponent extends SpriteComponent
     /// Check if the grid is enabled
     if (previousState.isShowGrid != newState.isShowGrid) {
       updateGridLayer(newState);
+    }
+
+    /// Checks if the drawable state has changed between the previous and new states.
+    if (previousState.isDrawable != newState.isDrawable) {
+      /// If the new state allows drawing, remove any opacity effects.
+      if (newState.isDrawable) {
+        removeEffectOpacity();
+      }
+
+      /// If drawing is not allowed, update the component's priority and apply an opacity effect.
+      else if (!newState.isDrawable) {
+        updatePriorityAndOpacity((gameRef.skinItemBloc.state as SkinItemLoaded).indexPart);
+      }
     }
 
     /// Check if the part is visible
@@ -131,7 +160,6 @@ class PartSpriteComponent extends SpriteComponent
 
   /// ----------------- SkinPartBloc -----------------
   void onInitialStateSkinPart(SkinPartState state) {
-    // index = state.parts!.indexOf(parent.part);
     priority = AppGameConstant.MAX_PRIORITY_PART - index;
   }
 
@@ -233,5 +261,45 @@ class PartSpriteComponent extends SpriteComponent
     pix = null;
   }
 
+  // Add the [OpacityEffect] to the component.
+  void addEffectOpacity({double? opacity}) {
+    add(OpacityEffect.to(opacity ?? 0.3, EffectController(duration: 0)));
+  }
+
+  // Remove the [OpacityEffect] from the component.
+  void removeEffectOpacity() {
+    add(OpacityEffect.to(1, EffectController(duration: 0)));
+  }
+
+  void updatePriorityAndOpacity(int currentIndex) {
+    if (currentIndex != index) {
+      priority = 50 + index;
+      addEffectOpacity();
+    } else {
+      priority = 100;
+      removeEffectOpacity();
+    }
+  }
+
   /// ----------------- End Function Component --------------
+
+  void onNewStateSkinItem(SkinItemState state) {
+    updatePriorityAndOpacity((state as SkinItemLoaded).indexPart);
+  }
+
+  bool listenWhenSkinItem(SkinItemState previousState, SkinItemState newState) {
+    if (previousState is SkinItemLoaded && newState is SkinItemLoaded) {
+      return previousState.indexPart != newState.indexPart;
+    }
+
+    return false;
+  }
+
+  void onInitialStateSkinItem(SkinItemState state) {
+    updatePriorityAndOpacity((state as SkinItemLoaded).indexPart);
+
+    if (gameRef.isCapture) {
+      removeEffectOpacity();
+    }
+  }
 }

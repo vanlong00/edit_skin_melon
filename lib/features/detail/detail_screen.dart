@@ -128,6 +128,7 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Widget _buildImages() {
+    print('TagImage: ${widget.tagImage}');
     return Hero(
       tag: widget.tagImage ?? 'detail-${widget.melonModel.id}',
       child: Container(

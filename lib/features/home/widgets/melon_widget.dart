@@ -6,7 +6,7 @@ import 'package:sizer/sizer.dart';
 import '../../../routing/app_route_name.dart';
 import '../../../widgets/app_image_network_widget.dart';
 
-enum MelonWidgetType { home, community, tryMore }
+enum MelonWidgetType { home, community, more, history }
 
 class MelonWidget extends StatelessWidget {
   const MelonWidget.home({
@@ -26,7 +26,14 @@ class MelonWidget extends StatelessWidget {
   const MelonWidget.more({
     super.key,
     required this.item,
-    this.type = MelonWidgetType.tryMore,
+    this.type = MelonWidgetType.more,
+    this.isMoreSpace = false,
+  });
+
+  const MelonWidget.history({
+    super.key,
+    required this.item,
+    this.type = MelonWidgetType.history,
     this.isMoreSpace = false,
   });
 
@@ -50,25 +57,32 @@ class MelonWidget extends StatelessWidget {
         return _buildCommunityWidget();
       case MelonWidgetType.home:
         return _buildHomeWidget();
-      case MelonWidgetType.tryMore:
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColor.backgroundGame,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          clipBehavior: Clip.hardEdge,
-          child: AppImageNetworkWidget(
-            imageUrl: item.thumbnailUrl ?? '',
-            fit: isLivingMods ? BoxFit.contain : BoxFit.cover,
-            width: 100.w,
-          ),
-        );
+      case MelonWidgetType.more:
+        return _buildMoreWidget();
+      case MelonWidgetType.history:
+        // TODO: Handle this case.
+        return _buildHomeWidget(tag: 'history-${item.id}');
     }
   }
 
-  Widget _buildHomeWidget() {
+  Container _buildMoreWidget() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColor.backgroundGame,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: AppImageNetworkWidget(
+        imageUrl: item.thumbnailUrl ?? '',
+        fit: isLivingMods ? BoxFit.contain : BoxFit.cover,
+        width: 100.w,
+      ),
+    );
+  }
+
+  Widget _buildHomeWidget({String? tag}) {
     return Hero(
-      tag: "home-${item.id}",
+      tag: tag ?? "home-${item.id}",
       transitionOnUserGestures: true,
       child: Container(
         decoration: BoxDecoration(
@@ -89,11 +103,21 @@ class MelonWidget extends StatelessWidget {
   }
 
   void _funcToNavigate(BuildContext context) {
+    // if (Navigator.canPop(context)) {
+    //   Navigator.of(context).pop();
+    // }
+
     switch (type) {
-      case MelonWidgetType.tryMore:
+      case MelonWidgetType.more:
         Navigator.of(context).pushNamed(
           AppRouteName.detailMore,
           arguments: {'item': item},
+        );
+        break;
+      case MelonWidgetType.history:
+        Navigator.of(context).pushNamed(
+          AppRouteName.detail,
+          arguments: {'item': item, 'tag': 'history-${item.id}'},
         );
         break;
       default:

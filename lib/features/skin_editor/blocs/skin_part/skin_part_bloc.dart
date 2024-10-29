@@ -56,4 +56,11 @@ class SkinPartBloc extends ReplayBloc<SkinPartEvent, SkinPartState> {
       ),
     );
   }
+
+  void undoLastChange() {
+    while (canUndo) {
+      undo();
+    }
+    clearHistory();
+  }
 }
